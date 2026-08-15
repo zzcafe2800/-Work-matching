@@ -146,6 +146,24 @@ nav.bottom-nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);pad
 .auth-choice{display:flex;flex-direction:column;gap:10px}
 .x-badge{display:inline-block;background:#000;color:#fff;padding:2px 6px;border-radius:6px;font-size:10px;font-weight:700;margin-left:6px;vertical-align:middle}
 .g-badge{display:inline-block;background:#4285F4;color:#fff;padding:2px 6px;border-radius:6px;font-size:10px;font-weight:700;margin-left:6px;vertical-align:middle}
+/* 待機オーバーレイ */
+.wait-overlay{position:fixed;inset:0;background:linear-gradient(160deg,var(--water-dark),var(--water));z-index:150;display:none;flex-direction:column;align-items:center;justify-content:center;padding:24px;color:#fff;text-align:center;overflow-y:auto}
+.wait-overlay.active{display:flex}
+.wait-overlay .big-spinner{width:64px;height:64px;border:4px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin 1s linear infinite;margin-bottom:24px}
+.wait-overlay h2{font-size:20px;margin-bottom:8px}
+.wait-overlay .wo-sub{font-size:13px;opacity:.9;margin-bottom:20px;line-height:1.6}
+.wo-card{background:var(--card);color:var(--text);border-radius:24px;padding:24px;max-width:360px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3);animation:fadein .3s}
+.wo-card .av-big{width:96px;height:96px;border-radius:50%;background:var(--bg);margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:48px;overflow:hidden;box-shadow:inset 3px 3px 8px var(--shadow-d)}
+.wo-card .av-big img{width:100%;height:100%;object-fit:cover}
+.wo-loc-box{background:var(--bg);border-radius:16px;padding:16px;margin:10px 0;box-shadow:inset 2px 2px 6px var(--shadow-d)}
+.wo-loc-box .lb-label{font-size:11px;color:var(--text-soft)}
+.wo-loc-box .lb-val{font-size:20px;font-weight:800;color:var(--water-dark);letter-spacing:.03em;word-break:break-all}
+.wo-timer{font-size:12px;opacity:.8;margin-top:14px}
+.match-pop{animation:pop .4s cubic-bezier(.2,1.4,.4,1)}
+@keyframes pop{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
+.like-badge{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:10px;font-size:12px;font-weight:700;margin:4px}
+.like-badge.on{background:var(--pink);color:#fff}
+.like-badge.off{background:var(--bg);color:var(--text-soft)}
 </style>
 </head>
 <body>
@@ -332,6 +350,7 @@ nav.bottom-nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);pad
     <div id="modal-actions" style="margin-top:14px"></div>
   </div>
 </div>
+<div class="wait-overlay" id="wait-overlay"><div id="wait-overlay-content"></div></div>
 <div class="toast" id="toast"></div>
 
 <script type="module">
@@ -392,6 +411,7 @@ const state = {
   swipeQueue:[], swipeIndex:0,
   friends:[], presenceMap:{_unsubs:{}},
   waitUnsub:null, photoDataURL:null, totalUsers:0,
+  match:{active:false},
 };
 
 const $ = (id)=>document.getElementById(id);
@@ -708,101 +728,287 @@ function switchTab(name){
   if(name==="friends") loadFriends();
 }
 
+// ================= マッチ（完全待機＋自動マッチ） =================
+let audioCtx=null;
+function unlockAudio(){ try{ audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)(); if(audioCtx.state==="suspended")audioCtx.resume(); }catch(e){} }
+function playMatchSound(){
+  if(!audioCtx) return;
+  const now=audioCtx.currentTime;
+  [660,880,1320].forEach((f,i)=>{
+    const o=audioCtx.createOscillator(),g=audioCtx.createGain();
+    o.type="sine"; o.frequency.value=f;
+    const t=now+i*0.14;
+    g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(0.35,t+0.02); g.gain.exponentialRampToValueAtTime(0.0001,t+0.35);
+    o.connect(g).connect(audioCtx.destination); o.start(t); o.stop(t+0.37);
+  });
+  try{ if(navigator.vibrate) navigator.vibrate([120,60,120]); }catch(e){}
+}
+
 async function renderMatchTab(){
   const box=$("tab-match");
-  box.innerHTML='<div class="loading"><span class="spinner"></span>集計中…</div>';
+  const p=state.profile;
+  // プロフィール編集欄（ホーム上部）
+  const av=p.photoData?`<img src="${p.photoData}" style="width:56px;height:56px;border-radius:50%;object-fit:cover">`:`<div style="width:56px;height:56px;border-radius:50%;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:30px;box-shadow:inset 2px 2px 6px var(--shadow-d)">${AVATARS[p.avatarId]||"🐱"}</div>`;
+  box.innerHTML=`
+    <div class="card" style="display:flex;align-items:center;gap:12px">
+      ${av}
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:700;font-size:15px">${esc(p.handle)}</div>
+        <div style="font-size:11px;color:var(--text-soft)">${p.scene?(p.scene.icon+" "+esc(p.scene.gameName)):"界隈未設定"}・${(p.categories||[]).slice(0,3).join("・")||"カテゴリ未設定"}</div>
+      </div>
+      <button class="btn btn-small btn-ghost" onclick="app.goto('profile-edit')">編集</button>
+    </div>
+    <div class="card" style="text-align:center">
+      <div style="font-size:14px;color:var(--text-soft);margin-bottom:4px">いま相手を探している人</div>
+      <div style="font-size:30px;font-weight:800;color:var(--pink)" id="searching-count">…<span style="font-size:15px">人</span></div>
+      <p class="hint" style="margin:14px 0 8px">どうやって作業する？</p>
+      <div style="display:flex;gap:10px">
+        <button class="btn btn-pink" onclick="app.startMatching('wait')">🏠 お部屋で待つ</button>
+        <button class="btn" onclick="app.startMatching('go')">🚪 お部屋へ向かう</button>
+      </div>
+      <p class="hint" style="margin-top:10px">「待つ」は自分の作業場所を登録して待ちます。<br>「向かう」は相手の場所へ行きます。</p>
+    </div>
+    <div class="card" id="match-stats"><div class="loading"><span class="spinner"></span>集計中…</div></div>`;
+  loadMatchStats();
+}
+
+async function loadMatchStats(){
   try{
-    // 全ユーザー取得して集計（MVP：小規模想定。大きくなったらカウンタ方式に）
+    const wsnap=await getDocs(query(collection(db,"waiting"),where("status","==","searching")));
+    const now=Date.now(); let cnt=0;
+    wsnap.forEach(d=>{ const w=d.data(); if(d.id===state.uid)return; if(w.updatedAt&&(now-w.updatedAt.toMillis())>2*60*1000)return; cnt++; });
+    const el=$("searching-count"); if(el) el.innerHTML=cnt+'<span style="font-size:15px">人</span>';
+
     const snap=await getDocs(query(collection(db,"users"),limit(300)));
-    const all=[]; snap.forEach(d=>all.push({uid:d.id,...d.data()}));
-    const now=Date.now();
-    // 待機中＝waiting:true かつ 10分以内にアクティブ
-    const waiting=all.filter(u=>u.waiting && u.lastActive && (now-u.lastActive.toMillis())<10*60*1000 && u.uid!==state.uid);
-
-    // 界隈ごと・カテゴリごとの人数
-    const sceneCount={}, catCount={};
-    all.forEach(u=>{
-      const g=u.scene?.gameName||"その他";
-      sceneCount[g]=(sceneCount[g]||0)+1;
-      (u.categories||[]).forEach(c=>catCount[c]=(catCount[c]||0)+1);
-    });
-    const sceneArr=Object.entries(sceneCount).sort((a,b)=>b[1]-a[1]).slice(0,6);
-    const catArr=Object.entries(catCount).sort((a,b)=>b[1]-a[1]).slice(0,6);
-    const maxS=Math.max(1,...sceneArr.map(x=>x[1])), maxC=Math.max(1,...catArr.map(x=>x[1]));
-
-    const iAmWaiting=state.profile.waiting;
-    box.innerHTML=`
-      <div class="card" style="text-align:center">
-        <div style="font-size:14px;color:var(--text-soft);margin-bottom:6px">いま作業仲間を待っている人</div>
-        <div style="font-size:32px;font-weight:800;color:var(--pink)">${waiting.length}<span style="font-size:16px">人</span></div>
-        <button class="btn ${iAmWaiting?"btn-ghost":"btn-pink"}" style="margin-top:12px" onclick="app.toggleWaiting()">
-          ${iAmWaiting?"⏸ マッチ待機をやめる":"🤝 マッチ待機をはじめる"}
-        </button>
-        ${iAmWaiting?'<p class="hint" style="margin-top:8px">待機中です。あなたも一覧に表示されています。</p>':''}
-      </div>
-
-      ${iAmWaiting ? renderWaitingList(waiting) : `<div class="card"><div class="empty" style="padding:24px">
-        <div style="font-size:36px;margin-bottom:8px">👀</div>
-        「マッチ待機」を押すと、<br>いま待っている仲間が見えます
-      </div></div>`}
-
-      <div class="card">
-        <h3 style="font-size:14px;color:var(--water-dark);margin-bottom:12px">🎮 界隈ごとの人数</h3>
-        ${sceneArr.map(([g,n])=>`<div class="stat-row"><div class="stat-label">${esc(g)}</div><div class="stat-bar-bg"><div class="stat-bar" style="width:${n/maxS*100}%"></div></div><div class="stat-num">${n}人</div></div>`).join("")||'<div class="hint">データがありません</div>'}
-      </div>
-      <div class="card">
-        <h3 style="font-size:14px;color:var(--water-dark);margin-bottom:12px">📚 カテゴリーごとの人数</h3>
-        ${catArr.map(([c,n])=>`<div class="stat-row"><div class="stat-label">${esc(c)}</div><div class="stat-bar-bg"><div class="stat-bar" style="width:${n/maxC*100}%"></div></div><div class="stat-num">${n}人</div></div>`).join("")||'<div class="hint">データがありません</div>'}
-      </div>`;
-  }catch(e){ console.error(e); box.innerHTML='<div class="empty">読み込みに失敗しました</div>'; }
+    const sceneCount={},catCount={};
+    snap.forEach(d=>{ const u=d.data(); const g=u.scene?.gameName||"その他"; sceneCount[g]=(sceneCount[g]||0)+1; (u.categories||[]).forEach(c=>catCount[c]=(catCount[c]||0)+1); });
+    const sArr=Object.entries(sceneCount).sort((a,b)=>b[1]-a[1]).slice(0,5);
+    const cArr=Object.entries(catCount).sort((a,b)=>b[1]-a[1]).slice(0,5);
+    const mS=Math.max(1,...sArr.map(x=>x[1])),mC=Math.max(1,...cArr.map(x=>x[1]));
+    const st=$("match-stats");
+    if(st) st.innerHTML=`
+      <h3 style="font-size:14px;color:var(--water-dark);margin-bottom:10px">🎮 界隈ごとの人数</h3>
+      ${sArr.map(([g,n])=>`<div class="stat-row"><div class="stat-label">${esc(g)}</div><div class="stat-bar-bg"><div class="stat-bar" style="width:${n/mS*100}%"></div></div><div class="stat-num">${n}人</div></div>`).join("")||'<div class="hint">データなし</div>'}
+      <h3 style="font-size:14px;color:var(--water-dark);margin:14px 0 10px">📚 カテゴリーごとの人数</h3>
+      ${cArr.map(([c,n])=>`<div class="stat-row"><div class="stat-label">${esc(c)}</div><div class="stat-bar-bg"><div class="stat-bar" style="width:${n/mC*100}%"></div></div><div class="stat-num">${n}人</div></div>`).join("")||'<div class="hint">データなし</div>'}`;
+  }catch(e){ console.error(e); }
 }
 
-function renderWaitingList(waiting){
-  const myCats=new Set(state.profile.categories||[]);
-  const myScene=state.profile.scene?.gameName;
-  waiting.sort((a,b)=>{
-    const sa=(a.scene?.gameName===myScene?3:0)+(a.categories||[]).filter(c=>myCats.has(c)).length;
-    const sb=(b.scene?.gameName===myScene?3:0)+(b.categories||[]).filter(c=>myCats.has(c)).length;
-    return sb-sa;
-  });
-  if(waiting.length===0) return `<div class="card"><div class="empty" style="padding:24px">🌙 いま他に待っている人はいません<br><span style="font-size:12px">見つかるまで待機してみましょう</span></div></div>`;
-  return `<div class="card"><h3 style="font-size:14px;color:var(--pink);margin-bottom:10px">🤝 いま待っている仲間</h3>
-    ${waiting.map(u=>{
-      const loc = u.workLocation ? `${esc(u.scene?.locationLabel||"場所")}: ${esc(u.workLocation)}` : (u.scene?.gameName?esc(u.scene.gameName):"");
-      return `<div class="wait-item">
-        <div class="av">${avatarHtml(u)}</div>
-        <div class="body">
-          <div class="name">${esc(u.handle)}</div>
-          <div class="loc">${u.scene?.icon||"🎮"} ${loc}</div>
-          <div class="cats">${(u.categories||[]).slice(0,4).map(c=>`<span class="cat">${esc(c)}</span>`).join("")}</div>
-        </div>
-      </div>`;
-    }).join("")}
-  </div>`;
+// 作業場所プロフィールのスナップショット
+function myProfileSnap(role, location){
+  const p=state.profile;
+  return { handle:p.handle, avatarId:p.avatarId, photoData:p.photoData||"", scene:p.scene||null,
+    categories:p.categories||[], timeSlots:p.timeSlots||[], goal:p.goal||"", focusStyle:p.focusStyle||"",
+    role, location: role==="wait"?(location||""):"" };
 }
 
-async function toggleWaiting(){
-  const willWait=!state.profile.waiting;
-  if(willWait){
-    // 待機開始：作業場所を入力してもらう
-    const sc=state.profile.scene;
-    const fmt=LOC_FORMATS[sc?.locationFormat||"free"];
-    showModal(`${sc?.icon||"🎮"} ${esc(sc?.gameName||"")} で待機`,
-      `<p>${esc(sc?.locationLabel||"作業場所")}を入力すると、仲間が来やすくなります（任意）。</p>
+// 待機開始
+function startMatching(role){
+  unlockAudio(); // ユーザー操作のうちにオーディオ解禁
+  if(role==="wait"){
+    const sc=state.profile.scene; const fmt=LOC_FORMATS[sc?.locationFormat||"free"];
+    showModal(`${sc?.icon||"🎮"} ${esc(sc?.gameName||"")} で待つ`,
+      `<p>${esc(sc?.locationLabel||"作業場所")}を入力してください。マッチした相手にこの場所が伝わります。</p>
        <input type="text" id="wait-loc" placeholder="${fmt.ph}" maxlength="24" value="${escA(state.profile.workLocation||"")}">
        <p class="hint" style="margin-top:6px">${fmt.label}</p>`,
-      [{label:"待機をはじめる",primary:true,onclick:async()=>{
+      [{label:"この場所で待つ",primary:true,onclick:()=>{
         const val=($("wait-loc").value||"").trim();
-        if(val && fmt.re && !fmt.re.test(val)){ toast("入力形式が違います（"+fmt.label+"）"); return; }
-        state.profile.waiting=true; state.profile.workLocation=val;
-        try{ await updateDoc(doc(db,"users",state.uid),{waiting:true,workLocation:val,lastActive:serverTimestamp()}); }catch(e){}
-        saveLocal(); closeModal(); renderMatchTab();
+        if(!val){ toast("場所を入力してください"); return; }
+        if(fmt.re && !fmt.re.test(val)){ toast("入力形式が違います（"+fmt.label+"）"); return; }
+        state.profile.workLocation=val; saveLocal();
+        closeModal(); enterWaiting("wait", val);
       }}]);
   } else {
-    state.profile.waiting=false;
-    try{ await updateDoc(doc(db,"users",state.uid),{waiting:false,lastActive:serverTimestamp()}); }catch(e){}
-    saveLocal(); renderMatchTab();
+    enterWaiting("go", "");
   }
+}
+
+async function enterWaiting(role, location){
+  state.match={ active:true, role, location, matchId:null, matchData:null, established:false, startedAt:Date.now() };
+  openWaitOverlay(); renderWaitOverlay();
+  // 待機ドキュメント作成
+  try{
+    await setDoc(doc(db,"waiting",state.uid), Object.assign({ uid:state.uid, status:"searching", matchId:null, updatedAt:serverTimestamp() }, myProfileSnap(role,location)));
+  }catch(e){ console.error("waiting create",e); toast("待機の登録に失敗しました"); leaveWaiting(); return; }
+
+  // ハートビート（stale扱い防止）
+  state.match.hb=setInterval(()=>{ try{ updateDoc(doc(db,"waiting",state.uid),{updatedAt:serverTimestamp()}); }catch(e){} }, 30000);
+  // タイマー表示更新
+  state.match.timer=setInterval(()=>{ const el=$("wo-timer"); if(el){ const s=Math.floor((Date.now()-state.match.startedAt)/1000); el.textContent=`待機時間 ${Math.floor(s/60)}分${String(s%60).padStart(2,"0")}秒`; } },1000);
+
+  // 自分が関わるマッチを監視
+  state.match.matchesUnsub=onSnapshot(
+    query(collection(db,"matches"), where("users","array-contains",state.uid)),
+    (snap)=>{
+      let m=null;
+      snap.forEach(d=>{ const x={id:d.id,...d.data()}; if(x.status==="cancelled")return; if(!m)m=x; });
+      if(m) handleMatchDoc(m);
+    }, (err)=>console.error("matches listen",err)
+  );
+  // 待機プールを監視して自動マッチ
+  state.match.poolUnsub=onSnapshot(
+    query(collection(db,"waiting"), where("status","==","searching")),
+    (snap)=>{ tryInitiate(snap); }, (err)=>console.error("pool listen",err)
+  );
+}
+
+async function tryInitiate(snap){
+  if(!state.match.active || state.match.matchId) return;
+  const now=Date.now(); const cands=[];
+  snap.forEach(d=>{
+    if(d.id===state.uid) return;
+    const w=d.data();
+    if(w.status!=="searching") return;
+    if(w.updatedAt && (now-w.updatedAt.toMillis())>2*60*1000) return;
+    cands.push({uid:d.id,...w});
+  });
+  if(!cands.length) return;
+  const myScene=state.profile.scene?.gameName; const myCats=new Set(state.profile.categories||[]);
+  cands.forEach(c=>{ c._s=(c.role!==state.match.role?5:0)+(c.scene?.gameName===myScene?3:0)+(c.categories||[]).filter(x=>myCats.has(x)).length; });
+  cands.sort((a,b)=>b._s-a._s);
+  const partner=cands[0];
+  // 小さいuidだけが作成（重複防止）
+  if(state.uid < partner.uid){
+    const matchId=[state.uid,partner.uid].sort().join("__");
+    try{
+      const mref=doc(db,"matches",matchId);
+      const ex=await getDoc(mref);
+      if(ex.exists()) return;
+      await setDoc(mref,{
+        users:[state.uid,partner.uid].sort(),
+        likes:{[state.uid]:false,[partner.uid]:false},
+        status:"pending",
+        profiles:{
+          [state.uid]:myProfileSnap(state.match.role,state.match.location),
+          [partner.uid]:{handle:partner.handle,avatarId:partner.avatarId,photoData:partner.photoData||"",scene:partner.scene||null,categories:partner.categories||[],timeSlots:partner.timeSlots||[],goal:partner.goal||"",focusStyle:partner.focusStyle||"",role:partner.role,location:partner.location||""}
+        },
+        createdAt:serverTimestamp()
+      });
+    }catch(e){ console.warn("initiate",e); }
+  }
+  // 大きいuid側はmatchesリスナーで拾う
+}
+
+function handleMatchDoc(m){
+  const firstTime = state.match.matchId!==m.id;
+  state.match.matchId=m.id; state.match.matchData=m;
+  if(firstTime){
+    // プール監視を止める
+    if(state.match.poolUnsub){ state.match.poolUnsub(); state.match.poolUnsub=null; }
+    try{ setDoc(doc(db,"waiting",state.uid),{status:"matched",matchId:m.id},{merge:true}); }catch(e){}
+    playMatchSound();
+  }
+  // 両者いいね → 成立（小さいuid側が確定）
+  const bothLiked = m.users.every(u=>m.likes && m.likes[u]);
+  if(bothLiked && m.status==="pending" && state.uid===m.users[0]){
+    try{ updateDoc(doc(db,"matches",m.id),{status:"established"}); }catch(e){}
+  }
+  if(m.status==="established"){ state.match.established=true; }
+  renderWaitOverlay();
+}
+
+async function likeCurrentMatch(){
+  const m=state.match.matchData; if(!m) return;
+  try{ await updateDoc(doc(db,"matches",m.id),{["likes."+state.uid]:true}); }catch(e){ console.error(e); }
+  // UIはリスナーで更新
+}
+
+async function passCurrentMatch(){
+  const m=state.match.matchData;
+  if(m){ try{ await updateDoc(doc(db,"matches",m.id),{status:"cancelled"}); }catch(e){} }
+  state.match.matchId=null; state.match.matchData=null; state.match.established=false;
+  try{ await setDoc(doc(db,"waiting",state.uid),{status:"searching",matchId:null,updatedAt:serverTimestamp()},{merge:true}); }catch(e){}
+  // プール監視を再開
+  if(!state.match.poolUnsub){
+    state.match.poolUnsub=onSnapshot(query(collection(db,"waiting"),where("status","==","searching")),(snap)=>tryInitiate(snap));
+  }
+  renderWaitOverlay();
+}
+
+async function leaveWaiting(){
+  if(state.match.hb) clearInterval(state.match.hb);
+  if(state.match.timer) clearInterval(state.match.timer);
+  if(state.match.poolUnsub) state.match.poolUnsub();
+  if(state.match.matchesUnsub) state.match.matchesUnsub();
+  const m=state.match.matchData;
+  // 成立前に抜けるならマッチをキャンセル
+  if(m && !state.match.established){ try{ await updateDoc(doc(db,"matches",m.id),{status:"cancelled"}); }catch(e){} }
+  try{ await deleteDoc(doc(db,"waiting",state.uid)); }catch(e){}
+  state.match={active:false};
+  closeWaitOverlay();
+  renderMatchTab();
+}
+
+// ---------- 待機オーバーレイ描画 ----------
+function openWaitOverlay(){ $("wait-overlay").classList.add("active"); }
+function closeWaitOverlay(){ $("wait-overlay").classList.remove("active"); }
+
+function renderWaitOverlay(){
+  const box=$("wait-overlay-content");
+  const M=state.match; const m=M.matchData;
+
+  // 状態1：探索中
+  if(!m){
+    const roleTxt = M.role==="wait" ? `🏠 ${esc(state.profile.scene?.locationLabel||"場所")}: ${esc(M.location)} で待っています` : "🚪 入れる部屋を探しています";
+    box.innerHTML=`
+      <div class="big-spinner"></div>
+      <h2>現在 相手を探しています</h2>
+      <div class="wo-sub">${roleTxt}<br>誰かが参加するまで待機します</div>
+      <div id="wo-timer" class="wo-timer">待機時間 0分00秒</div>
+      <button class="btn btn-ghost" style="color:#fff;margin-top:24px;max-width:220px" onclick="app.leaveWaiting()">待機をやめる</button>`;
+    return;
+  }
+
+  const partnerUid=m.users.find(u=>u!==state.uid);
+  const pp=m.profiles[partnerUid]||{};
+  const myLiked=m.likes && m.likes[state.uid];
+  const partnerLiked=m.likes && m.likes[partnerUid];
+  const pav=pp.photoData?`<img src="${pp.photoData}">`:(AVATARS[pp.avatarId]||"🐱");
+
+  // 状態3：成立
+  if(m.status==="established"){
+    const mine=m.profiles[state.uid]||{};
+    const locBox=(prof,label)=>{
+      if(prof.role==="wait" && prof.location) return `<div class="wo-loc-box"><div class="lb-label">${label}（${prof.scene?esc(prof.scene.locationLabel):"場所"}）</div><div class="lb-val">${esc(prof.location)}</div></div>`;
+      return `<div class="wo-loc-box"><div class="lb-label">${label}</div><div class="lb-val" style="font-size:15px;color:var(--text-soft)">🚪 部屋へ向かう側</div></div>`;
+    };
+    box.innerHTML=`
+      <div class="wo-card match-pop">
+        <div style="font-size:40px;margin-bottom:6px">🎉</div>
+        <h2 style="color:var(--pink);font-size:20px;margin-bottom:4px">マッチ成立！</h2>
+        <p style="font-size:13px;color:var(--text-soft);margin-bottom:14px">${esc(pp.handle)} さんと作業しましょう</p>
+        <div class="av-big">${pav}</div>
+        <div style="font-weight:700;font-size:16px;margin-bottom:12px">${esc(pp.handle)}${pp.scene?`<div style="font-size:11px;color:var(--text-soft);font-weight:400">${pp.scene.icon} ${esc(pp.scene.gameName)}</div>`:""}</div>
+        ${locBox(pp,"相手の待機場所")}
+        ${locBox(mine,"あなたの待機場所")}
+        <p class="hint" style="margin-top:10px">${pp.role==="wait"?"相手の部屋へ向かいましょう":(mine.role==="wait"?"あなたの部屋で待ちましょう":"どちらかが部屋を立てて場所を共有しましょう")}</p>
+        <button class="btn btn-primary" style="margin-top:14px" onclick="app.leaveWaiting()">作業をはじめる（閉じる）</button>
+      </div>`;
+    return;
+  }
+
+  // 状態2：マッチ発見→お互いいいね待ち
+  box.innerHTML=`
+    <div class="wo-card match-pop">
+      <div style="font-size:13px;color:var(--pink);font-weight:700;margin-bottom:10px">🔔 仲間が見つかりました！</div>
+      <div class="av-big">${pav}</div>
+      <div style="font-weight:700;font-size:18px">${esc(pp.handle)}</div>
+      <div style="font-size:12px;color:var(--text-soft);margin-bottom:10px">${pp.scene?(pp.scene.icon+" "+esc(pp.scene.gameName)):""}・${pp.role==="wait"?"🏠 部屋で待ってる":"🚪 部屋へ向かう"}</div>
+      <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:4px;margin-bottom:8px">${(pp.categories||[]).map(c=>`<span class="sc-cat" style="background:var(--water-light);color:#fff;font-size:11px;padding:3px 9px;border-radius:9px">${esc(c)}</span>`).join("")}</div>
+      ${pp.goal?`<p style="font-size:13px;margin-bottom:6px"><strong>いま:</strong> ${esc(pp.goal)}</p>`:""}
+      ${pp.focusStyle?`<p style="font-size:13px;margin-bottom:10px"><strong>スタイル:</strong> ${esc(pp.focusStyle)}</p>`:""}
+      <div style="margin:10px 0">
+        <span class="like-badge ${myLiked?"on":"off"}">あなた ${myLiked?"♡":"…"}</span>
+        <span class="like-badge ${partnerLiked?"on":"off"}">相手 ${partnerLiked?"♡":"…"}</span>
+      </div>
+      ${myLiked
+        ? `<p class="hint">相手の返事を待っています…</p>`
+        : `<div style="display:flex;gap:10px;margin-top:10px">
+             <button class="btn" onclick="app.passMatch()">パス</button>
+             <button class="btn btn-pink" onclick="app.likeMatch()">♡ いいね</button>
+           </div>`}
+      <button class="btn btn-ghost" style="margin-top:8px" onclick="app.leaveWaiting()">やめる</button>
+    </div>`;
 }
 
 // ================= 探し（スワイプ） =================
@@ -1020,7 +1226,9 @@ function showTerms(){
 window.app={
   startGuest,loginGoogle,loginX,goto,switchTab,
   setSceneSort,moreScenes,pickScene,finishOnboard,createScene,
-  toggleWaiting,initSwipe,swipe,loadFriends,
+  startMatching,leaveWaiting,
+  likeMatch:likeCurrentMatch, passMatch:passCurrentMatch,
+  initSwipe,swipe,loadFriends,
   saveProfileEdit,removePhoto,changeScene,signOut:doSignOut,
   showModal,closeModal,showTerms,renderMatchTab,
 };
