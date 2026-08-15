@@ -347,6 +347,7 @@ import {
 import {
   getDatabase, ref, onValue, onDisconnect, set as rtdbSet, serverTimestamp as rtdbTimestamp
 } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-database.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-analytics.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDVjaGY0aeXO971aE1JmTJNx04LrpxCAb0",
@@ -355,12 +356,14 @@ const firebaseConfig = {
   projectId: "workmatch-d76f8",
   storageBucket: "workmatch-d76f8.firebasestorage.app",
   messagingSenderId: "974887147532",
-  appId: "1:974887147532:web:e943ea732a9865428b7629"
+  appId: "1:974887147532:web:e943ea732a9865428b7629",
+  measurementId: "G-1MGJJD82NW"
 };
 const fbApp = initializeApp(firebaseConfig);
 const auth = getAuth(fbApp);
 const db = getFirestore(fbApp);
 const rtdb = getDatabase(fbApp);
+try { getAnalytics(fbApp); } catch(e) { /* file://やローカルでは無効でもOK */ }
 
 // ---------- マスターデータ ----------
 const AVATARS = ["🐱","🐶","🐰","🐻","🦊","🐼","🐨","🦁","🐸","🦉","🐧","🦆"];
