@@ -4,453 +4,350 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta name="theme-color" content="#5b9cb8">
-<title>お作業マッチング（gogh非公式）</title>
-<meta name="description" content="goghで一緒に作業する仲間を探す非公式マッチングサイト。恋愛・出会い目的の利用は禁止。">
+<title>作業仲間さがし</title>
+<meta name="description" content="一緒に作業してくれる心強い作業友を見つけるサイト。どんなゲーム・作業場所でも使えます。恋愛・出会い目的の利用は禁止。">
 <style>
 :root{
-  --water:#5b9cb8;
-  --water-dark:#468197;
-  --water-light:#a3c9db;
-  --pink:#e0588f;
-  --pink-soft:#f4a8c5;
-  --bg:#eef4f8;
-  --card:#ffffff;
-  --text:#3a4a55;
-  --text-soft:#7a8894;
-  --shadow-d:rgba(70,129,151,.18);
-  --shadow-l:rgba(255,255,255,.95);
-  --warn:#e8a54a;
-  --danger:#d85c5c;
-  --ok:#5eb187;
+  --water:#5b9cb8; --water-dark:#468197; --water-light:#a3c9db;
+  --pink:#e0588f; --pink-soft:#f4a8c5;
+  --bg:#eef4f8; --card:#ffffff;
+  --text:#3a4a55; --text-soft:#7a8894;
+  --shadow-d:rgba(70,129,151,.18); --shadow-l:rgba(255,255,255,.95);
+  --warn:#e8a54a; --danger:#d85c5c; --ok:#5eb187;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;overflow-x:hidden}
-body{
-  font-family:-apple-system,"Hiragino Kaku Gothic ProN","Yu Gothic UI","Meiryo",sans-serif;
-  background:var(--bg);
-  color:var(--text);
-  font-size:15px;
-  line-height:1.6;
-  padding-bottom:80px;
-}
+body{font-family:-apple-system,"Hiragino Kaku Gothic ProN","Yu Gothic UI","Meiryo",sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.6;padding-bottom:80px}
 button{font-family:inherit;font-size:inherit;color:inherit;background:none;border:none;cursor:pointer}
 input,textarea,select{font-family:inherit;font-size:inherit;color:inherit}
-
-/* ---------- ヘッダー ---------- */
-header{
-  padding:14px 16px 10px;
-  text-align:center;
-  background:linear-gradient(180deg,var(--bg) 0%,rgba(238,244,248,0) 100%);
-  position:sticky;top:0;z-index:10;backdrop-filter:blur(6px);
-}
-header h1{
-  font-size:16px;font-weight:700;color:var(--water-dark);
-  letter-spacing:.02em;
-}
-header .unofficial{
-  display:inline-block;font-size:10px;font-weight:600;
-  background:var(--pink);color:#fff;padding:2px 6px;border-radius:8px;
-  margin-left:6px;vertical-align:middle;
-}
-
-/* ---------- 画面切り替え ---------- */
+header{padding:14px 16px 10px;text-align:center;background:linear-gradient(180deg,var(--bg) 0%,rgba(238,244,248,0) 100%);position:sticky;top:0;z-index:10;backdrop-filter:blur(6px)}
+header h1{font-size:16px;font-weight:700;color:var(--water-dark);letter-spacing:.02em}
 .screen{display:none;padding:8px 16px 24px;max-width:520px;margin:0 auto}
 .screen.active{display:block;animation:fadein .25s ease}
 @keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-
-/* ---------- ニューモーフィック カード ---------- */
-.card{
-  background:var(--card);
-  border-radius:20px;
-  padding:18px;
-  margin-bottom:14px;
-  box-shadow:
-    6px 6px 16px var(--shadow-d),
-    -6px -6px 16px var(--shadow-l);
-}
-.card-inset{
-  background:var(--bg);
-  border-radius:16px;
-  padding:14px;
-  box-shadow:
-    inset 3px 3px 8px var(--shadow-d),
-    inset -3px -3px 8px var(--shadow-l);
-}
-
-/* ---------- ボタン ---------- */
-.btn{
-  display:block;width:100%;padding:14px;border-radius:16px;font-weight:700;
-  text-align:center;transition:transform .1s,box-shadow .2s;
-  background:var(--card);color:var(--water-dark);
-  box-shadow:4px 4px 10px var(--shadow-d),-4px -4px 10px var(--shadow-l);
-}
+.card{background:var(--card);border-radius:20px;padding:18px;margin-bottom:14px;box-shadow:6px 6px 16px var(--shadow-d),-6px -6px 16px var(--shadow-l)}
+.card-inset{background:var(--bg);border-radius:16px;padding:14px;box-shadow:inset 3px 3px 8px var(--shadow-d),inset -3px -3px 8px var(--shadow-l)}
+.btn{display:block;width:100%;padding:14px;border-radius:16px;font-weight:700;text-align:center;transition:transform .1s,box-shadow .2s;background:var(--card);color:var(--water-dark);box-shadow:4px 4px 10px var(--shadow-d),-4px -4px 10px var(--shadow-l)}
 .btn:active{transform:scale(.98);box-shadow:inset 2px 2px 6px var(--shadow-d),inset -2px -2px 6px var(--shadow-l)}
 .btn-primary{background:linear-gradient(135deg,var(--water) 0%,var(--water-dark) 100%);color:#fff;box-shadow:4px 4px 12px var(--shadow-d)}
 .btn-pink{background:linear-gradient(135deg,var(--pink) 0%,var(--pink-soft) 100%);color:#fff}
+.btn-google{background:#fff;color:#3c4043;box-shadow:4px 4px 10px var(--shadow-d),-4px -4px 10px var(--shadow-l);border:1px solid #eee}
+.btn-x{background:#000;color:#fff}
 .btn-ghost{background:transparent;box-shadow:none;color:var(--text-soft);font-weight:500;font-size:13px}
 .btn-small{padding:8px 14px;width:auto;display:inline-block;font-size:13px;border-radius:12px}
 .btn:disabled{opacity:.45;cursor:not-allowed}
-
-/* ---------- フォーム ---------- */
 label{display:block;font-size:13px;font-weight:600;color:var(--text-soft);margin-bottom:6px}
-input[type=text],textarea,select{
-  width:100%;padding:12px 14px;border-radius:14px;border:none;
-  background:var(--bg);color:var(--text);
-  box-shadow:inset 2px 2px 6px var(--shadow-d),inset -2px -2px 6px var(--shadow-l);
-  outline:none;
-}
-input[type=text]:focus,textarea:focus,select:focus{
-  box-shadow:inset 2px 2px 6px var(--shadow-d),inset -2px -2px 6px var(--shadow-l),0 0 0 2px var(--water-light);
-}
+input[type=text],textarea,select{width:100%;padding:12px 14px;border-radius:14px;border:none;background:var(--bg);color:var(--text);box-shadow:inset 2px 2px 6px var(--shadow-d),inset -2px -2px 6px var(--shadow-l);outline:none}
+input[type=text]:focus,textarea:focus,select:focus{box-shadow:inset 2px 2px 6px var(--shadow-d),inset -2px -2px 6px var(--shadow-l),0 0 0 2px var(--water-light)}
 textarea{resize:vertical;min-height:60px;font-family:inherit}
 .field{margin-bottom:14px}
 .hint{font-size:11px;color:var(--text-soft);margin-top:4px;line-height:1.4}
 .counter{font-size:11px;color:var(--text-soft);text-align:right;margin-top:2px}
-
-/* ---------- チップ（複数選択） ---------- */
 .chips{display:flex;flex-wrap:wrap;gap:8px}
-.chip{
-  padding:8px 14px;border-radius:14px;font-size:13px;font-weight:600;
-  background:var(--card);color:var(--text-soft);
-  box-shadow:3px 3px 8px var(--shadow-d),-3px -3px 8px var(--shadow-l);
-  transition:all .15s;
-}
-.chip.selected{
-  background:linear-gradient(135deg,var(--water) 0%,var(--water-dark) 100%);color:#fff;
-  box-shadow:inset 2px 2px 6px rgba(0,0,0,.15);
-}
+.chip{padding:8px 14px;border-radius:14px;font-size:13px;font-weight:600;background:var(--card);color:var(--text-soft);box-shadow:3px 3px 8px var(--shadow-d),-3px -3px 8px var(--shadow-l);transition:all .15s}
+.chip.selected{background:linear-gradient(135deg,var(--water) 0%,var(--water-dark) 100%);color:#fff;box-shadow:inset 2px 2px 6px rgba(0,0,0,.15)}
 .chip.pink.selected{background:linear-gradient(135deg,var(--pink) 0%,var(--pink-soft) 100%)}
-
-/* ---------- アバター選択 ---------- */
 .avatars{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
-.avatar-opt{
-  aspect-ratio:1;border-radius:50%;
-  background:var(--card);
-  box-shadow:3px 3px 8px var(--shadow-d),-3px -3px 8px var(--shadow-l);
-  display:flex;align-items:center;justify-content:center;
-  font-size:32px;
-  transition:all .15s;
-}
-.avatar-opt.selected{
-  box-shadow:inset 3px 3px 8px var(--shadow-d),inset -3px -3px 8px var(--shadow-l);
-  transform:scale(.94);
-}
-
-/* ---------- タブ ---------- */
-.tabs{display:flex;gap:8px;margin-bottom:14px;background:var(--bg);padding:4px;border-radius:16px;
-  box-shadow:inset 2px 2px 6px var(--shadow-d),inset -2px -2px 6px var(--shadow-l);
-}
-.tab{
-  flex:1;padding:10px;border-radius:12px;font-size:14px;font-weight:600;color:var(--text-soft);
-  text-align:center;
-}
-.tab.active{background:var(--card);color:var(--water-dark);
-  box-shadow:2px 2px 6px var(--shadow-d),-2px -2px 6px var(--shadow-l);
-}
+.avatar-opt{aspect-ratio:1;border-radius:50%;background:var(--card);box-shadow:3px 3px 8px var(--shadow-d),-3px -3px 8px var(--shadow-l);display:flex;align-items:center;justify-content:center;font-size:32px;transition:all .15s;overflow:hidden}
+.avatar-opt img{width:100%;height:100%;object-fit:cover}
+.avatar-opt.selected{box-shadow:inset 3px 3px 8px var(--shadow-d),inset -3px -3px 8px var(--shadow-l);transform:scale(.94)}
+.photo-slot{width:80px;height:80px;border-radius:50%;background:var(--bg);display:inline-flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:inset 3px 3px 8px var(--shadow-d),inset -3px -3px 8px var(--shadow-l);font-size:36px;position:relative}
+.photo-slot img{width:100%;height:100%;object-fit:cover}
+.photo-badge{position:absolute;bottom:-2px;right:-2px;background:var(--pink);color:#fff;font-size:9px;font-weight:700;padding:2px 5px;border-radius:6px}
+.tabs{display:flex;gap:8px;margin-bottom:14px;background:var(--bg);padding:4px;border-radius:16px;box-shadow:inset 2px 2px 6px var(--shadow-d),inset -2px -2px 6px var(--shadow-l)}
+.tab{flex:1;padding:10px;border-radius:12px;font-size:13px;font-weight:600;color:var(--text-soft);text-align:center}
+.tab.active{background:var(--card);color:var(--water-dark);box-shadow:2px 2px 6px var(--shadow-d),-2px -2px 6px var(--shadow-l)}
 .tab.locked{opacity:.5}
-
-/* ---------- 募集カード ---------- */
-.post-card{display:flex;gap:12px;align-items:flex-start;position:relative}
-.post-card .av{
-  width:48px;height:48px;border-radius:50%;background:var(--bg);
-  display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;
-  box-shadow:inset 2px 2px 5px var(--shadow-d);
-}
-.post-card .body{flex:1;min-width:0}
-.post-card .name{font-weight:700;font-size:14px;margin-bottom:2px}
-.post-card .meta{font-size:12px;color:var(--text-soft);line-height:1.5}
-.post-card .cats{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
-.post-card .cat{font-size:11px;padding:2px 8px;border-radius:8px;background:var(--water-light);color:#fff;font-weight:600}
-.post-card .actions{margin-top:10px;display:flex;gap:8px}
-.host-badge{position:absolute;top:0;right:0;font-size:10px;background:var(--pink);color:#fff;padding:2px 8px;border-radius:8px;font-weight:700}
-.guest-badge{position:absolute;top:0;right:0;font-size:10px;background:var(--water);color:#fff;padding:2px 8px;border-radius:8px;font-weight:700}
-
-/* ---------- ステータス表示 ---------- */
 .status{padding:12px;border-radius:14px;text-align:center;font-weight:600;font-size:13px;margin-bottom:14px}
 .status.info{background:var(--water-light);color:#fff}
 .status.pink{background:var(--pink-soft);color:#fff}
-.status.warn{background:var(--warn);color:#fff}
 .empty{text-align:center;color:var(--text-soft);padding:40px 20px;font-size:14px}
-
-/* ---------- ボトムナビ ---------- */
-nav.bottom-nav{
-  position:fixed;left:0;right:0;bottom:0;
-  background:var(--card);
-  padding:8px 8px 12px;
-  display:flex;justify-content:space-around;
-  box-shadow:0 -4px 16px var(--shadow-d);
-  z-index:20;
-  padding-bottom:calc(12px + env(safe-area-inset-bottom));
-}
-.nav-btn{
-  flex:1;padding:6px;display:flex;flex-direction:column;align-items:center;gap:2px;
-  color:var(--text-soft);font-size:11px;font-weight:600;
-}
+nav.bottom-nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);padding:8px 8px 12px;display:flex;justify-content:space-around;box-shadow:0 -4px 16px var(--shadow-d);z-index:20;padding-bottom:calc(12px + env(safe-area-inset-bottom))}
+.nav-btn{flex:1;padding:6px;display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--text-soft);font-size:11px;font-weight:600}
 .nav-btn .ico{font-size:22px;line-height:1}
 .nav-btn.active{color:var(--water-dark)}
-.nav-btn.locked{opacity:.4}
-
-/* ---------- ロック画面 ---------- */
 .lock-panel{text-align:center;padding:30px 20px}
 .lock-panel .lock-ico{font-size:56px;margin-bottom:16px;opacity:.6}
 .lock-panel h3{font-size:16px;margin-bottom:8px;color:var(--text)}
 .lock-panel p{font-size:13px;color:var(--text-soft);margin-bottom:20px;line-height:1.6}
-
-/* ---------- モーダル ---------- */
 .modal-bg{position:fixed;inset:0;background:rgba(58,74,85,.4);z-index:100;display:none;align-items:center;justify-content:center;padding:20px}
 .modal-bg.active{display:flex}
-.modal{background:var(--card);border-radius:20px;padding:22px;max-width:400px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.modal{background:var(--card);border-radius:20px;padding:22px;max-width:400px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.2);max-height:82vh;overflow-y:auto}
 .modal h3{margin-bottom:10px;color:var(--water-dark)}
 .modal p{font-size:13px;color:var(--text-soft);margin-bottom:16px}
-
-/* ---------- 免責バー ---------- */
-.disclaimer{
-  font-size:11px;color:var(--text-soft);text-align:center;padding:16px 12px;
-  background:var(--bg);border-radius:12px;margin-bottom:14px;line-height:1.6;
-}
+.disclaimer{font-size:11px;color:var(--text-soft);text-align:center;padding:16px 12px;background:var(--bg);border-radius:12px;margin-bottom:14px;line-height:1.6}
 .disclaimer strong{color:var(--pink)}
-
-/* ---------- ローディング ---------- */
 .loading{text-align:center;padding:30px;color:var(--text-soft);font-size:13px}
-.spinner{
-  display:inline-block;width:20px;height:20px;border:2px solid var(--water-light);
-  border-top-color:var(--water);border-radius:50%;animation:spin 1s linear infinite;vertical-align:middle;margin-right:8px;
-}
+.spinner{display:inline-block;width:20px;height:20px;border:2px solid var(--water-light);border-top-color:var(--water);border-radius:50%;animation:spin 1s linear infinite;vertical-align:middle;margin-right:8px}
 @keyframes spin{to{transform:rotate(360deg)}}
-
-/* ---------- Toast ---------- */
-.toast{
-  position:fixed;top:60px;left:50%;transform:translateX(-50%);
-  background:var(--text);color:#fff;padding:10px 18px;border-radius:14px;
-  font-size:13px;font-weight:600;z-index:200;opacity:0;transition:opacity .3s;pointer-events:none;
-}
+.toast{position:fixed;top:60px;left:50%;transform:translateX(-50%);background:var(--text);color:#fff;padding:10px 18px;border-radius:14px;font-size:13px;font-weight:600;z-index:200;opacity:0;transition:opacity .3s;pointer-events:none;max-width:90%;text-align:center}
 .toast.show{opacity:1}
+.user-count{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;background:var(--card);border-radius:20px;box-shadow:3px 3px 8px var(--shadow-d),-3px -3px 8px var(--shadow-l);font-size:12px;font-weight:700;color:var(--water-dark);margin-bottom:16px}
+.user-count .dot{width:8px;height:8px;border-radius:50%;background:var(--ok);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+/* 界隈カード */
+.scene-card{display:flex;align-items:center;gap:12px;padding:14px;border-radius:16px;background:var(--bg);margin-bottom:10px;box-shadow:inset 2px 2px 6px var(--shadow-d),inset -2px -2px 6px var(--shadow-l);transition:all .15s}
+.scene-card.selected{background:linear-gradient(135deg,var(--water-light),var(--water));color:#fff;box-shadow:3px 3px 8px var(--shadow-d)}
+.scene-card .sc-icon{width:44px;height:44px;border-radius:12px;background:var(--card);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;box-shadow:2px 2px 5px var(--shadow-d)}
+.scene-card.selected .sc-icon{background:rgba(255,255,255,.25)}
+.scene-card .sc-info{flex:1;min-width:0}
+.scene-card .sc-game{font-weight:700;font-size:15px}
+.scene-card .sc-detail{font-size:11px;opacity:.85;line-height:1.4}
+.scene-card .sc-share{font-size:11px;font-weight:700;padding:3px 8px;border-radius:8px;background:var(--pink-soft);color:#fff;flex-shrink:0}
+.scene-card.selected .sc-share{background:rgba(255,255,255,.3)}
+.mini-toggle{display:flex;gap:6px;margin-bottom:12px}
+.mini-toggle button{flex:1;padding:8px;border-radius:12px;font-size:13px;font-weight:600;color:var(--text-soft);background:var(--bg);box-shadow:inset 2px 2px 5px var(--shadow-d),inset -2px -2px 5px var(--shadow-l)}
+.mini-toggle button.active{background:var(--card);color:var(--water-dark);box-shadow:2px 2px 5px var(--shadow-d),-2px -2px 5px var(--shadow-l)}
+/* 集計バー */
+.stat-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.stat-row .stat-label{font-size:13px;font-weight:600;width:38%;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stat-row .stat-bar-bg{flex:1;height:20px;background:var(--bg);border-radius:10px;overflow:hidden;box-shadow:inset 2px 2px 5px var(--shadow-d)}
+.stat-row .stat-bar{height:100%;background:linear-gradient(90deg,var(--water-light),var(--water));border-radius:10px;transition:width .5s}
+.stat-row .stat-num{font-size:12px;font-weight:700;color:var(--water-dark);width:44px;text-align:right;flex-shrink:0}
+/* 待機中リスト */
+.wait-item{display:flex;gap:10px;align-items:center;padding:10px;border-radius:14px;background:var(--bg);margin-bottom:8px}
+.wait-item .av{width:40px;height:40px;border-radius:50%;background:var(--card);display:flex;align-items:center;justify-content:center;font-size:20px;overflow:hidden;flex-shrink:0}
+.wait-item .av img{width:100%;height:100%;object-fit:cover}
+.wait-item .body{flex:1;min-width:0}
+.wait-item .name{font-weight:700;font-size:14px}
+.wait-item .loc{font-size:11px;color:var(--text-soft)}
+.wait-item .cats{display:flex;flex-wrap:wrap;gap:3px;margin-top:3px}
+.wait-item .cat{font-size:10px;padding:1px 6px;border-radius:6px;background:var(--water-light);color:#fff}
+/* スワイプ */
+.swipe-area{position:relative;height:500px;margin:10px auto 20px;max-width:340px;touch-action:none}
+.swipe-card{position:absolute;inset:0;background:var(--card);border-radius:24px;padding:20px;box-shadow:6px 6px 20px var(--shadow-d),-6px -6px 20px var(--shadow-l);display:flex;flex-direction:column;user-select:none;cursor:grab;transition:transform .3s ease,opacity .3s ease}
+.swipe-card.dragging{transition:none;cursor:grabbing}
+.swipe-card.stacked-1{transform:scale(.94) translateY(10px);z-index:1;opacity:.7}
+.swipe-card.stacked-2{transform:scale(.88) translateY(20px);z-index:0;opacity:.4}
+.swipe-card .av-big{width:100px;height:100px;border-radius:50%;background:var(--bg);margin:6px auto 12px;display:flex;align-items:center;justify-content:center;font-size:52px;box-shadow:inset 3px 3px 10px var(--shadow-d),inset -3px -3px 10px var(--shadow-l);overflow:hidden}
+.swipe-card .av-big img{width:100%;height:100%;object-fit:cover}
+.swipe-card .sc-name{text-align:center;font-size:20px;font-weight:700;color:var(--water-dark);margin-bottom:2px}
+.swipe-card .sc-sub{text-align:center;font-size:12px;color:var(--text-soft);margin-bottom:10px}
+.swipe-card .sc-body{flex:1;overflow-y:auto;font-size:13px;line-height:1.8}
+.swipe-card .sc-cats{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:8px 0}
+.swipe-card .sc-cat{font-size:12px;padding:4px 10px;border-radius:10px;background:var(--water-light);color:#fff;font-weight:600}
+.swipe-hint{position:absolute;top:20px;padding:6px 14px;border-radius:12px;font-weight:800;font-size:18px;opacity:0;pointer-events:none}
+.swipe-hint.like{right:20px;background:var(--pink);color:#fff;transform:rotate(15deg)}
+.swipe-hint.nope{left:20px;background:var(--text-soft);color:#fff;transform:rotate(-15deg)}
+.swipe-actions{display:flex;justify-content:center;gap:24px;margin-top:12px}
+.swipe-btn{width:60px;height:60px;border-radius:50%;background:var(--card);box-shadow:4px 4px 10px var(--shadow-d),-4px -4px 10px var(--shadow-l);font-size:26px;display:flex;align-items:center;justify-content:center;transition:transform .1s}
+.swipe-btn:active{transform:scale(.9)}
+.swipe-btn.like{color:var(--pink)}
+.swipe-btn.nope{color:var(--text-soft)}
+.friend-item{display:flex;gap:12px;align-items:center;padding:10px;border-radius:14px;background:var(--bg);margin-bottom:8px}
+.friend-item .av{width:44px;height:44px;border-radius:50%;background:var(--card);display:flex;align-items:center;justify-content:center;font-size:22px;overflow:hidden;flex-shrink:0}
+.friend-item .av img{width:100%;height:100%;object-fit:cover}
+.friend-item .body{flex:1;min-width:0}
+.friend-item .name{font-weight:700;font-size:14px}
+.friend-item .status-line{font-size:11px;color:var(--text-soft)}
+.online-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--ok);margin-right:4px;vertical-align:middle}
+.offline-dot{background:var(--text-soft);opacity:.4}
+.waiting-dot{background:var(--warn)}
+.auth-choice{display:flex;flex-direction:column;gap:10px}
+.x-badge{display:inline-block;background:#000;color:#fff;padding:2px 6px;border-radius:6px;font-size:10px;font-weight:700;margin-left:6px;vertical-align:middle}
+.g-badge{display:inline-block;background:#4285F4;color:#fff;padding:2px 6px;border-radius:6px;font-size:10px;font-weight:700;margin-left:6px;vertical-align:middle}
 </style>
 </head>
 <body>
 
-<header>
-  <h1>お作業マッチング<span class="unofficial">gogh非公式</span></h1>
-</header>
+<header><h1>作業仲間さがし</h1></header>
 
 <main>
 
-<!-- ==================== スタート画面 ==================== -->
+<!-- ========== スタート ========== -->
 <section id="screen-start" class="screen active">
+  <div style="text-align:center">
+    <div class="user-count"><span class="dot"></span>登録者 <span id="user-count-display">…</span> 人</div>
+  </div>
   <div class="card" style="text-align:center;padding:28px 20px">
     <div style="font-size:56px;margin-bottom:8px">☕✏️</div>
-    <h2 style="font-size:18px;color:var(--water-dark);margin-bottom:10px">
-      goghで一緒に作業する<br>仲間を見つけよう
-    </h2>
-    <p style="font-size:13px;color:var(--text-soft);margin-bottom:20px;line-height:1.7">
-      作業ゲーム「gogh」で<br>
-      同じ時間に集中したい人を<br>
-      サッと見つけるためのサイトです。
+    <h2 style="font-size:18px;color:var(--water-dark);margin-bottom:10px">一緒に作業してくれる<br>心強い作業友を見つけよう</h2>
+    <p style="font-size:13px;color:var(--text-soft);line-height:1.7">
+      どんなゲーム・どんな作業場所でもOK。<br>
+      同じ時間に集中したい仲間を<br>
+      サッと見つけられます。
     </p>
   </div>
-
   <div class="disclaimer">
     <strong>恋愛・出会い目的の利用は禁止</strong>しています。<br>
-    このサイトは、とあつ様の「gogh」の<strong>非公式</strong>ツールで、<br>
-    公式との提携や後援関係はありません。
+    作業に集中する仲間を見つけるためのサイトです。
   </div>
-
-  <button class="btn btn-primary" onclick="app.startFlow()">はじめる（かんたん・登録不要）</button>
-  <button class="btn btn-ghost" onclick="app.showTerms()">利用について・免責事項</button>
+  <div class="auth-choice">
+    <button class="btn btn-google" onclick="app.loginGoogle()">Ⓖ Googleではじめる</button>
+    <button class="btn btn-x" onclick="app.loginX()">𝕏 Xではじめる</button>
+    <button class="btn" onclick="app.startGuest()">👤 ゲストではじめる（この端末に保存）</button>
+  </div>
+  <div style="font-size:11px;color:var(--text-soft);text-align:center;margin-top:14px;line-height:1.7">
+    ログインすると、探し・フレンド・画像・データ復元が使えます。<br>
+    ゲストはこの端末にデータを保存します。
+  </div>
+  <button class="btn btn-ghost" onclick="app.showTerms()" style="margin-top:10px">利用について・免責事項</button>
 </section>
 
-<!-- ==================== プロフィール登録 ==================== -->
-<section id="screen-profile-setup" class="screen">
+<!-- ========== オンボーディング（名前＋界隈だけ） ========== -->
+<section id="screen-onboard" class="screen">
   <div class="card">
-    <h2 style="color:var(--water-dark);margin-bottom:4px;font-size:16px">プロフィールをつくる</h2>
-    <p class="hint" style="margin-bottom:16px">あとで自由に変更できます</p>
-
+    <h2 style="color:var(--water-dark);font-size:16px;margin-bottom:4px">はじめる前に2つだけ</h2>
+    <p class="hint" style="margin-bottom:16px">あとで細かい設定もできます</p>
     <div class="field">
-      <label>ハンドル名 <span style="color:var(--pink)">*</span></label>
-      <input type="text" id="p-handle" maxlength="15" placeholder="ゆめ">
-      <div class="counter"><span id="p-handle-count">0</span>/15</div>
+      <label>なまえ <span style="color:var(--pink)">*</span></label>
+      <input type="text" id="ob-handle" maxlength="15" placeholder="ゆめ">
+      <div class="counter"><span id="ob-handle-count">0</span>/15</div>
     </div>
-
     <div class="field">
-      <label>アバター <span style="color:var(--pink)">*</span></label>
-      <div class="avatars" id="p-avatars"></div>
-      <p class="hint">プリセットから選べます。自撮り画像は後日対応予定です。</p>
+      <label>どの界隈で作業する？ <span style="color:var(--pink)">*</span></label>
+      <input type="text" id="ob-scene-search" placeholder="ゲーム名で検索（英字）" autocomplete="off">
+      <p class="hint">みんなが登録した界隈。人気・新規で切り替えて選べます。</p>
+      <div class="mini-toggle" style="margin-top:10px">
+        <button class="active" id="tg-popular" onclick="app.setSceneSort('popular')">🔥 人気</button>
+        <button id="tg-new" onclick="app.setSceneSort('new')">✨ 新規</button>
+      </div>
+      <div id="ob-scene-list"><div class="loading"><span class="spinner"></span>界隈を読み込み中…</div></div>
+      <button class="btn btn-ghost" id="scene-more-btn" onclick="app.moreScenes()" style="display:none">もっと見る</button>
+      <button class="btn btn-small btn-pink" onclick="app.goto('scene-create')" style="margin-top:8px">＋ 新しい界隈を作る</button>
     </div>
-
-    <div class="field">
-      <label>作業カテゴリー <span style="color:var(--pink)">*</span></label>
-      <div class="chips" id="p-categories"></div>
-      <p class="hint">複数選べます</p>
-    </div>
-
-    <div class="field">
-      <label>よく作業する時間帯 <span style="color:var(--pink)">*</span></label>
-      <div class="chips" id="p-timeslots"></div>
-    </div>
-
-    <div class="field">
-      <label>集中スタイル（任意）</label>
-      <div class="chips" id="p-focus"></div>
-    </div>
-
-    <div class="field">
-      <label>いま頑張っていること（任意）</label>
-      <input type="text" id="p-goal" maxlength="60" placeholder="秋の資格試験、新刊の作画 など">
-      <div class="counter"><span id="p-goal-count">0</span>/60</div>
-    </div>
-
-    <div class="field">
-      <label>gogh内での呼び名（任意）</label>
-      <input type="text" id="p-goghname" maxlength="20" placeholder="サイトのハンドル名と違うとき">
-    </div>
+    <div id="ob-selected-scene" style="display:none"></div>
   </div>
-
-  <button class="btn btn-primary" onclick="app.saveProfile()">保存してはじめる</button>
+  <button class="btn btn-primary" onclick="app.finishOnboard()">この界隈ではじめる</button>
 </section>
 
-<!-- ==================== ホーム画面（マッチ・探しタブ） ==================== -->
+<!-- ========== 界隈を作る ========== -->
+<section id="screen-scene-create" class="screen">
+  <div class="card">
+    <h2 style="color:var(--water-dark);font-size:16px;margin-bottom:4px">新しい界隈を作る</h2>
+    <p class="hint" style="margin-bottom:16px">作業場所の入力ルールを決めると、みんなが迷わず入力できます</p>
+    <div class="field">
+      <label>ゲーム／プラットフォーム名 <span style="color:var(--pink)">*</span></label>
+      <input type="text" id="sc-game" maxlength="24" placeholder="英字で入力（例: gogh, Minecraft）">
+      <p class="hint">英字のみ入力できます</p>
+    </div>
+    <div class="field">
+      <label>作業場所の呼び名 <span style="color:var(--pink)">*</span></label>
+      <input type="text" id="sc-loclabel" maxlength="16" placeholder="例: 部屋ID / ワールド名 / フレンドコード">
+    </div>
+    <div class="field">
+      <label>作業場所の入力形式 <span style="color:var(--pink)">*</span></label>
+      <div class="chips" id="sc-format"></div>
+      <p class="hint">この界隈で作業場所を入力するときのルール</p>
+    </div>
+    <div class="field">
+      <label>アイコン</label>
+      <div class="chips" id="sc-icon"></div>
+    </div>
+    <div class="field">
+      <label>制作者名（任意・空欄なら匿名さん）</label>
+      <input type="text" id="sc-creator" maxlength="15" placeholder="匿名さん">
+    </div>
+  </div>
+  <button class="btn btn-primary" onclick="app.createScene()">界隈を作って選ぶ</button>
+  <button class="btn btn-ghost" onclick="app.goto('onboard')">もどる</button>
+</section>
+
+<!-- ========== ホーム ========== -->
 <section id="screen-home" class="screen">
   <div class="tabs">
     <button class="tab active" data-tab="match" onclick="app.switchTab('match')">🤝 マッチ</button>
-    <button class="tab locked" data-tab="find" onclick="app.switchTab('find')">🔍 探し</button>
+    <button class="tab" data-tab="find" onclick="app.switchTab('find')">🔍 探し</button>
+    <button class="tab" data-tab="friends" onclick="app.switchTab('friends')">💛 フレンド</button>
   </div>
-
-  <!-- マッチタブ -->
-  <div id="tab-match">
-    <div id="my-posting-area"></div>
-
-    <div style="display:flex;justify-content:space-between;align-items:center;margin:16px 0 10px">
-      <h3 style="font-size:14px;color:var(--water-dark)">いま募集中の人</h3>
-      <button class="btn btn-small btn-ghost" onclick="app.loadPostings()">🔄 更新</button>
-    </div>
-
-    <div id="postings-list">
-      <div class="loading"><span class="spinner"></span>読み込み中…</div>
-    </div>
-  </div>
-
-  <!-- 探しタブ（ロック） -->
-  <div id="tab-find" style="display:none">
-    <div class="card">
-      <div class="lock-panel">
-        <div class="lock-ico">🔒</div>
-        <h3>探しモードはログインが必要です</h3>
-        <p>
-          カードをスワイプしてフレンドをつくる機能は、<br>
-          なりすまし防止のため<br>
-          Xアカウントでログインした方だけ使えます。<br>
-          <br>
-          <span style="color:var(--text-soft);font-size:12px">※ 近日実装予定</span>
-        </p>
-        <button class="btn btn-pink" disabled>Xでログイン（準備中）</button>
-      </div>
-    </div>
-  </div>
+  <div id="tab-match"></div>
+  <div id="tab-find" style="display:none"></div>
+  <div id="tab-friends" style="display:none"></div>
 </section>
 
-<!-- ==================== 募集を出す ==================== -->
-<section id="screen-post" class="screen">
-  <div class="card">
-    <h2 style="color:var(--water-dark);margin-bottom:4px;font-size:16px">募集を出す</h2>
-    <p class="hint" style="margin-bottom:16px">今から一緒に作業する仲間を探します</p>
-
-    <div class="field">
-      <label>あなたの部屋の状態 <span style="color:var(--pink)">*</span></label>
-      <div class="chips">
-        <button class="chip pink" data-role="host" onclick="app.selectRole('host')">🏠 部屋をたてた（ID有り）</button>
-        <button class="chip" data-role="guest" onclick="app.selectRole('guest')">🚪 誰かの部屋に入りたい</button>
-      </div>
-    </div>
-
-    <div class="field" id="room-id-field" style="display:none">
-      <label>gogh 部屋ID <span style="color:var(--pink)">*</span></label>
-      <input type="text" id="p-roomid" maxlength="20" placeholder="例: ABCD1234">
-      <p class="hint">gogh内で部屋を作った時に表示されるIDを入れてください</p>
-    </div>
-
-    <div class="field">
-      <label>作業カテゴリー <span style="color:var(--pink)">*</span></label>
-      <div class="chips" id="post-categories"></div>
-    </div>
-
-    <div class="field">
-      <label>これからの作業時間 <span style="color:var(--pink)">*</span></label>
-      <div class="chips" id="post-duration"></div>
-    </div>
-
-    <div class="field">
-      <label>ひとこと（任意）</label>
-      <input type="text" id="p-message" maxlength="40" placeholder="ポモドーロで、静かめで、など">
-    </div>
-  </div>
-
-  <button class="btn btn-primary" onclick="app.submitPosting()">募集を出す</button>
-  <button class="btn btn-ghost" onclick="app.goto('home')">キャンセル</button>
-</section>
-
-<!-- ==================== プロフィール画面 ==================== -->
+<!-- ========== プロフィール ========== -->
 <section id="screen-profile" class="screen">
   <div class="card">
-    <h2 style="color:var(--water-dark);margin-bottom:16px;font-size:16px">プロフィール</h2>
+    <h2 style="color:var(--water-dark);font-size:16px;margin-bottom:16px">プロフィール</h2>
     <div id="my-profile-view"></div>
-    <button class="btn btn-small" onclick="app.goto('profile-setup')" style="margin-top:14px">編集する</button>
+    <button class="btn btn-small" onclick="app.goto('profile-edit')" style="margin-top:14px">編集する</button>
   </div>
-
-  <div class="card">
-    <h3 style="color:var(--water-dark);font-size:14px;margin-bottom:10px">Xアカウント連携</h3>
-    <p class="hint" style="margin-bottom:12px">
-      連携すると、探しモード・フレンド・Xアイコン使用が解放されます。<br>
-      現在準備中です。
-    </p>
-    <button class="btn btn-pink" disabled>Xでログイン（準備中）</button>
-  </div>
-
-  <div class="card">
+  <div class="card" id="account-card">
     <h3 style="color:var(--water-dark);font-size:14px;margin-bottom:10px">アカウント</h3>
-    <p class="hint" style="margin-bottom:8px">現在の認証: <span id="auth-status">…</span></p>
-    <p class="hint" style="margin-bottom:12px">ユーザーID: <span id="uid-display" style="word-break:break-all;font-family:monospace"></span></p>
-    <button class="btn btn-small btn-ghost" onclick="app.showTerms()">利用について</button>
+    <div id="account-body"></div>
   </div>
+</section>
+
+<!-- ========== プロフィール編集（詳細） ========== -->
+<section id="screen-profile-edit" class="screen">
+  <div class="card">
+    <h2 style="color:var(--water-dark);font-size:16px;margin-bottom:16px">プロフィール編集</h2>
+    <div class="field">
+      <label>なまえ <span style="color:var(--pink)">*</span></label>
+      <input type="text" id="pe-handle" maxlength="15">
+    </div>
+    <div class="field">
+      <label>アバター</label>
+      <div class="avatars" id="pe-avatars"></div>
+    </div>
+    <div class="field" id="pe-photo-field" style="display:none">
+      <label>自撮り画像（任意・ログイン限定）</label>
+      <div style="display:flex;align-items:center;gap:14px">
+        <div class="photo-slot" id="pe-photo-preview">📷</div>
+        <div style="flex:1">
+          <button class="btn btn-small" onclick="document.getElementById('pe-photo-input').click()">画像を選ぶ</button>
+          <button class="btn btn-small btn-ghost" onclick="app.removePhoto()" id="pe-photo-remove" style="display:none;margin-top:4px">削除</button>
+          <input type="file" id="pe-photo-input" accept="image/*" style="display:none">
+          <p class="hint" style="margin-top:6px">100×100に縮小。変更は30日に1回。</p>
+        </div>
+      </div>
+    </div>
+    <div class="field">
+      <label>界隈（作業する場所）</label>
+      <div id="pe-scene-display" class="card-inset" style="font-size:13px"></div>
+      <button class="btn btn-small btn-ghost" onclick="app.changeScene()" style="margin-top:6px">界隈を変える</button>
+    </div>
+    <div class="field">
+      <label>作業カテゴリー</label>
+      <div class="chips" id="pe-categories"></div>
+    </div>
+    <div class="field">
+      <label>よく作業する時間帯</label>
+      <div class="chips" id="pe-timeslots"></div>
+    </div>
+    <div class="field">
+      <label>集中スタイル</label>
+      <div class="chips" id="pe-focus"></div>
+    </div>
+    <div class="field">
+      <label>いま頑張っていること</label>
+      <input type="text" id="pe-goal" maxlength="60" placeholder="秋の資格試験、新刊の作画 など">
+    </div>
+  </div>
+  <button class="btn btn-primary" onclick="app.saveProfileEdit()">保存する</button>
+  <button class="btn btn-ghost" onclick="app.goto('profile')">もどる</button>
 </section>
 
 </main>
 
-<!-- ==================== ボトムナビ ==================== -->
 <nav class="bottom-nav" id="bottom-nav" style="display:none">
-  <button class="nav-btn active" data-nav="home" onclick="app.goto('home')">
-    <span class="ico">🏠</span>ホーム
-  </button>
-  <button class="nav-btn" data-nav="post" onclick="app.goto('post')">
-    <span class="ico">➕</span>募集
-  </button>
-  <button class="nav-btn" data-nav="profile" onclick="app.goto('profile')">
-    <span class="ico">👤</span>プロフィール
-  </button>
+  <button class="nav-btn active" data-nav="home" onclick="app.goto('home')"><span class="ico">🏠</span>ホーム</button>
+  <button class="nav-btn" data-nav="profile" onclick="app.goto('profile')"><span class="ico">👤</span>プロフィール</button>
 </nav>
 
-<!-- ==================== モーダル ==================== -->
 <div class="modal-bg" id="modal-bg">
   <div class="modal" id="modal">
     <h3 id="modal-title"></h3>
     <div id="modal-body"></div>
-    <button class="btn btn-primary" onclick="app.closeModal()" style="margin-top:14px">閉じる</button>
+    <div id="modal-actions" style="margin-top:14px"></div>
   </div>
 </div>
-
 <div class="toast" id="toast"></div>
 
-<!-- ==================== JavaScript ==================== -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
-import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
 import {
-  getFirestore, doc, setDoc, getDoc, updateDoc,
-  collection, addDoc, query, where, onSnapshot, serverTimestamp,
-  deleteDoc, orderBy, limit, getDocs, Timestamp
+  getAuth, signInAnonymously, signInWithPopup, signInWithRedirect, getRedirectResult,
+  GoogleAuthProvider, TwitterAuthProvider, onAuthStateChanged, signOut
+} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
+import {
+  getFirestore, doc, setDoc, getDoc, updateDoc, collection, addDoc, query, where,
+  onSnapshot, serverTimestamp, deleteDoc, orderBy, limit, getDocs, Timestamp, increment
 } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
-import { getDatabase, ref, onValue, onDisconnect, set as rtdbSet, serverTimestamp as rtdbTimestamp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-database.js";
+import {
+  getDatabase, ref, onValue, onDisconnect, set as rtdbSet, serverTimestamp as rtdbTimestamp
+} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-database.js";
 
-// ---------- Firebase 初期化 ----------
 const firebaseConfig = {
   apiKey: "AIzaSyDVjaGY0aeXO971aE1JmTJNx04LrpxCAb0",
   authDomain: "workmatch-d76f8.firebaseapp.com",
@@ -467,521 +364,663 @@ const rtdb = getDatabase(fbApp);
 
 // ---------- マスターデータ ----------
 const AVATARS = ["🐱","🐶","🐰","🐻","🦊","🐼","🐨","🦁","🐸","🦉","🐧","🦆"];
+const SCENE_ICONS = ["🎮","🕹️","💻","📚","🎨","✏️","🎧","🌙","☕","🖥️","📱","🎯"];
 const CATEGORIES = ["勉強","お絵かき","執筆","プログラミング","読書","事務作業","その他"];
 const TIMESLOTS = ["朝(5-9)","昼(9-17)","夜(17-23)","深夜(23-5)"];
 const FOCUS_STYLES = ["黙々","ポモドーロ","スタンプで励まし"];
-const DURATIONS = [
-  {label:"30分",min:30},
-  {label:"1時間",min:60},
-  {label:"2時間",min:120},
-  {label:"3時間以上",min:180},
-];
-const POSTING_TTL_MIN = 60; // 募集の有効期限（分）
+const LOC_FORMATS = {
+  free:  {label:"自由入力",     re:null,               ph:"自由に入力"},
+  num:   {label:"数字だけ",     re:/^[0-9]+$/,         ph:"例: 123456"},
+  alpha: {label:"英字だけ",     re:/^[a-zA-Z]+$/,      ph:"例: abcXYZ"},
+  upper: {label:"英大文字だけ",  re:/^[A-Z]+$/,         ph:"例: ABCDEF"},
+  lower: {label:"英小文字だけ",  re:/^[a-z]+$/,         ph:"例: abcdef"},
+  alnum: {label:"英数字",       re:/^[a-zA-Z0-9]+$/,   ph:"例: abc123"},
+  upnum: {label:"大文字＋数字",  re:/^[A-Z0-9]+$/,      ph:"例: ABC123"},
+  hira:  {label:"ひらがな",     re:/^[ぁ-んー]+$/,     ph:"例: あいうえお"},
+};
+const PHOTO_COOLDOWN_MS = 30*24*60*60*1000;
+const LOCAL_KEY = "osagyou_local_profile";
 
-// ---------- 状態 ----------
 const state = {
-  uid: null,
-  profile: null,        // プロフィール（Firestore /users/{uid}）
-  postingId: null,      // 自分の募集ID
-  myPosting: null,
-  editingProfile: {},   // プロフィール登録画面の一時状態
-  editingPost: {},      // 募集画面の一時状態
-  postsUnsub: null,     // 一覧のonSnapshot解除用
+  uid:null, authType:"anon", isLoggedIn:false,
+  profile:null,
+  sceneCache:[], sceneSort:"popular", sceneShown:5, selectedScene:null,
+  editing:{},
+  swipeQueue:[], swipeIndex:0,
+  friends:[], presenceMap:{_unsubs:{}},
+  waitUnsub:null, photoDataURL:null, totalUsers:0,
 };
 
-// ---------- ユーティリティ ----------
 const $ = (id)=>document.getElementById(id);
-const toast = (msg)=>{
-  const t = $("toast");
-  t.textContent = msg;
-  t.classList.add("show");
-  setTimeout(()=>t.classList.remove("show"), 2200);
-};
+const toast = (m)=>{const t=$("toast");t.textContent=m;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2500);};
+const esc = (s)=> s==null?"":String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const escA = (s)=> s==null?"":String(s).replace(/'/g,"\\'").replace(/"/g,"&quot;");
+function relTime(ts){
+  if(!ts) return "不明";
+  const t = ts.toMillis ? ts.toMillis() : (typeof ts==="number"?ts:new Date(ts).getTime());
+  const d = Date.now()-t;
+  if(d<60000) return "たった今";
+  if(d<3600000) return Math.floor(d/60000)+"分前";
+  if(d<86400000) return Math.floor(d/3600000)+"時間前";
+  return Math.floor(d/86400000)+"日前";
+}
+function avatarHtml(p){ return p&&p.photoData ? `<img src="${p.photoData}" alt="">` : (AVATARS[p?.avatarId??0]||"🐱"); }
 
+// ---------- ローカル保存（匿名用） ----------
+function saveLocal(){
+  if(state.isLoggedIn) return; // ログイン中はローカル無視
+  try{ localStorage.setItem(LOCAL_KEY, JSON.stringify(state.profile||{})); }catch(e){}
+}
+function loadLocal(){
+  try{ const s=localStorage.getItem(LOCAL_KEY); return s?JSON.parse(s):null; }catch(e){ return null; }
+}
+function clearLocal(){ try{ localStorage.removeItem(LOCAL_KEY); }catch(e){} }
+
+// ---------- 画面遷移 ----------
 function goto(screen){
   document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
-  const target = $("screen-"+screen);
-  if(target) target.classList.add("active");
-  document.querySelectorAll(".nav-btn").forEach(b=>{
-    b.classList.toggle("active", b.dataset.nav===screen);
-  });
+  const t=$("screen-"+screen); if(t)t.classList.add("active");
+  document.querySelectorAll(".nav-btn").forEach(b=>b.classList.toggle("active",b.dataset.nav===screen));
   window.scrollTo(0,0);
-  // 画面ごとの初期化
-  if(screen==="home") loadPostings();
-  if(screen==="post") initPostScreen();
+  if(screen==="onboard") initOnboard();
+  if(screen==="scene-create") initSceneCreate();
+  if(screen==="home"){ switchTab("match"); }
   if(screen==="profile") renderProfileView();
-  if(screen==="profile-setup") initProfileSetup();
+  if(screen==="profile-edit") initProfileEdit();
 }
 
-// ---------- 認証（匿名スタート） ----------
+// ---------- 認証 ----------
 onAuthStateChanged(auth, async (user)=>{
-  if(user){
-    state.uid = user.uid;
-    $("uid-display").textContent = user.uid;
-    $("auth-status").textContent = user.isAnonymous ? "ゲスト" : "ログイン済み";
-    // プロフィール取得
-    try {
-      const snap = await getDoc(doc(db, "users", user.uid));
-      if(snap.exists()){
-        state.profile = snap.data();
-        // 既存ユーザー：ホームへ
-        $("bottom-nav").style.display = "flex";
-        goto("home");
-      } else {
-        // 新規：プロフィール登録画面はstartFlow()から遷移
-      }
-    } catch(e){
-      console.error("プロフィール取得失敗", e);
-    }
-  }
+  if(!user) return;
+  state.uid = user.uid;
+  const provs = user.providerData.map(p=>p.providerId);
+  state.isLoggedIn = !user.isAnonymous;
+  state.authType = user.isAnonymous ? "anon" : (provs.includes("google.com")?"google":(provs.includes("twitter.com")?"x":"login"));
+  setupPresence(user.uid);
+  await loadProfileAfterAuth();
 });
+getRedirectResult(auth).catch(e=>{ if(e&&e.code) console.error("redirect",e); });
 
-async function startFlow(){
-  try {
-    if(!state.uid){
-      await signInAnonymously(auth);
-      // onAuthStateChangedが走るまで少し待つ
-      await new Promise(r=>setTimeout(r,400));
-    }
-    if(state.profile){
-      $("bottom-nav").style.display = "flex";
-      goto("home");
+async function loadProfileAfterAuth(){
+  try{
+    const snap = await getDoc(doc(db,"users",state.uid));
+    if(snap.exists()){
+      state.profile = snap.data();
+      if(state.isLoggedIn) clearLocal(); // 重複防止
+      touchActive();
+      showBottomNav(); goto("home");
+    } else if(state.isLoggedIn){
+      // ログイン初回：ローカルに匿名データがあれば引き継ぐ
+      const local = loadLocal();
+      if(local && local.handle){
+        state.profile = local;
+        await persistProfile(true);
+        clearLocal();
+        touchActive();
+        showBottomNav(); goto("home");
+      } else {
+        goto("onboard");
+      }
     } else {
-      goto("profile-setup");
-    }
-  } catch(e){
-    console.error(e);
-    toast("接続できませんでした。時間をおいてお試しください");
-  }
-}
-
-// ---------- プロフィール登録 ----------
-function initProfileSetup(){
-  // 既存プロフィールがあればフォームに反映
-  const p = state.profile || {};
-  state.editingProfile = {
-    handle: p.handle || "",
-    avatarId: p.avatarId ?? 0,
-    categories: [...(p.categories || [])],
-    timeSlots: [...(p.timeSlots || [])],
-    focusStyle: p.focusStyle || "",
-    goal: p.goal || "",
-    goghName: p.goghName || "",
-  };
-
-  $("p-handle").value = state.editingProfile.handle;
-  $("p-handle-count").textContent = state.editingProfile.handle.length;
-  $("p-goal").value = state.editingProfile.goal;
-  $("p-goal-count").textContent = state.editingProfile.goal.length;
-  $("p-goghname").value = state.editingProfile.goghName;
-
-  // アバター
-  const av = $("p-avatars");
-  av.innerHTML = "";
-  AVATARS.forEach((emoji,i)=>{
-    const el = document.createElement("button");
-    el.className = "avatar-opt" + (i===state.editingProfile.avatarId ? " selected" : "");
-    el.textContent = emoji;
-    el.type = "button";
-    el.onclick = ()=>{
-      state.editingProfile.avatarId = i;
-      av.querySelectorAll(".avatar-opt").forEach((e,j)=>e.classList.toggle("selected", j===i));
-    };
-    av.appendChild(el);
-  });
-
-  // カテゴリー（複数）
-  renderChips("p-categories", CATEGORIES, state.editingProfile.categories, "multi");
-  // 時間帯（複数）
-  renderChips("p-timeslots", TIMESLOTS, state.editingProfile.timeSlots, "multi", true);
-  // 集中スタイル（単一）
-  renderChips("p-focus", FOCUS_STYLES, state.editingProfile.focusStyle ? [state.editingProfile.focusStyle] : [], "single");
-}
-
-function renderChips(containerId, options, selected, mode, pink){
-  const c = $(containerId);
-  c.innerHTML = "";
-  options.forEach(opt=>{
-    const el = document.createElement("button");
-    el.className = "chip" + (selected.includes(opt) ? " selected" : "") + (pink ? " pink" : "");
-    el.textContent = opt;
-    el.type = "button";
-    el.onclick = ()=>{
-      if(mode==="multi"){
-        const idx = selected.indexOf(opt);
-        if(idx>=0) selected.splice(idx,1);
-        else selected.push(opt);
-        // stateも同期（selectedはstate参照なのでOK）
+      // 匿名初回
+      const local = loadLocal();
+      if(local && local.handle){
+        state.profile = local;
+        await persistProfile(true);
+        touchActive();
+        showBottomNav(); goto("home");
       } else {
-        // single
-        selected.length = 0;
-        selected.push(opt);
-        // stateにも反映：focusStyleは文字列で保存するので別途対応
-        if(containerId==="p-focus") state.editingProfile.focusStyle = opt;
+        goto("onboard");
       }
-      // 再描画
-      c.querySelectorAll(".chip").forEach((e,i)=>{
-        e.classList.toggle("selected", selected.includes(options[i]));
-      });
-    };
-    c.appendChild(el);
-  });
-}
-
-// 文字数カウンタ
-$("p-handle").addEventListener("input", e=>{
-  state.editingProfile.handle = e.target.value;
-  $("p-handle-count").textContent = e.target.value.length;
-});
-$("p-goal").addEventListener("input", e=>{
-  state.editingProfile.goal = e.target.value;
-  $("p-goal-count").textContent = e.target.value.length;
-});
-$("p-goghname").addEventListener("input", e=>{
-  state.editingProfile.goghName = e.target.value;
-});
-
-async function saveProfile(){
-  const p = state.editingProfile;
-  // バリデーション
-  if(!p.handle.trim()) return toast("ハンドル名を入れてください");
-  if(p.categories.length===0) return toast("作業カテゴリーを選んでください");
-  if(p.timeSlots.length===0) return toast("時間帯を選んでください");
-  // 出会い目的ワードの簡易チェック
-  const warnWords = /(DM歓迎|通話|恋愛|出会い|付き合|カップル|募集中|彼氏|彼女|男性募集|女性募集)/i;
-  const combined = p.handle + " " + p.goal + " " + p.goghName;
-  if(warnWords.test(combined)){
-    if(!confirm("入力内容に恋愛・出会いを連想させる言葉が含まれています。作業目的以外の利用は禁止しています。それでも保存しますか？")){
-      return;
     }
-  }
-
-  try {
-    await setDoc(doc(db, "users", state.uid), {
-      handle: p.handle.trim(),
-      avatarId: p.avatarId,
-      categories: p.categories,
-      timeSlots: p.timeSlots,
-      focusStyle: p.focusStyle,
-      goal: p.goal.trim(),
-      goghName: p.goghName.trim(),
-      platform: "gogh",           // 将来のマルチ対応のため
-      isAnonymous: auth.currentUser.isAnonymous,
-      updatedAt: serverTimestamp(),
-    }, { merge: true });
-    state.profile = { ...p };
-    $("bottom-nav").style.display = "flex";
-    toast("保存しました");
-    goto("home");
-  } catch(e){
-    console.error(e);
-    toast("保存に失敗しました");
-  }
+  }catch(e){ console.error(e); toast("読み込みに失敗しました"); }
 }
 
-// ---------- 募集を出す ----------
-function initPostScreen(){
-  state.editingPost = {
-    role: null,       // "host" or "guest"
-    roomId: "",
-    categories: [...(state.profile?.categories || [])],  // プロフィールから初期値
-    duration: 60,
-    message: "",
-  };
-  // ロール未選択に戻す
-  document.querySelectorAll("[data-role]").forEach(el=>el.classList.remove("selected"));
-  $("room-id-field").style.display = "none";
-  $("p-roomid").value = "";
-  $("p-message").value = "";
-
-  renderChips("post-categories", CATEGORIES, state.editingPost.categories, "multi");
-  // duration（単一・分数）
-  const dc = $("post-duration");
-  dc.innerHTML = "";
-  DURATIONS.forEach(d=>{
-    const el = document.createElement("button");
-    el.className = "chip pink" + (d.min===state.editingPost.duration ? " selected" : "");
-    el.textContent = d.label;
-    el.type = "button";
-    el.onclick = ()=>{
-      state.editingPost.duration = d.min;
-      dc.querySelectorAll(".chip").forEach((e,i)=>e.classList.toggle("selected", DURATIONS[i].min===d.min));
-    };
-    dc.appendChild(el);
-  });
+async function startGuest(){
+  try{ if(!state.uid){ await signInAnonymously(auth);} }
+  catch(e){ console.error(e); toast("接続できませんでした"); }
 }
-
-function selectRole(role){
-  state.editingPost.role = role;
-  document.querySelectorAll("[data-role]").forEach(el=>{
-    el.classList.toggle("selected", el.dataset.role===role);
-  });
-  $("room-id-field").style.display = (role==="host") ? "block" : "none";
-}
-
-$("p-roomid").addEventListener("input", e=>{
-  state.editingPost.roomId = e.target.value.trim();
-});
-$("p-message").addEventListener("input", e=>{
-  state.editingPost.message = e.target.value;
-});
-
-async function submitPosting(){
-  const p = state.editingPost;
-  if(!p.role) return toast("部屋の状態を選んでください");
-  if(p.role==="host" && !p.roomId) return toast("部屋IDを入れてください");
-  if(p.categories.length===0) return toast("カテゴリーを選んでください");
-
-  try {
-    // 既存の自分の募集があれば削除
-    if(state.postingId){
-      try { await deleteDoc(doc(db, "postings", state.postingId)); } catch(_){}
+async function loginGoogle(){ await doProviderLogin(new GoogleAuthProvider()); }
+async function loginX(){ await doProviderLogin(new TwitterAuthProvider()); }
+async function doProviderLogin(provider){
+  try{
+    try{ await signInWithPopup(auth, provider); }
+    catch(err){
+      if(err.code==="auth/popup-blocked"||err.code==="auth/popup-closed-by-user"||err.code==="auth/cancelled-popup-request"){
+        await signInWithRedirect(auth, provider); return;
+      }
+      if(err.code==="auth/operation-not-allowed"){ toast("このログイン方法が未設定です（管理者に連絡）"); return; }
+      throw err;
     }
-    const expiresAt = Timestamp.fromMillis(Date.now() + POSTING_TTL_MIN * 60 * 1000);
-    const ref = await addDoc(collection(db, "postings"), {
-      uid: state.uid,
-      handle: state.profile.handle,
-      avatarId: state.profile.avatarId,
-      goghName: state.profile.goghName,
-      role: p.role,                  // host / guest
-      roomId: p.role==="host" ? p.roomId : "",
-      categories: p.categories,
-      duration: p.duration,
-      message: p.message.trim(),
-      platform: "gogh",
-      createdAt: serverTimestamp(),
-      expiresAt: expiresAt,
-      status: "looking",
-    });
-    state.postingId = ref.id;
-    toast("募集を出しました");
-    goto("home");
-  } catch(e){
-    console.error(e);
-    toast("募集の投稿に失敗しました");
-  }
+  }catch(e){ console.error(e); toast("ログイン失敗: "+(e.code||e.message||"")); }
+}
+async function doSignOut(){
+  if(!confirm("サインアウトしますか？")) return;
+  try{ await signOut(auth); location.reload(); }catch(e){ console.error(e); }
 }
 
-// ---------- 募集一覧 ----------
-async function loadPostings(){
-  // 既存の購読解除
-  if(state.postsUnsub){ state.postsUnsub(); state.postsUnsub = null; }
+function showBottomNav(){ $("bottom-nav").style.display="flex"; }
 
-  const list = $("postings-list");
-  const myArea = $("my-posting-area");
-  list.innerHTML = '<div class="loading"><span class="spinner"></span>読み込み中…</div>';
-
-  try {
-    // 有効期限内の募集を取得（クライアント側でフィルタ）
-    const q = query(
-      collection(db, "postings"),
-      where("status","==","looking"),
-      orderBy("createdAt","desc"),
-      limit(50)
-    );
-    state.postsUnsub = onSnapshot(q, (snap)=>{
-      const now = Date.now();
-      const items = [];
-      let mine = null;
-      snap.forEach(docSnap=>{
-        const d = docSnap.data();
-        // 期限切れは除外
-        if(d.expiresAt && d.expiresAt.toMillis() < now) return;
-        const item = { id: docSnap.id, ...d };
-        if(item.uid === state.uid){
-          mine = item;
-        } else {
-          items.push(item);
-        }
-      });
-
-      // 自分の募集を表示
-      state.myPosting = mine;
-      state.postingId = mine ? mine.id : null;
-      renderMyPosting(mine, myArea);
-
-      // 他人の募集：自分のカテゴリと重複が多い順にソート
-      const myCats = new Set(state.profile?.categories || []);
-      items.sort((a,b)=>{
-        const sa = (a.categories||[]).filter(c=>myCats.has(c)).length;
-        const sb = (b.categories||[]).filter(c=>myCats.has(c)).length;
-        return sb - sa;
-      });
-
-      renderPostings(items, list);
-    }, (err)=>{
-      console.error(err);
-      list.innerHTML = '<div class="empty">読み込みに失敗しました</div>';
-    });
-  } catch(e){
-    console.error(e);
-    list.innerHTML = '<div class="empty">エラー: '+e.message+'</div>';
-  }
+// アクティブ時刻の更新
+async function touchActive(){
+  if(!state.uid||!state.profile) return;
+  try{ await updateDoc(doc(db,"users",state.uid),{ lastActive:serverTimestamp() }); }catch(e){}
 }
 
-function renderMyPosting(mine, container){
-  if(!mine){
-    container.innerHTML = `
-      <div class="card" style="text-align:center;padding:20px">
-        <p style="color:var(--text-soft);font-size:13px;margin-bottom:12px">
-          まだ募集を出していません
-        </p>
-        <button class="btn btn-pink btn-small" onclick="app.goto('post')">➕ 募集を出す</button>
-      </div>`;
-    return;
+// ---------- presence ----------
+function setupPresence(uid){
+  const sref=ref(rtdb,"presence/"+uid), cref=ref(rtdb,".info/connected");
+  onValue(cref,snap=>{
+    if(snap.val()===true){
+      onDisconnect(sref).set({online:false,lastSeen:rtdbTimestamp()});
+      rtdbSet(sref,{online:true,lastSeen:rtdbTimestamp()});
+    }
+  });
+}
+function watchPresence(uids){
+  Object.values(state.presenceMap._unsubs||{}).forEach(fn=>fn());
+  state.presenceMap={_unsubs:{}};
+  uids.forEach(uid=>{
+    const un=onValue(ref(rtdb,"presence/"+uid),s=>{ state.presenceMap[uid]=s.val()||{online:false}; renderFriendsIfActive(); });
+    state.presenceMap._unsubs[uid]=un;
+  });
+}
+
+// ---------- 登録者数 ----------
+async function loadUserCount(){
+  try{ const s=await getDoc(doc(db,"stats","users")); const c=s.exists()?(s.data().count||0):0; state.totalUsers=c; $("user-count-display").textContent=c.toLocaleString(); }
+  catch(e){ $("user-count-display").textContent="?"; }
+}
+loadUserCount();
+
+// ---------- 界隈 ----------
+async function loadScenes(){
+  if(state.sceneCache.length) return state.sceneCache;
+  try{
+    const snap=await getDocs(query(collection(db,"scenes"),limit(200)));
+    const arr=[]; let total=0;
+    snap.forEach(d=>{ const s={id:d.id,...d.data()}; arr.push(s); total+=(s.userCount||0); });
+    arr._total=total; state.sceneCache=arr; return arr;
+  }catch(e){ console.error(e); return []; }
+}
+function setSceneSort(sort){
+  state.sceneSort=sort; state.sceneShown=5;
+  $("tg-popular").classList.toggle("active",sort==="popular");
+  $("tg-new").classList.toggle("active",sort==="new");
+  renderSceneList();
+}
+function moreScenes(){ state.sceneShown+=5; renderSceneList(); }
+function renderSceneList(){
+  const box=$("ob-scene-list");
+  const kw=($("ob-scene-search").value||"").toLowerCase().trim();
+  let arr=[...state.sceneCache];
+  if(kw) arr=arr.filter(s=>(s.gameName||"").toLowerCase().includes(kw));
+  if(state.sceneSort==="popular") arr.sort((a,b)=>(b.userCount||0)-(a.userCount||0));
+  else arr.sort((a,b)=>((b.createdAt&&b.createdAt.toMillis?b.createdAt.toMillis():0)-(a.createdAt&&a.createdAt.toMillis?a.createdAt.toMillis():0)));
+  const total=state.sceneCache._total||0;
+  const shown=arr.slice(0,state.sceneShown);
+  if(shown.length===0){
+    box.innerHTML=`<div class="empty" style="padding:20px;font-size:13px">まだ界隈がありません。<br>下のボタンで作ってみましょう。</div>`;
+    $("scene-more-btn").style.display="none"; return;
   }
-  const badge = mine.role==="host" ? '<span class="host-badge">🏠 ホスト</span>' : '<span class="guest-badge">🚪 ゲスト</span>';
-  const remain = Math.max(0, Math.floor((mine.expiresAt.toMillis() - Date.now())/60000));
-  container.innerHTML = `
-    <div class="card">
-      <h3 style="font-size:13px;color:var(--pink);margin-bottom:8px">あなたの募集（あと${remain}分）</h3>
-      <div class="post-card">
-        ${badge}
-        <div class="av">${AVATARS[mine.avatarId] || "🐱"}</div>
-        <div class="body">
-          <div class="name">${escapeHtml(mine.handle)}</div>
-          <div class="meta">
-            ${mine.role==="host" ? `部屋ID: <strong>${escapeHtml(mine.roomId)}</strong>` : "部屋を探しています"}
-          </div>
-          <div class="cats">
-            ${(mine.categories||[]).map(c=>`<span class="cat">${escapeHtml(c)}</span>`).join("")}
-          </div>
-          ${mine.message ? `<div class="meta" style="margin-top:6px">💬 ${escapeHtml(mine.message)}</div>` : ""}
-        </div>
+  box.innerHTML=shown.map(s=>{
+    const share = total>0 ? Math.round((s.userCount||0)/total*100) : 0;
+    const sel = state.selectedScene && state.selectedScene.id===s.id;
+    return `<div class="scene-card ${sel?"selected":""}" onclick="app.pickScene('${s.id}')">
+      <div class="sc-icon">${s.icon||"🎮"}</div>
+      <div class="sc-info">
+        <div class="sc-game">${esc(s.gameName)}</div>
+        <div class="sc-detail">${esc(s.locationLabel)}・${s.userCount||0}人</div>
       </div>
-      <button class="btn btn-small btn-ghost" onclick="app.cancelPosting()" style="margin-top:10px">募集をやめる</button>
+      <div class="sc-share">${share}%</div>
     </div>`;
+  }).join("");
+  $("scene-more-btn").style.display = arr.length>state.sceneShown ? "block":"none";
+}
+async function initOnboard(){
+  const p=state.profile||{};
+  $("ob-handle").value=p.handle||"";
+  $("ob-handle-count").textContent=(p.handle||"").length;
+  state.selectedScene = p.scene || null;
+  await loadScenes();
+  renderSceneList();
+  renderSelectedScene();
+}
+function pickScene(id){
+  const s=state.sceneCache.find(x=>x.id===id);
+  if(!s) return;
+  state.selectedScene = { id:s.id, gameName:s.gameName, locationLabel:s.locationLabel, locationFormat:s.locationFormat, icon:s.icon };
+  renderSceneList(); renderSelectedScene();
+}
+function renderSelectedScene(){
+  const box=$("ob-selected-scene");
+  if(!state.selectedScene){ box.style.display="none"; return; }
+  const s=state.selectedScene;
+  box.style.display="block";
+  box.innerHTML=`<div class="status pink" style="margin-top:12px">選択中: ${s.icon||"🎮"} ${esc(s.gameName)}（${esc(s.locationLabel)}）</div>`;
+}
+$("ob-scene-search").addEventListener("input",()=>{ state.sceneShown=5; renderSceneList(); });
+$("ob-handle").addEventListener("input",e=>$("ob-handle-count").textContent=e.target.value.length);
+
+async function finishOnboard(){
+  const handle=$("ob-handle").value.trim();
+  if(!handle) return toast("なまえを入れてください");
+  if(!state.selectedScene) return toast("界隈を選んでください");
+  const warn=/(DM歓迎|通話|恋愛|出会い|付き合|彼氏|彼女|セフレ)/i;
+  if(warn.test(handle)){ if(!confirm("恋愛・出会いを連想させる言葉が含まれています。作業目的以外は禁止です。続けますか？")) return; }
+
+  const isFirst = !state.profile;
+  state.profile = Object.assign({}, state.profile||{}, {
+    handle, scene: state.selectedScene,
+    avatarId: state.profile?.avatarId ?? Math.floor(Math.random()*AVATARS.length),
+    categories: state.profile?.categories||[], timeSlots: state.profile?.timeSlots||[],
+    focusStyle: state.profile?.focusStyle||"", goal: state.profile?.goal||"",
+  });
+  await persistProfile(isFirst);
+  // 界隈のuserCountを増やす（初回のみ）
+  if(isFirst && state.selectedScene.id){
+    try{ await setDoc(doc(db,"scenes",state.selectedScene.id),{userCount:increment(1)},{merge:true}); }catch(e){}
+  }
+  showBottomNav(); toast("ようこそ！"); goto("home");
 }
 
-function renderPostings(items, container){
-  if(items.length===0){
-    container.innerHTML = `
-      <div class="empty">
-        <div style="font-size:40px;margin-bottom:10px">🌙</div>
-        いま募集中の人はいません<br>
-        <span style="font-size:12px">あなたが先に募集を出してみましょう</span>
-      </div>`;
+// ---------- 界隈を作る ----------
+function initSceneCreate(){
+  $("sc-game").value=""; $("sc-loclabel").value=""; $("sc-creator").value="";
+  state.editing.scFormat="free"; state.editing.scIcon=SCENE_ICONS[0];
+  const fc=$("sc-format"); fc.innerHTML="";
+  Object.entries(LOC_FORMATS).forEach(([k,v])=>{
+    const el=document.createElement("button"); el.type="button";
+    el.className="chip"+(k==="free"?" selected":""); el.textContent=v.label;
+    el.onclick=()=>{ state.editing.scFormat=k; fc.querySelectorAll(".chip").forEach(c=>c.classList.remove("selected")); el.classList.add("selected"); };
+    fc.appendChild(el);
+  });
+  const ic=$("sc-icon"); ic.innerHTML="";
+  SCENE_ICONS.forEach((emoji,i)=>{
+    const el=document.createElement("button"); el.type="button";
+    el.className="chip"+(i===0?" selected":""); el.textContent=emoji; el.style.fontSize="18px";
+    el.onclick=()=>{ state.editing.scIcon=emoji; ic.querySelectorAll(".chip").forEach(c=>c.classList.remove("selected")); el.classList.add("selected"); };
+    ic.appendChild(el);
+  });
+}
+// ゲーム名は英字のみ
+$("sc-game").addEventListener("input",e=>{ e.target.value=e.target.value.replace(/[^a-zA-Z0-9 ]/g,""); });
+
+async function createScene(){
+  const gameName=$("sc-game").value.trim();
+  const locLabel=$("sc-loclabel").value.trim();
+  if(!gameName) return toast("ゲーム名を英字で入れてください");
+  if(!locLabel) return toast("作業場所の呼び名を入れてください");
+  const creator=$("sc-creator").value.trim()||"匿名さん";
+  try{
+    const ref=await addDoc(collection(db,"scenes"),{
+      gameName, locationLabel:locLabel, locationFormat:state.editing.scFormat,
+      icon:state.editing.scIcon, creatorName:creator, creatorUid:state.uid,
+      userCount:0, createdAt:serverTimestamp(),
+    });
+    // キャッシュに追加して選択状態に
+    const s={ id:ref.id, gameName, locationLabel:locLabel, locationFormat:state.editing.scFormat, icon:state.editing.scIcon, userCount:0, createdAt:{toMillis:()=>Date.now()} };
+    state.sceneCache.unshift(s);
+    state.selectedScene={ id:s.id, gameName, locationLabel:locLabel, locationFormat:state.editing.scFormat, icon:s.icon };
+    toast("界隈を作りました");
+    goto("onboard");
+  }catch(e){ console.error(e); toast("作成に失敗しました"); }
+}
+
+// ---------- プロフィール永続化 ----------
+async function persistProfile(isFirst){
+  const p=state.profile;
+  const data={
+    handle:p.handle, avatarId:p.avatarId,
+    scene:p.scene||null,
+    categories:p.categories||[], timeSlots:p.timeSlots||[],
+    focusStyle:p.focusStyle||"", goal:p.goal||"",
+    photoData:p.photoData||"", photoChangedAt:p.photoChangedAt||null,
+    authType:state.authType, isAnonymous:auth.currentUser?auth.currentUser.isAnonymous:true,
+    updatedAt:serverTimestamp(), lastActive:serverTimestamp(),
+    waiting:p.waiting||false,
+  };
+  if(isFirst) data.createdAt=serverTimestamp();
+  try{
+    await setDoc(doc(db,"users",state.uid),data,{merge:true});
+    if(isFirst){ await setDoc(doc(db,"stats","users"),{count:increment(1)},{merge:true}); loadUserCount(); }
+  }catch(e){ console.error("persist",e); }
+  saveLocal();
+}
+
+// ================= ホーム：マッチタブ =================
+function switchTab(name){
+  if((name==="find"||name==="friends") && !state.isLoggedIn){
+    showModal("ログインが必要です",
+      `<p>スワイプで探したり、フレンド機能を使うには、なりすまし防止のため<strong>ログイン</strong>が必要です。</p>`,
+      [{label:"ログインする",primary:true,onclick:()=>{closeModal();goto("profile");}}]);
     return;
   }
-  container.innerHTML = items.map(item=>{
-    const badge = item.role==="host" ? '<span class="host-badge">🏠</span>' : '<span class="guest-badge">🚪</span>';
-    const remain = Math.max(0, Math.floor((item.expiresAt.toMillis() - Date.now())/60000));
-    const roomInfo = item.role==="host"
-      ? `部屋ID: <strong>${escapeHtml(item.roomId)}</strong>`
-      : `部屋を探しています`;
-    return `
-      <div class="card">
-        <div class="post-card">
-          ${badge}
-          <div class="av">${AVATARS[item.avatarId] || "🐱"}</div>
-          <div class="body">
-            <div class="name">${escapeHtml(item.handle)}${item.goghName ? ` <span style="color:var(--text-soft);font-size:11px">(gogh: ${escapeHtml(item.goghName)})</span>` : ""}</div>
-            <div class="meta">${roomInfo}・${item.duration}分・あと${remain}分</div>
-            <div class="cats">
-              ${(item.categories||[]).map(c=>`<span class="cat">${escapeHtml(c)}</span>`).join("")}
-            </div>
-            ${item.message ? `<div class="meta" style="margin-top:6px">💬 ${escapeHtml(item.message)}</div>` : ""}
-            <div class="actions">
-              ${item.role==="host"
-                ? `<button class="btn btn-small btn-pink" onclick="app.joinRoom('${escapeAttr(item.roomId)}','${item.id}')">部屋に合流</button>`
-                : `<button class="btn btn-small" onclick="app.offerHost('${item.id}','${escapeAttr(item.handle)}')">部屋に招く</button>`
-              }
-            </div>
-          </div>
-        </div>
-      </div>`;
-  }).join("");
+  document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("active",t.dataset.tab===name));
+  $("tab-match").style.display=name==="match"?"block":"none";
+  $("tab-find").style.display=name==="find"?"block":"none";
+  $("tab-friends").style.display=name==="friends"?"block":"none";
+  if(name==="match") renderMatchTab();
+  if(name==="find") initSwipe();
+  if(name==="friends") loadFriends();
 }
 
-async function cancelPosting(){
-  if(!state.postingId) return;
-  if(!confirm("募集をやめますか？")) return;
-  try {
-    await deleteDoc(doc(db, "postings", state.postingId));
-    state.postingId = null;
-    state.myPosting = null;
-    toast("募集をやめました");
-  } catch(e){
-    console.error(e);
-    toast("キャンセルに失敗しました");
+async function renderMatchTab(){
+  const box=$("tab-match");
+  box.innerHTML='<div class="loading"><span class="spinner"></span>集計中…</div>';
+  try{
+    // 全ユーザー取得して集計（MVP：小規模想定。大きくなったらカウンタ方式に）
+    const snap=await getDocs(query(collection(db,"users"),limit(300)));
+    const all=[]; snap.forEach(d=>all.push({uid:d.id,...d.data()}));
+    const now=Date.now();
+    // 待機中＝waiting:true かつ 10分以内にアクティブ
+    const waiting=all.filter(u=>u.waiting && u.lastActive && (now-u.lastActive.toMillis())<10*60*1000 && u.uid!==state.uid);
+
+    // 界隈ごと・カテゴリごとの人数
+    const sceneCount={}, catCount={};
+    all.forEach(u=>{
+      const g=u.scene?.gameName||"その他";
+      sceneCount[g]=(sceneCount[g]||0)+1;
+      (u.categories||[]).forEach(c=>catCount[c]=(catCount[c]||0)+1);
+    });
+    const sceneArr=Object.entries(sceneCount).sort((a,b)=>b[1]-a[1]).slice(0,6);
+    const catArr=Object.entries(catCount).sort((a,b)=>b[1]-a[1]).slice(0,6);
+    const maxS=Math.max(1,...sceneArr.map(x=>x[1])), maxC=Math.max(1,...catArr.map(x=>x[1]));
+
+    const iAmWaiting=state.profile.waiting;
+    box.innerHTML=`
+      <div class="card" style="text-align:center">
+        <div style="font-size:14px;color:var(--text-soft);margin-bottom:6px">いま作業仲間を待っている人</div>
+        <div style="font-size:32px;font-weight:800;color:var(--pink)">${waiting.length}<span style="font-size:16px">人</span></div>
+        <button class="btn ${iAmWaiting?"btn-ghost":"btn-pink"}" style="margin-top:12px" onclick="app.toggleWaiting()">
+          ${iAmWaiting?"⏸ マッチ待機をやめる":"🤝 マッチ待機をはじめる"}
+        </button>
+        ${iAmWaiting?'<p class="hint" style="margin-top:8px">待機中です。あなたも一覧に表示されています。</p>':''}
+      </div>
+
+      ${iAmWaiting ? renderWaitingList(waiting) : `<div class="card"><div class="empty" style="padding:24px">
+        <div style="font-size:36px;margin-bottom:8px">👀</div>
+        「マッチ待機」を押すと、<br>いま待っている仲間が見えます
+      </div></div>`}
+
+      <div class="card">
+        <h3 style="font-size:14px;color:var(--water-dark);margin-bottom:12px">🎮 界隈ごとの人数</h3>
+        ${sceneArr.map(([g,n])=>`<div class="stat-row"><div class="stat-label">${esc(g)}</div><div class="stat-bar-bg"><div class="stat-bar" style="width:${n/maxS*100}%"></div></div><div class="stat-num">${n}人</div></div>`).join("")||'<div class="hint">データがありません</div>'}
+      </div>
+      <div class="card">
+        <h3 style="font-size:14px;color:var(--water-dark);margin-bottom:12px">📚 カテゴリーごとの人数</h3>
+        ${catArr.map(([c,n])=>`<div class="stat-row"><div class="stat-label">${esc(c)}</div><div class="stat-bar-bg"><div class="stat-bar" style="width:${n/maxC*100}%"></div></div><div class="stat-num">${n}人</div></div>`).join("")||'<div class="hint">データがありません</div>'}
+      </div>`;
+  }catch(e){ console.error(e); box.innerHTML='<div class="empty">読み込みに失敗しました</div>'; }
+}
+
+function renderWaitingList(waiting){
+  const myCats=new Set(state.profile.categories||[]);
+  const myScene=state.profile.scene?.gameName;
+  waiting.sort((a,b)=>{
+    const sa=(a.scene?.gameName===myScene?3:0)+(a.categories||[]).filter(c=>myCats.has(c)).length;
+    const sb=(b.scene?.gameName===myScene?3:0)+(b.categories||[]).filter(c=>myCats.has(c)).length;
+    return sb-sa;
+  });
+  if(waiting.length===0) return `<div class="card"><div class="empty" style="padding:24px">🌙 いま他に待っている人はいません<br><span style="font-size:12px">見つかるまで待機してみましょう</span></div></div>`;
+  return `<div class="card"><h3 style="font-size:14px;color:var(--pink);margin-bottom:10px">🤝 いま待っている仲間</h3>
+    ${waiting.map(u=>{
+      const loc = u.workLocation ? `${esc(u.scene?.locationLabel||"場所")}: ${esc(u.workLocation)}` : (u.scene?.gameName?esc(u.scene.gameName):"");
+      return `<div class="wait-item">
+        <div class="av">${avatarHtml(u)}</div>
+        <div class="body">
+          <div class="name">${esc(u.handle)}</div>
+          <div class="loc">${u.scene?.icon||"🎮"} ${loc}</div>
+          <div class="cats">${(u.categories||[]).slice(0,4).map(c=>`<span class="cat">${esc(c)}</span>`).join("")}</div>
+        </div>
+      </div>`;
+    }).join("")}
+  </div>`;
+}
+
+async function toggleWaiting(){
+  const willWait=!state.profile.waiting;
+  if(willWait){
+    // 待機開始：作業場所を入力してもらう
+    const sc=state.profile.scene;
+    const fmt=LOC_FORMATS[sc?.locationFormat||"free"];
+    showModal(`${sc?.icon||"🎮"} ${esc(sc?.gameName||"")} で待機`,
+      `<p>${esc(sc?.locationLabel||"作業場所")}を入力すると、仲間が来やすくなります（任意）。</p>
+       <input type="text" id="wait-loc" placeholder="${fmt.ph}" maxlength="24" value="${escA(state.profile.workLocation||"")}">
+       <p class="hint" style="margin-top:6px">${fmt.label}</p>`,
+      [{label:"待機をはじめる",primary:true,onclick:async()=>{
+        const val=($("wait-loc").value||"").trim();
+        if(val && fmt.re && !fmt.re.test(val)){ toast("入力形式が違います（"+fmt.label+"）"); return; }
+        state.profile.waiting=true; state.profile.workLocation=val;
+        try{ await updateDoc(doc(db,"users",state.uid),{waiting:true,workLocation:val,lastActive:serverTimestamp()}); }catch(e){}
+        saveLocal(); closeModal(); renderMatchTab();
+      }}]);
+  } else {
+    state.profile.waiting=false;
+    try{ await updateDoc(doc(db,"users",state.uid),{waiting:false,lastActive:serverTimestamp()}); }catch(e){}
+    saveLocal(); renderMatchTab();
   }
 }
 
-function joinRoom(roomId, postingId){
-  showModal("この部屋に合流します",
-    `<div style="text-align:center;padding:12px 0">
-       <p style="font-size:12px;color:var(--text-soft);margin-bottom:8px">gogh 部屋ID</p>
-       <div style="font-size:24px;font-weight:700;color:var(--water-dark);letter-spacing:.05em;margin-bottom:14px;padding:12px;background:var(--bg);border-radius:12px">${escapeHtml(roomId)}</div>
-       <p style="font-size:12px;color:var(--text-soft)">goghを開いて、このIDの部屋に入ってください。</p>
-     </div>`);
+// ================= 探し（スワイプ） =================
+async function initSwipe(){
+  const box=$("tab-find");
+  box.innerHTML='<div class="loading"><span class="spinner"></span>候補を読み込み中…</div>';
+  try{
+    const likesSnap=await getDocs(query(collection(db,"likes"),where("likerUid","==",state.uid)));
+    const liked=new Set(likesSnap.docs.map(d=>d.data().likedUid));
+    const friendUids=await getFriendUids();
+    const exclude=new Set([...liked,...friendUids,state.uid]);
+    const usersSnap=await getDocs(query(collection(db,"users"),limit(100)));
+    const cands=[];
+    usersSnap.forEach(d=>{ const u=d.data(); if(exclude.has(d.id))return; if(u.isAnonymous)return; if(!u.handle)return; cands.push({uid:d.id,...u}); });
+    const myCats=new Set(state.profile.categories||[]), myTS=new Set(state.profile.timeSlots||[]), myScene=state.profile.scene?.gameName;
+    cands.forEach(c=>{ c._s=(c.scene?.gameName===myScene?3:0)+2*(c.categories||[]).filter(x=>myCats.has(x)).length+(c.timeSlots||[]).filter(x=>myTS.has(x)).length; });
+    cands.sort((a,b)=>b._s-a._s);
+    state.swipeQueue=cands; state.swipeIndex=0; renderSwipe();
+  }catch(e){ console.error(e); box.innerHTML='<div class="empty">読み込みに失敗しました</div>'; }
+}
+function renderSwipe(){
+  const box=$("tab-find");
+  const rem=state.swipeQueue.slice(state.swipeIndex,state.swipeIndex+3);
+  if(rem.length===0){
+    box.innerHTML=`<div class="card"><div class="empty"><div style="font-size:40px;margin-bottom:10px">✨</div>候補がなくなりました<br><span style="font-size:12px">時間をおいてまた見に来てください</span><div style="margin-top:16px"><button class="btn btn-small" onclick="app.initSwipe()">🔄 更新</button></div></div></div>`;
+    return;
+  }
+  const cards=rem.map((c,i)=>{
+    const cls=i===0?"":(i===1?"stacked-1":"stacked-2");
+    return `<div class="swipe-card ${cls}" data-uid="${c.uid}">
+      <span class="swipe-hint like">LIKE</span><span class="swipe-hint nope">SKIP</span>
+      <div class="av-big">${avatarHtml(c)}</div>
+      <div class="sc-name">${esc(c.handle)}</div>
+      <div class="sc-sub">${c.scene?(c.scene.icon+" "+esc(c.scene.gameName)):""}・${relTime(c.lastActive)}にアクティブ</div>
+      <div class="sc-cats">${(c.categories||[]).map(cc=>`<span class="sc-cat">${esc(cc)}</span>`).join("")}</div>
+      <div class="sc-body">
+        ${c.goal?`<div><strong>いま:</strong> ${esc(c.goal)}</div>`:""}
+        ${c.focusStyle?`<div><strong>スタイル:</strong> ${esc(c.focusStyle)}</div>`:""}
+        <div><strong>時間帯:</strong> ${(c.timeSlots||[]).join("・")||"未設定"}</div>
+      </div>
+    </div>`;
+  }).reverse().join("");
+  box.innerHTML=`<div class="swipe-area">${cards}</div>
+    <div class="swipe-actions"><button class="swipe-btn nope" onclick="app.swipe('nope')">✕</button><button class="swipe-btn like" onclick="app.swipe('like')">♡</button></div>
+    <p class="hint" style="text-align:center;margin-top:10px">← スキップ ／ 気になったら ♡</p>`;
+  attachSwipe();
+}
+function attachSwipe(){
+  const card=document.querySelector(".swipe-card:not(.stacked-1):not(.stacked-2)");
+  if(!card) return;
+  let sx=0,sy=0,dx=0,dragging=false;
+  const lh=card.querySelector(".swipe-hint.like"), nh=card.querySelector(".swipe-hint.nope");
+  const down=e=>{dragging=true;card.classList.add("dragging");const p=e.touches?e.touches[0]:e;sx=p.clientX;sy=p.clientY;};
+  const move=e=>{if(!dragging)return;const p=e.touches?e.touches[0]:e;dx=p.clientX-sx;const dy=p.clientY-sy;card.style.transform=`translate(${dx}px,${dy}px) rotate(${dx/15}deg)`;lh.style.opacity=Math.max(0,Math.min(1,dx/100));nh.style.opacity=Math.max(0,Math.min(1,-dx/100));if(e.cancelable)e.preventDefault();};
+  const up=()=>{if(!dragging)return;dragging=false;card.classList.remove("dragging");if(dx>100)fling(card,"like");else if(dx<-100)fling(card,"nope");else{card.style.transform="";lh.style.opacity=0;nh.style.opacity=0;}dx=0;};
+  card.addEventListener("mousedown",down);window.addEventListener("mousemove",move);window.addEventListener("mouseup",up);
+  card.addEventListener("touchstart",down,{passive:true});window.addEventListener("touchmove",move,{passive:false});window.addEventListener("touchend",up);
+}
+function fling(card,action){const dir=action==="like"?1:-1;card.style.transform=`translate(${dir*500}px,0) rotate(${dir*30}deg)`;card.style.opacity="0";setTimeout(()=>handleSwipe(card.dataset.uid,action),250);}
+function swipe(action){const c=document.querySelector(".swipe-card:not(.stacked-1):not(.stacked-2)");if(c)fling(c,action);}
+async function handleSwipe(uid,action){
+  state.swipeIndex++;
+  if(action==="like"){
+    try{
+      await setDoc(doc(db,"likes",state.uid+"_"+uid),{likerUid:state.uid,likedUid:uid,createdAt:serverTimestamp()});
+      const back=await getDoc(doc(db,"likes",uid+"_"+state.uid));
+      if(back.exists()){ await createFriendship(state.uid,uid); showMatch(uid); }
+    }catch(e){ console.error(e); }
+  }
+  renderSwipe();
+}
+async function createFriendship(a,b){const[u1,u2]=[a,b].sort();try{await setDoc(doc(db,"friends",u1+"_"+u2),{uids:[u1,u2],createdAt:serverTimestamp()});}catch(e){}}
+async function showMatch(uid){
+  try{const s=await getDoc(doc(db,"users",uid));if(!s.exists())return;const u=s.data();
+    const av=u.photoData?`<img src="${u.photoData}" style="width:80px;height:80px;border-radius:50%;object-fit:cover">`:`<div style="font-size:60px">${AVATARS[u.avatarId]||"🐱"}</div>`;
+    showModal("🎉 マッチしました！",`<div style="text-align:center;padding:10px 0">${av}<div style="font-weight:700;font-size:18px;margin-top:10px">${esc(u.handle)}</div><div style="font-size:12px;color:var(--text-soft);margin-top:6px">フレンドになりました。<br>フレンドタブから会いに行きましょう。</div></div>`);
+  }catch(e){}
 }
 
-function offerHost(postingId, handle){
-  showModal("部屋を立てて招きますか？",
-    `<p style="font-size:13px">${escapeHtml(handle)}さんは部屋を探しています。<br>
-    あなたがgoghで部屋を作り、「募集を出す」からホストとして部屋IDを登録すると、相手に見つけてもらいやすくなります。</p>`);
+// ================= フレンド =================
+async function getFriendUids(){
+  const set=new Set();
+  try{const s=await getDocs(query(collection(db,"friends"),where("uids","array-contains",state.uid)));s.forEach(d=>{const[a,b]=d.data().uids;set.add(a===state.uid?b:a);});}catch(e){}
+  return set;
+}
+async function loadFriends(){
+  const box=$("tab-friends");
+  box.innerHTML='<div class="loading"><span class="spinner"></span>読み込み中…</div>';
+  try{
+    const uids=[...await getFriendUids()];
+    if(uids.length===0){ box.innerHTML=`<div class="card"><div class="empty"><div style="font-size:40px;margin-bottom:10px">💛</div>まだフレンドがいません<br><span style="font-size:12px">「探し」タブで相互いいねするとフレンドになれます</span></div></div>`; state.friends=[]; return; }
+    const arr=[];
+    for(const uid of uids){ const s=await getDoc(doc(db,"users",uid)); if(s.exists())arr.push({uid,...s.data()}); }
+    state.friends=arr; watchPresence(uids); renderFriendsIfActive();
+  }catch(e){ console.error(e); box.innerHTML='<div class="empty">読み込みに失敗しました</div>'; }
+}
+function renderFriendsIfActive(){
+  const box=$("tab-friends");
+  if(!box||box.style.display==="none"||!state.friends||!state.friends.length) return;
+  box.innerHTML=`<div class="card">${state.friends.map(f=>{
+    const pr=state.presenceMap[f.uid]||{online:false};
+    let dot="online-dot offline-dot",txt=relTime(f.lastActive)+"にアクティブ";
+    if(pr.online){ dot="online-dot"; txt="オンライン"; }
+    if(f.waiting){ dot="online-dot waiting-dot"; txt="マッチ待機中"; }
+    return `<div class="friend-item"><div class="av">${avatarHtml(f)}</div><div class="body"><div class="name">${esc(f.handle)}</div><div class="status-line"><span class="${dot}"></span>${txt}${f.scene?" ・ "+esc(f.scene.gameName):""}</div></div></div>`;
+  }).join("")}</div>`;
 }
 
-// ---------- プロフィール表示 ----------
+// ================= プロフィール =================
 function renderProfileView(){
   if(!state.profile) return;
-  const p = state.profile;
-  $("my-profile-view").innerHTML = `
-    <div style="text-align:center;margin-bottom:16px">
-      <div style="width:80px;height:80px;border-radius:50%;background:var(--bg);display:inline-flex;align-items:center;justify-content:center;font-size:48px;box-shadow:inset 3px 3px 8px var(--shadow-d),inset -3px -3px 8px var(--shadow-l)">${AVATARS[p.avatarId] || "🐱"}</div>
-      <div style="font-weight:700;font-size:18px;margin-top:8px">${escapeHtml(p.handle)}</div>
-      ${p.goghName ? `<div style="font-size:12px;color:var(--text-soft)">gogh: ${escapeHtml(p.goghName)}</div>` : ""}
+  const p=state.profile;
+  const av=p.photoData?`<img src="${p.photoData}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;box-shadow:inset 3px 3px 8px var(--shadow-d)">`:`<div style="width:80px;height:80px;border-radius:50%;background:var(--bg);display:inline-flex;align-items:center;justify-content:center;font-size:48px;box-shadow:inset 3px 3px 8px var(--shadow-d),inset -3px -3px 8px var(--shadow-l)">${AVATARS[p.avatarId]||"🐱"}</div>`;
+  let badge="";
+  if(state.authType==="google")badge='<span class="g-badge">G</span>';
+  else if(state.authType==="x")badge='<span class="x-badge">𝕏</span>';
+  const statusTxt = p.waiting?"🟠 マッチ待機中":"🟢 オンライン";
+  $("my-profile-view").innerHTML=`
+    <div style="text-align:center;margin-bottom:16px">${av}
+      <div style="font-weight:700;font-size:18px;margin-top:8px">${esc(p.handle)}${badge}</div>
+      <div style="font-size:12px;color:var(--text-soft)">${statusTxt}</div>
     </div>
     <div style="font-size:13px;line-height:1.9">
-      <div><strong>カテゴリー:</strong> ${(p.categories||[]).join("・")}</div>
-      <div><strong>時間帯:</strong> ${(p.timeSlots||[]).join("・")}</div>
-      ${p.focusStyle ? `<div><strong>スタイル:</strong> ${escapeHtml(p.focusStyle)}</div>` : ""}
-      ${p.goal ? `<div><strong>いま:</strong> ${escapeHtml(p.goal)}</div>` : ""}
-    </div>
-  `;
+      <div><strong>界隈:</strong> ${p.scene?(p.scene.icon+" "+esc(p.scene.gameName)+"（"+esc(p.scene.locationLabel)+"）"):"未設定"}</div>
+      <div><strong>カテゴリー:</strong> ${(p.categories||[]).join("・")||"未設定"}</div>
+      <div><strong>時間帯:</strong> ${(p.timeSlots||[]).join("・")||"未設定"}</div>
+      ${p.focusStyle?`<div><strong>スタイル:</strong> ${esc(p.focusStyle)}</div>`:""}
+      ${p.goal?`<div><strong>いま:</strong> ${esc(p.goal)}</div>`:""}
+      <div><strong>最終アクティブ:</strong> ${relTime(p.lastActive)}</div>
+    </div>`;
+  // アカウント欄
+  const ab=$("account-body");
+  if(state.isLoggedIn){
+    ab.innerHTML=`<div style="padding:10px;background:var(--bg);border-radius:12px;text-align:center;color:var(--ok);font-weight:600;font-size:13px;margin-bottom:10px">✓ ${state.authType==="google"?"Google":"X"}ログイン済み（データは復元されます）</div>
+      <button class="btn btn-small btn-ghost" onclick="app.showTerms()">利用について</button>
+      <button class="btn btn-small btn-ghost" onclick="app.signOut()" style="color:var(--danger)">サインアウト</button>`;
+  }else{
+    ab.innerHTML=`<p class="hint" style="margin-bottom:10px">いまはゲスト（この端末に保存）。<br>ログインすると探し・フレンド・画像・データ復元が使えます。</p>
+      <button class="btn btn-google" onclick="app.loginGoogle()" style="margin-bottom:8px">Ⓖ Googleでログイン</button>
+      <button class="btn btn-x" onclick="app.loginX()">𝕏 Xでログイン</button>
+      <button class="btn btn-small btn-ghost" onclick="app.showTerms()" style="margin-top:8px">利用について</button>`;
+  }
 }
 
-// ---------- タブ切替 ----------
-function switchTab(name){
-  document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("active", t.dataset.tab===name));
-  $("tab-match").style.display = (name==="match") ? "block" : "none";
-  $("tab-find").style.display = (name==="find") ? "block" : "none";
+// ---------- プロフィール編集 ----------
+function initProfileEdit(){
+  const p=state.profile;
+  state.editing=Object.assign({},state.editing,{
+    categories:[...(p.categories||[])], timeSlots:[...(p.timeSlots||[])],
+    focusStyle:p.focusStyle||"", photoData:p.photoData||null, photoChangedAt:p.photoChangedAt||null, _photoChanged:false
+  });
+  state.photoDataURL=p.photoData||null;
+  $("pe-handle").value=p.handle||"";
+  $("pe-goal").value=p.goal||"";
+  const av=$("pe-avatars"); av.innerHTML="";
+  AVATARS.forEach((e,i)=>{const el=document.createElement("button");el.type="button";el.className="avatar-opt"+(i===p.avatarId?" selected":"");el.textContent=e;el.onclick=()=>{state.editing.avatarId=i;av.querySelectorAll(".avatar-opt").forEach((x,j)=>x.classList.toggle("selected",j===i));};av.appendChild(el);});
+  state.editing.avatarId=p.avatarId;
+  renderChips("pe-categories",CATEGORIES,state.editing.categories,"multi");
+  renderChips("pe-timeslots",TIMESLOTS,state.editing.timeSlots,"multi",true);
+  renderChips("pe-focus",FOCUS_STYLES,state.editing.focusStyle?[state.editing.focusStyle]:[],"single");
+  $("pe-scene-display").innerHTML = p.scene?`${p.scene.icon} ${esc(p.scene.gameName)}（${esc(p.scene.locationLabel)}）`:"未設定";
+  $("pe-photo-field").style.display=state.isLoggedIn?"block":"none";
+  updatePhotoPreview();
 }
+function renderChips(id,options,selected,mode,pink){
+  const c=$(id);c.innerHTML="";
+  options.forEach(opt=>{const el=document.createElement("button");el.type="button";el.className="chip"+(selected.includes(opt)?" selected":"")+(pink?" pink":"");el.textContent=opt;
+    el.onclick=()=>{if(mode==="multi"){const i=selected.indexOf(opt);if(i>=0)selected.splice(i,1);else selected.push(opt);}else{selected.length=0;selected.push(opt);if(id==="pe-focus")state.editing.focusStyle=opt;}c.querySelectorAll(".chip").forEach((e,i)=>e.classList.toggle("selected",selected.includes(options[i])));};
+    c.appendChild(el);});
+}
+$("pe-photo-input").addEventListener("change",async e=>{
+  const file=e.target.files[0];if(!file)return;
+  if(state.editing.photoChangedAt){const last=state.editing.photoChangedAt.toMillis?state.editing.photoChangedAt.toMillis():new Date(state.editing.photoChangedAt).getTime();const el=Date.now()-last;if(el<PHOTO_COOLDOWN_MS){toast("画像変更まであと"+Math.ceil((PHOTO_COOLDOWN_MS-el)/86400000)+"日");return;}}
+  try{const d=await resizeImage(file,100,0.6);state.photoDataURL=d;state.editing.photoData=d;state.editing._photoChanged=true;updatePhotoPreview();toast("画像を読み込みました");}catch(err){toast("読み込み失敗");}
+});
+function resizeImage(file,size,q){return new Promise((res,rej)=>{const r=new FileReader();r.onload=e=>{const img=new Image();img.onload=()=>{const cv=document.createElement("canvas");cv.width=size;cv.height=size;const ctx=cv.getContext("2d");const s=Math.min(img.width,img.height);ctx.drawImage(img,(img.width-s)/2,(img.height-s)/2,s,s,0,0,size,size);res(cv.toDataURL("image/jpeg",q));};img.onerror=rej;img.src=e.target.result;};r.onerror=rej;r.readAsDataURL(file);});}
+function updatePhotoPreview(){const slot=$("pe-photo-preview"),rm=$("pe-photo-remove");if(state.photoDataURL){slot.innerHTML=`<img src="${state.photoDataURL}"><span class="photo-badge">UP</span>`;rm.style.display="inline-block";}else{slot.innerHTML="📷";rm.style.display="none";}}
+function removePhoto(){if(!confirm("画像を削除しますか？"))return;state.photoDataURL=null;state.editing.photoData=null;state.editing._photoChanged=true;updatePhotoPreview();}
+
+async function saveProfileEdit(){
+  const handle=$("pe-handle").value.trim();
+  if(!handle)return toast("なまえを入れてください");
+  state.profile.handle=handle;
+  state.profile.avatarId=state.editing.avatarId;
+  state.profile.categories=state.editing.categories;
+  state.profile.timeSlots=state.editing.timeSlots;
+  state.profile.focusStyle=state.editing.focusStyle;
+  state.profile.goal=$("pe-goal").value.trim();
+  if(state.editing._photoChanged){ state.profile.photoData=state.editing.photoData||""; state.profile.photoChangedAt=Timestamp.now(); }
+  await persistProfile(false);
+  toast("保存しました"); goto("profile");
+}
+
+function changeScene(){ goto("onboard"); }
 
 // ---------- モーダル ----------
-function showModal(title, body){
-  $("modal-title").textContent = title;
-  $("modal-body").innerHTML = body;
+function showModal(title,body,actions){
+  $("modal-title").textContent=title;$("modal-body").innerHTML=body;
+  const ac=$("modal-actions");ac.innerHTML="";
+  (actions||[]).forEach(a=>{const b=document.createElement("button");b.className="btn "+(a.primary?"btn-primary":"");b.textContent=a.label;b.style.marginBottom="6px";b.onclick=a.onclick;ac.appendChild(b);});
+  const cl=document.createElement("button");cl.className="btn btn-ghost";cl.textContent="閉じる";cl.onclick=closeModal;ac.appendChild(cl);
   $("modal-bg").classList.add("active");
 }
-function closeModal(){ $("modal-bg").classList.remove("active"); }
-
+function closeModal(){$("modal-bg").classList.remove("active");}
 function showTerms(){
-  showModal("このサイトについて", `
-    <p>お作業マッチング（gogh非公式）は、とあつ様が提供する作業ゲーム「gogh」で一緒に作業する仲間を探すための、<strong>個人が運営する非公式サイト</strong>です。gogh運営とは無関係で、公式との提携・後援関係はありません。</p>
-    <p style="margin-top:8px"><strong>禁止事項:</strong> 恋愛・出会い・交際・性的な連絡を目的とした利用、なりすまし、営業・宣伝、他利用者への迷惑行為。違反時はアカウント停止することがあります。</p>
-    <p style="margin-top:8px"><strong>免責:</strong> 本サービスの利用により生じたトラブルについて、運営者は責任を負いません。利用者間のトラブルは当事者間で解決してください。</p>
-    <p style="margin-top:8px"><strong>年齢:</strong> 13歳以上の方が対象です。未成年は保護者の同意を得てください。</p>
+  showModal("このサイトについて",`
+    <p>「作業仲間さがし」は、一緒に作業する仲間を見つけるための<strong>個人が運営する非公式サイト</strong>です。掲載される界隈やゲーム名は<strong>利用者が自由に登録したもの</strong>で、各ゲーム・サービスの運営会社とは無関係です。公式との提携・後援関係はありません。</p>
+    <p style="margin-top:8px"><strong>禁止事項:</strong> 恋愛・出会い・交際・性的な連絡を目的とした利用、なりすまし、営業・宣伝、他利用者への迷惑行為、権利侵害。違反時はアカウント停止することがあります。</p>
+    <p style="margin-top:8px"><strong>免責:</strong> 本サービスの利用や利用者間・第三者とのトラブルについて、運営者は責任を負いません。</p>
+    <p style="margin-top:8px"><strong>年齢:</strong> 13歳以上が対象です。未成年は保護者の同意を得てください。</p>
+    <p style="margin-top:8px">権利者からの削除要請などは、運営者までご連絡ください。速やかに対応します。</p>
   `);
 }
 
-// ---------- ヘルパー ----------
-function escapeHtml(s){
-  if(s==null) return "";
-  return String(s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-}
-function escapeAttr(s){
-  if(s==null) return "";
-  return String(s).replace(/'/g, "\\'").replace(/"/g,"&quot;");
-}
-
-// ---------- 公開API ----------
-window.app = {
-  startFlow, goto, saveProfile, submitPosting, cancelPosting,
-  loadPostings, selectRole, switchTab, joinRoom, offerHost,
-  showModal, closeModal, showTerms,
+window.app={
+  startGuest,loginGoogle,loginX,goto,switchTab,
+  setSceneSort,moreScenes,pickScene,finishOnboard,createScene,
+  toggleWaiting,initSwipe,swipe,loadFriends,
+  saveProfileEdit,removePhoto,changeScene,signOut:doSignOut,
+  showModal,closeModal,showTerms,renderMatchTab,
 };
-
 </script>
 </body>
 </html>
