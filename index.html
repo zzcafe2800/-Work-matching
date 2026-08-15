@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#5b9cb8">
+<title>お作業マッチング（gogh非公式）</title>
+<meta name="description" content="goghで一緒に作業する仲間を探す非公式マッチングサイト。恋愛・出会い目的の利用は禁止。">
+<style>
+:root{
+  --water:#5b9cb8;
+  --water-dark:#468197;
+  --water-light:#a3c9db;
+  --pink:#e0588f;
+  --pink-soft:#f4a8c5;
+  --bg:#eef4f8;
+  --card:#ffffff;
+  --text:#3a4a55;
+  --text-soft:#7a8894;
+  --shadow-d:rgba(70,129,151,.18);
+  --shadow-l:rgba(255,255,255,.95);
+  --warn:#e8a54a;
+  --danger:#d85c5c;
+  --ok:#5eb187;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow-x:hidden}
+body{
+  font-family:-apple-system,"Hiragino Kaku Gothic ProN","Yu Gothic UI","Meiryo",sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  font-size:15px;
+  line-height:1.6;
+  padding-bottom:80px;
+}
+button{font-family:inherit;font-size:inherit;color:inherit;background:none;border:none;cursor:pointer}
+input,textarea,select{font-family:inherit;font-size:inherit;color:inherit}
+
+/* ---------- ヘッダー ---------- */
+header{
+  padding:14px 16px 10px;
+  text-align:center;
+  background:linear-gradient(180deg,var(--bg) 0%,rgba(238,244,248,0) 100%);
+  position:sticky;top:0;z-index:10;backdrop-filter:blur(6px);
+}
+header h1{
+  font-size:16px;font-weight:700;color:var(--water-dark);
+  letter-spacing:.02em;
+}
+header .unofficial{
+  display:inline-block;font-size:10px;font-weight:600;
+  background:var(--pink);color:#fff;padding:2px 6px;border-radius:8px;
+  margin-left:6px;vertical-align:middle;
+}
+
+/* ---------- 画面切り替え ---------- */
+.screen{display:none;padding:8px 16px 24px;max-width:520px;margin:0 auto}
+.screen.active{display:block;animation:fadein .25s ease}
+@keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ---------- ニューモーフィック カード ---------- */
+.card{
+  background:var(--card);
+  border-radius:20px;
+  padding:18px;
+  margin-bottom:14px;
+  box-shadow:
+    6px 6px 16px var(--shadow-d),
+    -6px -6px 16px var(--shadow-l);
+}
+.card-inset{
+  background:var(--bg);
+  border-radius:16px;
+  padding:14px;
+  box-shadow:
+    inset 3px 3px 8px var(--shadow-d),
+    inset -3px -3px 8px var(--shadow-l);
+}
+
+/* ---------- ボタン ---------- */
+.btn{
+  display:block;width:100%;padding:14px;border-radius:16px;font-weight:700;
+  text-align:center;transition:transform .1s,box-shadow .2s;
+  background:var(--card);color:var(--water-dark);
+  box-shadow:4px 4px 10px var(--shadow-d),-4px -4px 10px var(--shadow-l);
+}
+.btn:active{transform:scale(.98);box-shadow:inset 2px 2px 6px var(--shadow-d),inset -2px -2px 6px var(--shadow-l)}
+.btn-primary{background:linear-gradient(135deg,var(--water) 0%,var(--water-dark) 100%);color:#fff;box-shadow:4px 4px 12px var(--shadow-d)}
+.btn-pink{background:linear-gradient(135deg,var(--pink) 0%,var(--pink-soft) 100%);color:#fff}
+.btn-ghost{background:transparent;box-shadow:none;color:var(--text-soft);font-weight:500;font-size:13px}
+.btn-small{padding:8px 14px;width:auto;display:inline-block;font-size:13px;border-radius:12px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+
+/* ---------- フォーム ---------- */
+label{display:block;font-size:13px;font-weight:600;color:var(--text-soft);margin-bottom:6px}
+input[type=text],textarea,select{
+  width:100%;padding:12px 14px;border-radius:14px;border:none;
+  background:var(--bg);color:var(--text);
+  box-shadow:inset 2px 2px 6px var(--shadow-d),inset -2px -2px 6px var(--shadow-l);
+  outline:none;
+}
+input[type=text]:focus,textarea:focus,select:focus{
+  box-shadow:inset 2px 2px 6px var(--shadow-d),inset -2px -2px 6px var(--shadow-l),0 0 0 2px var(--water-light);
+}
+textarea{resize:vertical;min-height:60px;font-family:inherit}
+.field{margin-bottom:14px}
+.hint{font-size:11px;color:var(--text-soft);margin-top:4px;line-height:1.4}
+.counter{font-size:11px;color:var(--text-soft);text-align:right;margin-top:2px}
+
+/* ---------- チップ（複数選択） ---------- */
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{
+  padding:8px 14px;border-radius:14px;font-size:13px;font-weight:600;
+  background:var(--card);color:var(--text-soft);
+  box-shadow:3px 3px 8px var(--shadow-d),-3px -3px 8px var(--shadow-l);
+  transition:all .15s;
+}
+.chip.selected{
+  background:linear-gradient(135deg,var(--water) 0%,var(--water-dark) 100%);color:#fff;
+  box-shadow:inset 2px 2px 6px rgba(0,0,0,.15);
+}
+.chip.pink.selected{background:linear-gradient(135deg,var(--pink) 0%,var(--pink-soft) 100%)}
+
+/* ---------- アバター選択 ---------- */
+.avatars{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.avatar-opt{
+  aspect-ratio:1;border-radius:50%;
+  background:var(--card);
+  box-shadow:3px 3px 8px var(--shadow-d),-3px -3px 8px var(--shadow-l);
+  display:flex;align-items:center;justify-content:center;
+  font-size:32px;
+  transition:all .15s;
+}
+.avatar-opt.selected{
+  box-shadow:inset 3px 3px 8px var(--shadow-d),inset -3px -3px 8px var(--shadow-l);
+  transform:scale(.94);
+}
+
+/* ---------- タブ ---------- */
+.tabs{display:flex;gap:8px;margin-bottom:14px;background:var(--bg);padding:4px;border-radius:16px;
+  box-shadow:inset 2px 2px 6px var(--shadow-d),inset -2px -2px 6px var(--shadow-l);
+}
+.tab{
+  flex:1;padding:10px;border-radius:12px;font-size:14px;font-weight:600;color:var(--text-soft);
+  text-align:center;
+}
+.tab.active{background:var(--card);color:var(--water-dark);
+  box-shadow:2px 2px 6px var(--shadow-d),-2px -2px 6px var(--shadow-l);
+}
+.tab.locked{opacity:.5}
+
+/* ---------- 募集カード ---------- */
+.post-card{display:flex;gap:12px;align-items:flex-start;position:relative}
+.post-card .av{
+  width:48px;height:48px;border-radius:50%;background:var(--bg);
+  display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;
+  box-shadow:inset 2px 2px 5px var(--shadow-d);
+}
+.post-card .body{flex:1;min-width:0}
+.post-card .name{font-weight:700;font-size:14px;margin-bottom:2px}
+.post-card .meta{font-size:12px;color:var(--text-soft);line-height:1.5}
+.post-card .cats{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.post-card .cat{font-size:11px;padding:2px 8px;border-radius:8px;background:var(--water-light);color:#fff;font-weight:600}
+.post-card .actions{margin-top:10px;display:flex;gap:8px}
+.host-badge{position:absolute;top:0;right:0;font-size:10px;background:var(--pink);color:#fff;padding:2px 8px;border-radius:8px;font-weight:700}
+.guest-badge{position:absolute;top:0;right:0;font-size:10px;background:var(--water);color:#fff;padding:2px 8px;border-radius:8px;font-weight:700}
+
+/* ---------- ステータス表示 ---------- */
+.status{padding:12px;border-radius:14px;text-align:center;font-weight:600;font-size:13px;margin-bottom:14px}
+.status.info{background:var(--water-light);color:#fff}
+.status.pink{background:var(--pink-soft);color:#fff}
+.status.warn{background:var(--warn);color:#fff}
+.empty{text-align:center;color:var(--text-soft);padding:40px 20px;font-size:14px}
+
+/* ---------- ボトムナビ ---------- */
+nav.bottom-nav{
+  position:fixed;left:0;right:0;bottom:0;
+  background:var(--card);
+  padding:8px 8px 12px;
+  display:flex;justify-content:space-around;
+  box-shadow:0 -4px 16px var(--shadow-d);
+  z-index:20;
+  padding-bottom:calc(12px + env(safe-area-inset-bottom));
+}
+.nav-btn{
+  flex:1;padding:6px;display:flex;flex-direction:column;align-items:center;gap:2px;
+  color:var(--text-soft);font-size:11px;font-weight:600;
+}
+.nav-btn .ico{font-size:22px;line-height:1}
+.nav-btn.active{color:var(--water-dark)}
+.nav-btn.locked{opacity:.4}
+
+/* ---------- ロック画面 ---------- */
+.lock-panel{text-align:center;padding:30px 20px}
+.lock-panel .lock-ico{font-size:56px;margin-bottom:16px;opacity:.6}
+.lock-panel h3{font-size:16px;margin-bottom:8px;color:var(--text)}
+.lock-panel p{font-size:13px;color:var(--text-soft);margin-bottom:20px;line-height:1.6}
+
+/* ---------- モーダル ---------- */
+.modal-bg{position:fixed;inset:0;background:rgba(58,74,85,.4);z-index:100;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-bg.active{display:flex}
+.modal{background:var(--card);border-radius:20px;padding:22px;max-width:400px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.modal h3{margin-bottom:10px;color:var(--water-dark)}
+.modal p{font-size:13px;color:var(--text-soft);margin-bottom:16px}
+
+/* ---------- 免責バー ---------- */
+.disclaimer{
+  font-size:11px;color:var(--text-soft);text-align:center;padding:16px 12px;
+  background:var(--bg);border-radius:12px;margin-bottom:14px;line-height:1.6;
+}
+.disclaimer strong{color:var(--pink)}
+
+/* ---------- ローディング ---------- */
+.loading{text-align:center;padding:30px;color:var(--text-soft);font-size:13px}
+.spinner{
+  display:inline-block;width:20px;height:20px;border:2px solid var(--water-light);
+  border-top-color:var(--water);border-radius:50%;animation:spin 1s linear infinite;vertical-align:middle;margin-right:8px;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ---------- Toast ---------- */
+.toast{
+  position:fixed;top:60px;left:50%;transform:translateX(-50%);
+  background:var(--text);color:#fff;padding:10px 18px;border-radius:14px;
+  font-size:13px;font-weight:600;z-index:200;opacity:0;transition:opacity .3s;pointer-events:none;
+}
+.toast.show{opacity:1}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>お作業マッチング<span class="unofficial">gogh非公式</span></h1>
+</header>
+
+<main>
+
+<!-- ==================== スタート画面 ==================== -->
+<section id="screen-start" class="screen active">
+  <div class="card" style="text-align:center;padding:28px 20px">
+    <div style="font-size:56px;margin-bottom:8px">☕✏️</div>
+    <h2 style="font-size:18px;color:var(--water-dark);margin-bottom:10px">
+      goghで一緒に作業する<br>仲間を見つけよう
+    </h2>
+    <p style="font-size:13px;color:var(--text-soft);margin-bottom:20px;line-height:1.7">
+      作業ゲーム「gogh」で<br>
+      同じ時間に集中したい人を<br>
+      サッと見つけるためのサイトです。
+    </p>
+  </div>
+
+  <div class="disclaimer">
+    <strong>恋愛・出会い目的の利用は禁止</strong>しています。<br>
+    このサイトは、とあつ様の「gogh」の<strong>非公式</strong>ツールで、<br>
+    公式との提携や後援関係はありません。
+  </div>
+
+  <button class="btn btn-primary" onclick="app.startFlow()">はじめる（かんたん・登録不要）</button>
+  <button class="btn btn-ghost" onclick="app.showTerms()">利用について・免責事項</button>
+</section>
+
+<!-- ==================== プロフィール登録 ==================== -->
+<section id="screen-profile-setup" class="screen">
+  <div class="card">
+    <h2 style="color:var(--water-dark);margin-bottom:4px;font-size:16px">プロフィールをつくる</h2>
+    <p class="hint" style="margin-bottom:16px">あとで自由に変更できます</p>
+
+    <div class="field">
+      <label>ハンドル名 <span style="color:var(--pink)">*</span></label>
+      <input type="text" id="p-handle" maxlength="15" placeholder="ゆめ">
+      <div class="counter"><span id="p-handle-count">0</span>/15</div>
+    </div>
+
+    <div class="field">
+      <label>アバター <span style="color:var(--pink)">*</span></label>
+      <div class="avatars" id="p-avatars"></div>
+      <p class="hint">プリセットから選べます。自撮り画像は後日対応予定です。</p>
+    </div>
+
+    <div class="field">
+      <label>作業カテゴリー <span style="color:var(--pink)">*</span></label>
+      <div class="chips" id="p-categories"></div>
+      <p class="hint">複数選べます</p>
+    </div>
+
+    <div class="field">
+      <label>よく作業する時間帯 <span style="color:var(--pink)">*</span></label>
+      <div class="chips" id="p-timeslots"></div>
+    </div>
+
+    <div class="field">
+      <label>集中スタイル（任意）</label>
+      <div class="chips" id="p-focus"></div>
+    </div>
+
+    <div class="field">
+      <label>いま頑張っていること（任意）</label>
+      <input type="text" id="p-goal" maxlength="60" placeholder="秋の資格試験、新刊の作画 など">
+      <div class="counter"><span id="p-goal-count">0</span>/60</div>
+    </div>
+
+    <div class="field">
+      <label>gogh内での呼び名（任意）</label>
+      <input type="text" id="p-goghname" maxlength="20" placeholder="サイトのハンドル名と違うとき">
+    </div>
+  </div>
+
+  <button class="btn btn-primary" onclick="app.saveProfile()">保存してはじめる</button>
+</section>
+
+<!-- ==================== ホーム画面（マッチ・探しタブ） ==================== -->
+<section id="screen-home" class="screen">
+  <div class="tabs">
+    <button class="tab active" data-tab="match" onclick="app.switchTab('match')">🤝 マッチ</button>
+    <button class="tab locked" data-tab="find" onclick="app.switchTab('find')">🔍 探し</button>
+  </div>
+
+  <!-- マッチタブ -->
+  <div id="tab-match">
+    <div id="my-posting-area"></div>
+
+    <div style="display:flex;justify-content:space-between;align-items:center;margin:16px 0 10px">
+      <h3 style="font-size:14px;color:var(--water-dark)">いま募集中の人</h3>
+      <button class="btn btn-small btn-ghost" onclick="app.loadPostings()">🔄 更新</button>
+    </div>
+
+    <div id="postings-list">
+      <div class="loading"><span class="spinner"></span>読み込み中…</div>
+    </div>
+  </div>
+
+  <!-- 探しタブ（ロック） -->
+  <div id="tab-find" style="display:none">
+    <div class="card">
+      <div class="lock-panel">
+        <div class="lock-ico">🔒</div>
+        <h3>探しモードはログインが必要です</h3>
+        <p>
+          カードをスワイプしてフレンドをつくる機能は、<br>
+          なりすまし防止のため<br>
+          Xアカウントでログインした方だけ使えます。<br>
+          <br>
+          <span style="color:var(--text-soft);font-size:12px">※ 近日実装予定</span>
+        </p>
+        <button class="btn btn-pink" disabled>Xでログイン（準備中）</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 募集を出す ==================== -->
+<section id="screen-post" class="screen">
+  <div class="card">
+    <h2 style="color:var(--water-dark);margin-bottom:4px;font-size:16px">募集を出す</h2>
+    <p class="hint" style="margin-bottom:16px">今から一緒に作業する仲間を探します</p>
+
+    <div class="field">
+      <label>あなたの部屋の状態 <span style="color:var(--pink)">*</span></label>
+      <div class="chips">
+        <button class="chip pink" data-role="host" onclick="app.selectRole('host')">🏠 部屋をたてた（ID有り）</button>
+        <button class="chip" data-role="guest" onclick="app.selectRole('guest')">🚪 誰かの部屋に入りたい</button>
+      </div>
+    </div>
+
+    <div class="field" id="room-id-field" style="display:none">
+      <label>gogh 部屋ID <span style="color:var(--pink)">*</span></label>
+      <input type="text" id="p-roomid" maxlength="20" placeholder="例: ABCD1234">
+      <p class="hint">gogh内で部屋を作った時に表示されるIDを入れてください</p>
+    </div>
+
+    <div class="field">
+      <label>作業カテゴリー <span style="color:var(--pink)">*</span></label>
+      <div class="chips" id="post-categories"></div>
+    </div>
+
+    <div class="field">
+      <label>これからの作業時間 <span style="color:var(--pink)">*</span></label>
+      <div class="chips" id="post-duration"></div>
+    </div>
+
+    <div class="field">
+      <label>ひとこと（任意）</label>
+      <input type="text" id="p-message" maxlength="40" placeholder="ポモドーロで、静かめで、など">
+    </div>
+  </div>
+
+  <button class="btn btn-primary" onclick="app.submitPosting()">募集を出す</button>
+  <button class="btn btn-ghost" onclick="app.goto('home')">キャンセル</button>
+</section>
+
+<!-- ==================== プロフィール画面 ==================== -->
+<section id="screen-profile" class="screen">
+  <div class="card">
+    <h2 style="color:var(--water-dark);margin-bottom:16px;font-size:16px">プロフィール</h2>
+    <div id="my-profile-view"></div>
+    <button class="btn btn-small" onclick="app.goto('profile-setup')" style="margin-top:14px">編集する</button>
+  </div>
+
+  <div class="card">
+    <h3 style="color:var(--water-dark);font-size:14px;margin-bottom:10px">Xアカウント連携</h3>
+    <p class="hint" style="margin-bottom:12px">
+      連携すると、探しモード・フレンド・Xアイコン使用が解放されます。<br>
+      現在準備中です。
+    </p>
+    <button class="btn btn-pink" disabled>Xでログイン（準備中）</button>
+  </div>
+
+  <div class="card">
+    <h3 style="color:var(--water-dark);font-size:14px;margin-bottom:10px">アカウント</h3>
+    <p class="hint" style="margin-bottom:8px">現在の認証: <span id="auth-status">…</span></p>
+    <p class="hint" style="margin-bottom:12px">ユーザーID: <span id="uid-display" style="word-break:break-all;font-family:monospace"></span></p>
+    <button class="btn btn-small btn-ghost" onclick="app.showTerms()">利用について</button>
+  </div>
+</section>
+
+</main>
+
+<!-- ==================== ボトムナビ ==================== -->
+<nav class="bottom-nav" id="bottom-nav" style="display:none">
+  <button class="nav-btn active" data-nav="home" onclick="app.goto('home')">
+    <span class="ico">🏠</span>ホーム
+  </button>
+  <button class="nav-btn" data-nav="post" onclick="app.goto('post')">
+    <span class="ico">➕</span>募集
+  </button>
+  <button class="nav-btn" data-nav="profile" onclick="app.goto('profile')">
+    <span class="ico">👤</span>プロフィール
+  </button>
+</nav>
+
+<!-- ==================== モーダル ==================== -->
+<div class="modal-bg" id="modal-bg">
+  <div class="modal" id="modal">
+    <h3 id="modal-title"></h3>
+    <div id="modal-body"></div>
+    <button class="btn btn-primary" onclick="app.closeModal()" style="margin-top:14px">閉じる</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- ==================== JavaScript ==================== -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
+import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
+import {
+  getFirestore, doc, setDoc, getDoc, updateDoc,
+  collection, addDoc, query, where, onSnapshot, serverTimestamp,
+  deleteDoc, orderBy, limit, getDocs, Timestamp
+} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
+import { getDatabase, ref, onValue, onDisconnect, set as rtdbSet, serverTimestamp as rtdbTimestamp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-database.js";
+
+// ---------- Firebase 初期化 ----------
+const firebaseConfig = {
+  apiKey: "AIzaSyDVjaGY0aeXO971aE1JmTJNx04LrpxCAb0",
+  authDomain: "workmatch-d76f8.firebaseapp.com",
+  databaseURL: "https://workmatch-d76f8-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "workmatch-d76f8",
+  storageBucket: "workmatch-d76f8.firebasestorage.app",
+  messagingSenderId: "974887147532",
+  appId: "1:974887147532:web:e943ea732a9865428b7629"
+};
+const fbApp = initializeApp(firebaseConfig);
+const auth = getAuth(fbApp);
+const db = getFirestore(fbApp);
+const rtdb = getDatabase(fbApp);
+
+// ---------- マスターデータ ----------
+const AVATARS = ["🐱","🐶","🐰","🐻","🦊","🐼","🐨","🦁","🐸","🦉","🐧","🦆"];
+const CATEGORIES = ["勉強","お絵かき","執筆","プログラミング","読書","事務作業","その他"];
+const TIMESLOTS = ["朝(5-9)","昼(9-17)","夜(17-23)","深夜(23-5)"];
+const FOCUS_STYLES = ["黙々","ポモドーロ","スタンプで励まし"];
+const DURATIONS = [
+  {label:"30分",min:30},
+  {label:"1時間",min:60},
+  {label:"2時間",min:120},
+  {label:"3時間以上",min:180},
+];
+const POSTING_TTL_MIN = 60; // 募集の有効期限（分）
+
+// ---------- 状態 ----------
+const state = {
+  uid: null,
+  profile: null,        // プロフィール（Firestore /users/{uid}）
+  postingId: null,      // 自分の募集ID
+  myPosting: null,
+  editingProfile: {},   // プロフィール登録画面の一時状態
+  editingPost: {},      // 募集画面の一時状態
+  postsUnsub: null,     // 一覧のonSnapshot解除用
+};
+
+// ---------- ユーティリティ ----------
+const $ = (id)=>document.getElementById(id);
+const toast = (msg)=>{
+  const t = $("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"), 2200);
+};
+
+function goto(screen){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  const target = $("screen-"+screen);
+  if(target) target.classList.add("active");
+  document.querySelectorAll(".nav-btn").forEach(b=>{
+    b.classList.toggle("active", b.dataset.nav===screen);
+  });
+  window.scrollTo(0,0);
+  // 画面ごとの初期化
+  if(screen==="home") loadPostings();
+  if(screen==="post") initPostScreen();
+  if(screen==="profile") renderProfileView();
+  if(screen==="profile-setup") initProfileSetup();
+}
+
+// ---------- 認証（匿名スタート） ----------
+onAuthStateChanged(auth, async (user)=>{
+  if(user){
+    state.uid = user.uid;
+    $("uid-display").textContent = user.uid;
+    $("auth-status").textContent = user.isAnonymous ? "ゲスト" : "ログイン済み";
+    // プロフィール取得
+    try {
+      const snap = await getDoc(doc(db, "users", user.uid));
+      if(snap.exists()){
+        state.profile = snap.data();
+        // 既存ユーザー：ホームへ
+        $("bottom-nav").style.display = "flex";
+        goto("home");
+      } else {
+        // 新規：プロフィール登録画面はstartFlow()から遷移
+      }
+    } catch(e){
+      console.error("プロフィール取得失敗", e);
+    }
+  }
+});
+
+async function startFlow(){
+  try {
+    if(!state.uid){
+      await signInAnonymously(auth);
+      // onAuthStateChangedが走るまで少し待つ
+      await new Promise(r=>setTimeout(r,400));
+    }
+    if(state.profile){
+      $("bottom-nav").style.display = "flex";
+      goto("home");
+    } else {
+      goto("profile-setup");
+    }
+  } catch(e){
+    console.error(e);
+    toast("接続できませんでした。時間をおいてお試しください");
+  }
+}
+
+// ---------- プロフィール登録 ----------
+function initProfileSetup(){
+  // 既存プロフィールがあればフォームに反映
+  const p = state.profile || {};
+  state.editingProfile = {
+    handle: p.handle || "",
+    avatarId: p.avatarId ?? 0,
+    categories: [...(p.categories || [])],
+    timeSlots: [...(p.timeSlots || [])],
+    focusStyle: p.focusStyle || "",
+    goal: p.goal || "",
+    goghName: p.goghName || "",
+  };
+
+  $("p-handle").value = state.editingProfile.handle;
+  $("p-handle-count").textContent = state.editingProfile.handle.length;
+  $("p-goal").value = state.editingProfile.goal;
+  $("p-goal-count").textContent = state.editingProfile.goal.length;
+  $("p-goghname").value = state.editingProfile.goghName;
+
+  // アバター
+  const av = $("p-avatars");
+  av.innerHTML = "";
+  AVATARS.forEach((emoji,i)=>{
+    const el = document.createElement("button");
+    el.className = "avatar-opt" + (i===state.editingProfile.avatarId ? " selected" : "");
+    el.textContent = emoji;
+    el.type = "button";
+    el.onclick = ()=>{
+      state.editingProfile.avatarId = i;
+      av.querySelectorAll(".avatar-opt").forEach((e,j)=>e.classList.toggle("selected", j===i));
+    };
+    av.appendChild(el);
+  });
+
+  // カテゴリー（複数）
+  renderChips("p-categories", CATEGORIES, state.editingProfile.categories, "multi");
+  // 時間帯（複数）
+  renderChips("p-timeslots", TIMESLOTS, state.editingProfile.timeSlots, "multi", true);
+  // 集中スタイル（単一）
+  renderChips("p-focus", FOCUS_STYLES, state.editingProfile.focusStyle ? [state.editingProfile.focusStyle] : [], "single");
+}
+
+function renderChips(containerId, options, selected, mode, pink){
+  const c = $(containerId);
+  c.innerHTML = "";
+  options.forEach(opt=>{
+    const el = document.createElement("button");
+    el.className = "chip" + (selected.includes(opt) ? " selected" : "") + (pink ? " pink" : "");
+    el.textContent = opt;
+    el.type = "button";
+    el.onclick = ()=>{
+      if(mode==="multi"){
+        const idx = selected.indexOf(opt);
+        if(idx>=0) selected.splice(idx,1);
+        else selected.push(opt);
+        // stateも同期（selectedはstate参照なのでOK）
+      } else {
+        // single
+        selected.length = 0;
+        selected.push(opt);
+        // stateにも反映：focusStyleは文字列で保存するので別途対応
+        if(containerId==="p-focus") state.editingProfile.focusStyle = opt;
+      }
+      // 再描画
+      c.querySelectorAll(".chip").forEach((e,i)=>{
+        e.classList.toggle("selected", selected.includes(options[i]));
+      });
+    };
+    c.appendChild(el);
+  });
+}
+
+// 文字数カウンタ
+$("p-handle").addEventListener("input", e=>{
+  state.editingProfile.handle = e.target.value;
+  $("p-handle-count").textContent = e.target.value.length;
+});
+$("p-goal").addEventListener("input", e=>{
+  state.editingProfile.goal = e.target.value;
+  $("p-goal-count").textContent = e.target.value.length;
+});
+$("p-goghname").addEventListener("input", e=>{
+  state.editingProfile.goghName = e.target.value;
+});
+
+async function saveProfile(){
+  const p = state.editingProfile;
+  // バリデーション
+  if(!p.handle.trim()) return toast("ハンドル名を入れてください");
+  if(p.categories.length===0) return toast("作業カテゴリーを選んでください");
+  if(p.timeSlots.length===0) return toast("時間帯を選んでください");
+  // 出会い目的ワードの簡易チェック
+  const warnWords = /(DM歓迎|通話|恋愛|出会い|付き合|カップル|募集中|彼氏|彼女|男性募集|女性募集)/i;
+  const combined = p.handle + " " + p.goal + " " + p.goghName;
+  if(warnWords.test(combined)){
+    if(!confirm("入力内容に恋愛・出会いを連想させる言葉が含まれています。作業目的以外の利用は禁止しています。それでも保存しますか？")){
+      return;
+    }
+  }
+
+  try {
+    await setDoc(doc(db, "users", state.uid), {
+      handle: p.handle.trim(),
+      avatarId: p.avatarId,
+      categories: p.categories,
+      timeSlots: p.timeSlots,
+      focusStyle: p.focusStyle,
+      goal: p.goal.trim(),
+      goghName: p.goghName.trim(),
+      platform: "gogh",           // 将来のマルチ対応のため
+      isAnonymous: auth.currentUser.isAnonymous,
+      updatedAt: serverTimestamp(),
+    }, { merge: true });
+    state.profile = { ...p };
+    $("bottom-nav").style.display = "flex";
+    toast("保存しました");
+    goto("home");
+  } catch(e){
+    console.error(e);
+    toast("保存に失敗しました");
+  }
+}
+
+// ---------- 募集を出す ----------
+function initPostScreen(){
+  state.editingPost = {
+    role: null,       // "host" or "guest"
+    roomId: "",
+    categories: [...(state.profile?.categories || [])],  // プロフィールから初期値
+    duration: 60,
+    message: "",
+  };
+  // ロール未選択に戻す
+  document.querySelectorAll("[data-role]").forEach(el=>el.classList.remove("selected"));
+  $("room-id-field").style.display = "none";
+  $("p-roomid").value = "";
+  $("p-message").value = "";
+
+  renderChips("post-categories", CATEGORIES, state.editingPost.categories, "multi");
+  // duration（単一・分数）
+  const dc = $("post-duration");
+  dc.innerHTML = "";
+  DURATIONS.forEach(d=>{
+    const el = document.createElement("button");
+    el.className = "chip pink" + (d.min===state.editingPost.duration ? " selected" : "");
+    el.textContent = d.label;
+    el.type = "button";
+    el.onclick = ()=>{
+      state.editingPost.duration = d.min;
+      dc.querySelectorAll(".chip").forEach((e,i)=>e.classList.toggle("selected", DURATIONS[i].min===d.min));
+    };
+    dc.appendChild(el);
+  });
+}
+
+function selectRole(role){
+  state.editingPost.role = role;
+  document.querySelectorAll("[data-role]").forEach(el=>{
+    el.classList.toggle("selected", el.dataset.role===role);
+  });
+  $("room-id-field").style.display = (role==="host") ? "block" : "none";
+}
+
+$("p-roomid").addEventListener("input", e=>{
+  state.editingPost.roomId = e.target.value.trim();
+});
+$("p-message").addEventListener("input", e=>{
+  state.editingPost.message = e.target.value;
+});
+
+async function submitPosting(){
+  const p = state.editingPost;
+  if(!p.role) return toast("部屋の状態を選んでください");
+  if(p.role==="host" && !p.roomId) return toast("部屋IDを入れてください");
+  if(p.categories.length===0) return toast("カテゴリーを選んでください");
+
+  try {
+    // 既存の自分の募集があれば削除
+    if(state.postingId){
+      try { await deleteDoc(doc(db, "postings", state.postingId)); } catch(_){}
+    }
+    const expiresAt = Timestamp.fromMillis(Date.now() + POSTING_TTL_MIN * 60 * 1000);
+    const ref = await addDoc(collection(db, "postings"), {
+      uid: state.uid,
+      handle: state.profile.handle,
+      avatarId: state.profile.avatarId,
+      goghName: state.profile.goghName,
+      role: p.role,                  // host / guest
+      roomId: p.role==="host" ? p.roomId : "",
+      categories: p.categories,
+      duration: p.duration,
+      message: p.message.trim(),
+      platform: "gogh",
+      createdAt: serverTimestamp(),
+      expiresAt: expiresAt,
+      status: "looking",
+    });
+    state.postingId = ref.id;
+    toast("募集を出しました");
+    goto("home");
+  } catch(e){
+    console.error(e);
+    toast("募集の投稿に失敗しました");
+  }
+}
+
+// ---------- 募集一覧 ----------
+async function loadPostings(){
+  // 既存の購読解除
+  if(state.postsUnsub){ state.postsUnsub(); state.postsUnsub = null; }
+
+  const list = $("postings-list");
+  const myArea = $("my-posting-area");
+  list.innerHTML = '<div class="loading"><span class="spinner"></span>読み込み中…</div>';
+
+  try {
+    // 有効期限内の募集を取得（クライアント側でフィルタ）
+    const q = query(
+      collection(db, "postings"),
+      where("status","==","looking"),
+      orderBy("createdAt","desc"),
+      limit(50)
+    );
+    state.postsUnsub = onSnapshot(q, (snap)=>{
+      const now = Date.now();
+      const items = [];
+      let mine = null;
+      snap.forEach(docSnap=>{
+        const d = docSnap.data();
+        // 期限切れは除外
+        if(d.expiresAt && d.expiresAt.toMillis() < now) return;
+        const item = { id: docSnap.id, ...d };
+        if(item.uid === state.uid){
+          mine = item;
+        } else {
+          items.push(item);
+        }
+      });
+
+      // 自分の募集を表示
+      state.myPosting = mine;
+      state.postingId = mine ? mine.id : null;
+      renderMyPosting(mine, myArea);
+
+      // 他人の募集：自分のカテゴリと重複が多い順にソート
+      const myCats = new Set(state.profile?.categories || []);
+      items.sort((a,b)=>{
+        const sa = (a.categories||[]).filter(c=>myCats.has(c)).length;
+        const sb = (b.categories||[]).filter(c=>myCats.has(c)).length;
+        return sb - sa;
+      });
+
+      renderPostings(items, list);
+    }, (err)=>{
+      console.error(err);
+      list.innerHTML = '<div class="empty">読み込みに失敗しました</div>';
+    });
+  } catch(e){
+    console.error(e);
+    list.innerHTML = '<div class="empty">エラー: '+e.message+'</div>';
+  }
+}
+
+function renderMyPosting(mine, container){
+  if(!mine){
+    container.innerHTML = `
+      <div class="card" style="text-align:center;padding:20px">
+        <p style="color:var(--text-soft);font-size:13px;margin-bottom:12px">
+          まだ募集を出していません
+        </p>
+        <button class="btn btn-pink btn-small" onclick="app.goto('post')">➕ 募集を出す</button>
+      </div>`;
+    return;
+  }
+  const badge = mine.role==="host" ? '<span class="host-badge">🏠 ホスト</span>' : '<span class="guest-badge">🚪 ゲスト</span>';
+  const remain = Math.max(0, Math.floor((mine.expiresAt.toMillis() - Date.now())/60000));
+  container.innerHTML = `
+    <div class="card">
+      <h3 style="font-size:13px;color:var(--pink);margin-bottom:8px">あなたの募集（あと${remain}分）</h3>
+      <div class="post-card">
+        ${badge}
+        <div class="av">${AVATARS[mine.avatarId] || "🐱"}</div>
+        <div class="body">
+          <div class="name">${escapeHtml(mine.handle)}</div>
+          <div class="meta">
+            ${mine.role==="host" ? `部屋ID: <strong>${escapeHtml(mine.roomId)}</strong>` : "部屋を探しています"}
+          </div>
+          <div class="cats">
+            ${(mine.categories||[]).map(c=>`<span class="cat">${escapeHtml(c)}</span>`).join("")}
+          </div>
+          ${mine.message ? `<div class="meta" style="margin-top:6px">💬 ${escapeHtml(mine.message)}</div>` : ""}
+        </div>
+      </div>
+      <button class="btn btn-small btn-ghost" onclick="app.cancelPosting()" style="margin-top:10px">募集をやめる</button>
+    </div>`;
+}
+
+function renderPostings(items, container){
+  if(items.length===0){
+    container.innerHTML = `
+      <div class="empty">
+        <div style="font-size:40px;margin-bottom:10px">🌙</div>
+        いま募集中の人はいません<br>
+        <span style="font-size:12px">あなたが先に募集を出してみましょう</span>
+      </div>`;
+    return;
+  }
+  container.innerHTML = items.map(item=>{
+    const badge = item.role==="host" ? '<span class="host-badge">🏠</span>' : '<span class="guest-badge">🚪</span>';
+    const remain = Math.max(0, Math.floor((item.expiresAt.toMillis() - Date.now())/60000));
+    const roomInfo = item.role==="host"
+      ? `部屋ID: <strong>${escapeHtml(item.roomId)}</strong>`
+      : `部屋を探しています`;
+    return `
+      <div class="card">
+        <div class="post-card">
+          ${badge}
+          <div class="av">${AVATARS[item.avatarId] || "🐱"}</div>
+          <div class="body">
+            <div class="name">${escapeHtml(item.handle)}${item.goghName ? ` <span style="color:var(--text-soft);font-size:11px">(gogh: ${escapeHtml(item.goghName)})</span>` : ""}</div>
+            <div class="meta">${roomInfo}・${item.duration}分・あと${remain}分</div>
+            <div class="cats">
+              ${(item.categories||[]).map(c=>`<span class="cat">${escapeHtml(c)}</span>`).join("")}
+            </div>
+            ${item.message ? `<div class="meta" style="margin-top:6px">💬 ${escapeHtml(item.message)}</div>` : ""}
+            <div class="actions">
+              ${item.role==="host"
+                ? `<button class="btn btn-small btn-pink" onclick="app.joinRoom('${escapeAttr(item.roomId)}','${item.id}')">部屋に合流</button>`
+                : `<button class="btn btn-small" onclick="app.offerHost('${item.id}','${escapeAttr(item.handle)}')">部屋に招く</button>`
+              }
+            </div>
+          </div>
+        </div>
+      </div>`;
+  }).join("");
+}
+
+async function cancelPosting(){
+  if(!state.postingId) return;
+  if(!confirm("募集をやめますか？")) return;
+  try {
+    await deleteDoc(doc(db, "postings", state.postingId));
+    state.postingId = null;
+    state.myPosting = null;
+    toast("募集をやめました");
+  } catch(e){
+    console.error(e);
+    toast("キャンセルに失敗しました");
+  }
+}
+
+function joinRoom(roomId, postingId){
+  showModal("この部屋に合流します",
+    `<div style="text-align:center;padding:12px 0">
+       <p style="font-size:12px;color:var(--text-soft);margin-bottom:8px">gogh 部屋ID</p>
+       <div style="font-size:24px;font-weight:700;color:var(--water-dark);letter-spacing:.05em;margin-bottom:14px;padding:12px;background:var(--bg);border-radius:12px">${escapeHtml(roomId)}</div>
+       <p style="font-size:12px;color:var(--text-soft)">goghを開いて、このIDの部屋に入ってください。</p>
+     </div>`);
+}
+
+function offerHost(postingId, handle){
+  showModal("部屋を立てて招きますか？",
+    `<p style="font-size:13px">${escapeHtml(handle)}さんは部屋を探しています。<br>
+    あなたがgoghで部屋を作り、「募集を出す」からホストとして部屋IDを登録すると、相手に見つけてもらいやすくなります。</p>`);
+}
+
+// ---------- プロフィール表示 ----------
+function renderProfileView(){
+  if(!state.profile) return;
+  const p = state.profile;
+  $("my-profile-view").innerHTML = `
+    <div style="text-align:center;margin-bottom:16px">
+      <div style="width:80px;height:80px;border-radius:50%;background:var(--bg);display:inline-flex;align-items:center;justify-content:center;font-size:48px;box-shadow:inset 3px 3px 8px var(--shadow-d),inset -3px -3px 8px var(--shadow-l)">${AVATARS[p.avatarId] || "🐱"}</div>
+      <div style="font-weight:700;font-size:18px;margin-top:8px">${escapeHtml(p.handle)}</div>
+      ${p.goghName ? `<div style="font-size:12px;color:var(--text-soft)">gogh: ${escapeHtml(p.goghName)}</div>` : ""}
+    </div>
+    <div style="font-size:13px;line-height:1.9">
+      <div><strong>カテゴリー:</strong> ${(p.categories||[]).join("・")}</div>
+      <div><strong>時間帯:</strong> ${(p.timeSlots||[]).join("・")}</div>
+      ${p.focusStyle ? `<div><strong>スタイル:</strong> ${escapeHtml(p.focusStyle)}</div>` : ""}
+      ${p.goal ? `<div><strong>いま:</strong> ${escapeHtml(p.goal)}</div>` : ""}
+    </div>
+  `;
+}
+
+// ---------- タブ切替 ----------
+function switchTab(name){
+  document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("active", t.dataset.tab===name));
+  $("tab-match").style.display = (name==="match") ? "block" : "none";
+  $("tab-find").style.display = (name==="find") ? "block" : "none";
+}
+
+// ---------- モーダル ----------
+function showModal(title, body){
+  $("modal-title").textContent = title;
+  $("modal-body").innerHTML = body;
+  $("modal-bg").classList.add("active");
+}
+function closeModal(){ $("modal-bg").classList.remove("active"); }
+
+function showTerms(){
+  showModal("このサイトについて", `
+    <p>お作業マッチング（gogh非公式）は、とあつ様が提供する作業ゲーム「gogh」で一緒に作業する仲間を探すための、<strong>個人が運営する非公式サイト</strong>です。gogh運営とは無関係で、公式との提携・後援関係はありません。</p>
+    <p style="margin-top:8px"><strong>禁止事項:</strong> 恋愛・出会い・交際・性的な連絡を目的とした利用、なりすまし、営業・宣伝、他利用者への迷惑行為。違反時はアカウント停止することがあります。</p>
+    <p style="margin-top:8px"><strong>免責:</strong> 本サービスの利用により生じたトラブルについて、運営者は責任を負いません。利用者間のトラブルは当事者間で解決してください。</p>
+    <p style="margin-top:8px"><strong>年齢:</strong> 13歳以上の方が対象です。未成年は保護者の同意を得てください。</p>
+  `);
+}
+
+// ---------- ヘルパー ----------
+function escapeHtml(s){
+  if(s==null) return "";
+  return String(s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+function escapeAttr(s){
+  if(s==null) return "";
+  return String(s).replace(/'/g, "\\'").replace(/"/g,"&quot;");
+}
+
+// ---------- 公開API ----------
+window.app = {
+  startFlow, goto, saveProfile, submitPosting, cancelPosting,
+  loadPostings, selectRole, switchTab, joinRoom, offerHost,
+  showModal, closeModal, showTerms,
+};
+
+</script>
+</body>
+</html>
