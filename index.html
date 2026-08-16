@@ -1,1857 +1,1602 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<meta name="theme-color" content="#5b9cb8">
-<title>作業仲間さがし</title>
-<meta name="description" content="一緒に作業してくれる心強い作業友を見つけるサイト。どんなゲーム・作業場所でも使えます。恋愛・出会い目的の利用は禁止。">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>宵影村『四つの名前』</title>
 <style>
-:root{
-  --water:#5b9cb8; --water-dark:#468197; --water-light:#a3c9db;
-  --pink:#e0588f; --pink-soft:#f4a8c5;
-  --bg:#eef4f8; --card:#ffffff;
-  --text:#3a4a55; --text-soft:#7a8894;
-  --shadow-d:rgba(70,129,151,.18); --shadow-l:rgba(255,255,255,.95);
-  --warn:#e8a54a; --danger:#d85c5c; --ok:#5eb187;
+:root{--ink:#0d0f16;--ink2:#151824;--ink3:#1e2233;--washi:#e9e4d6;--sub:#9aa0b4;--shu:#c9463c;--ao:#5a8fb0;--line:#2b3044;--ok:#3f7d63;--warn:#c98a3c;--paperink:#2a2620;}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:#000;color:var(--washi);font-family:"Hiragino Mincho ProN","Yu Mincho",serif;
+  display:flex;align-items:center;justify-content:center;overflow:hidden}
+button{font-family:inherit;cursor:pointer}
+h1,h2,h3{font-weight:600;margin:0 0 .4em}
+/* 16:9 ゲーム画面 */
+#app{position:relative;width:min(100vw,calc(100vh*16/9));height:min(100vh,calc(100vw*9/16));
+  aspect-ratio:16/9;overflow:hidden;background:#0a0c12;font-size:clamp(11px,1.55vh,20px);
+  box-shadow:0 0 70px rgba(0,0,0,.85)}
+/* 背景（全面） */
+.bg{position:absolute;inset:0}
+.bg .stage-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.bg .stage-ph{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:.4em;color:#5b6079;text-align:center;padding:2em;
+  background:radial-gradient(130% 100% at 50% 22%,#1a2230,#0b0e15 76%);border:1px dashed #333a52}
+.bg .stage-ph .fn{font-family:monospace;font-size:.72em;color:#565c78}
+.bg .stage-ph .cap{font-size:.92em;letter-spacing:.03em}
+.scrim{position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(0deg,rgba(6,7,12,.94),rgba(6,7,12,.12) 44%,transparent 72%)}
+/* HUD */
+.hud{position:absolute;top:0;left:0;right:0;z-index:8;display:flex;justify-content:space-between;align-items:center;
+  padding:.7em 1em;font-size:.82em;color:var(--sub);background:linear-gradient(rgba(6,7,12,.55),transparent);pointer-events:none}
+.hud .you{color:var(--shu)}
+.hbtn{pointer-events:auto;background:rgba(20,24,36,.72);border:1px solid var(--line);color:var(--washi);
+  border-radius:999px;padding:.32em .95em;font-size:.92em}
+/* セリフ窓（VN） */
+.vn{position:absolute;left:3%;right:3%;bottom:3.4%;z-index:7;display:flex;gap:.7em;align-items:flex-end}
+.vn-portrait{flex:0 0 4.3em;width:4.3em;height:4.3em;border-radius:.5em;overflow:hidden;border:1px solid var(--shu);background:#0d0f16}
+.vn-portrait .ph{margin:0}.vn-portrait .box{min-height:4.3em;border:none;padding:.2em}
+.vn-portrait .fn{display:none}.vn-portrait .cap{font-size:.5em;line-height:1.2}
+.vn-portrait img{width:100%;height:100%;object-fit:cover}
+.vn-box{flex:1;background:rgba(9,11,18,.86);border:1px solid var(--shu);border-radius:.5em;padding:.6em 1em;backdrop-filter:blur(2px);box-shadow:0 6px 24px rgba(0,0,0,.5)}
+.vn-name{color:var(--shu);font-size:.82em;margin-bottom:.15em;letter-spacing:.08em}
+.vn-text{font-size:1em;line-height:1.6}
+/* コンテンツ層 */
+.content{position:absolute;left:0;right:0;top:2.8em;bottom:8.6em;z-index:6;overflow:auto;
+  display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:.6em;padding:0 4%}
+.content::-webkit-scrollbar{width:6px}.content::-webkit-scrollbar-thumb{background:#2a3040;border-radius:3px}
+/* 準備コントロール（VN上に浮かせる） */
+.ready{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(3.4% + 5.2em);z-index:9;
+  display:flex;align-items:center;gap:.6em}
+.readydots{display:flex;gap:.35em}
+.dot{width:.7em;height:.7em;border-radius:50%;background:#3a3f57}.dot.on{background:var(--ok)}
+.nextbtn{background:var(--shu);color:#fff;border:1px solid var(--shu);border-radius:999px;padding:.45em 1.5em;font-size:.95em;box-shadow:0 4px 16px rgba(201,70,60,.4)}
+.nextbtn.off{background:transparent;color:var(--sub);border-color:var(--line);box-shadow:none}
+/* 和紙スリップ（手がかり） */
+.slips{display:flex;flex-wrap:wrap;gap:.7em;justify-content:center;align-items:flex-start;max-width:100%;margin:auto 0}
+.washi{width:min(15em,44%);background:linear-gradient(#efe6cf,#e2d6ba);color:var(--paperink);border:1px solid #b7a880;border-radius:.25em;
+  padding:.7em .8em;box-shadow:0 8px 20px rgba(0,0,0,.5);font-size:.9em;line-height:1.55}
+.washi.secret{background:linear-gradient(#251b1f,#191115);color:#f0d9d4;border-color:var(--shu)}
+.washi .wt{font-weight:600;margin-bottom:.15em;display:flex;justify-content:space-between;gap:.4em;align-items:baseline}
+.washi .wk{font-size:.72em;color:#8a7c5c;margin-bottom:.3em}.washi.secret .wk{color:#cc9}
+.washi .core{font-size:.66em;border:1px solid currentColor;border-radius:999px;padding:0 .5em;opacity:.7;white-space:nowrap}
+/* 選択の札（プラーク） */
+.plaques{display:grid;grid-template-columns:repeat(3,1fr);gap:.7em;width:min(42em,100%);margin:auto 0}
+.plaque{background:linear-gradient(#1d2231,#12151f);border:1px solid #39415c;border-radius:.4em;color:var(--washi);
+  padding:.95em .6em;font-size:1em;text-align:center;letter-spacing:.05em;box-shadow:0 4px 14px rgba(0,0,0,.45);transition:.15s}
+.plaque:hover{border-color:var(--ao)}
+.plaque.sel{border-color:var(--shu);background:linear-gradient(#2a1e22,#1a1216);box-shadow:0 0 0 1px var(--shu),0 4px 16px rgba(0,0,0,.55)}
+/* ナレーション/一般カード（半透明スラブ） */
+.card{background:rgba(12,15,24,.8);border:1px solid var(--line);border-radius:.5em;padding:.85em 1em;margin:.5em 0;
+  max-width:44em;width:100%;line-height:1.75;backdrop-filter:blur(2px)}
+.card.mine{border-color:var(--shu)}
+.card.sub{color:var(--sub)}
+/* キャラ選択 */
+.charstage{position:absolute;inset:0;z-index:6;display:flex;align-items:flex-end;justify-content:center;gap:1.1em;padding:0 3% 9.2em}
+.charpick{flex:1;max-width:12em;cursor:pointer;text-align:center;opacity:.85;transition:.18s}
+.charpick:hover{opacity:1;transform:translateY(-5px)}
+.charpick.sel{opacity:1}
+.charpick .fig{height:15em;display:flex;align-items:flex-end;justify-content:center}
+.charpick .fig .ph{margin:0;width:100%;height:100%}
+.charpick .fig .box{min-height:100%;height:100%;border-radius:.4em}
+.charpick .fig img{max-height:100%;width:100%;object-fit:contain;filter:drop-shadow(0 8px 16px rgba(0,0,0,.6))}
+.charpick.sel .fig img,.charpick.sel .fig .box{filter:drop-shadow(0 0 12px rgba(201,70,60,.55));border-color:var(--shu)}
+.charpick .cn{margin-top:.25em;font-size:1.05em}
+.charpick .ct{font-size:.72em;color:var(--sub);min-height:2.4em}
+.charpick.taken{opacity:.32;pointer-events:none}
+/* タイトル */
+.title-over{position:absolute;inset:0;z-index:6;display:flex;flex-direction:column;justify-content:center;padding:0 8%}
+.title-logo{font-size:3.6em;letter-spacing:.16em;text-shadow:0 3px 18px #000}
+.title-sub{color:var(--sub);font-size:.92em;margin:.3em 0 1.4em}
+.title-menu{display:flex;flex-direction:column;gap:.5em;max-width:16em}
+.title-menu .btn{font-size:1.1em;width:100%}
+.stamp{align-self:flex-start;border:1px solid var(--ao);color:var(--ao);border-radius:.3em;font-size:.72em;padding:.1em .7em;letter-spacing:.22em;margin-bottom:.6em}
+/* 入力 */
+.field{width:min(24em,100%);margin:auto 0}
+input.txt{width:100%;background:rgba(9,11,18,.82);border:1px solid var(--line);border-radius:.4em;color:var(--washi);padding:.7em;font-size:1em;margin:.2em 0}
+select.txt{width:100%;background:rgba(9,11,18,.82);border:1px solid var(--line);border-radius:.4em;color:var(--washi);padding:.7em;font-size:1em;margin:.2em 0}
+.lbl{display:block;font-size:.82em;color:var(--sub);margin:.6em 0 .1em}
+/* ボタン */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.4em;background:rgba(20,24,36,.72);color:var(--washi);
+  border:1px solid var(--line);border-radius:.5em;padding:.7em 1.1em;font-size:1em;margin:.3em 0}
+.btn.primary{background:var(--shu);border-color:var(--shu);color:#fff}
+.btn.ghost{background:transparent}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+/* 小物 */
+.center{text-align:center}.sub{color:var(--sub)}.small{font-size:.82em;color:var(--sub)}
+.kv{font-size:.9em;color:var(--sub);margin:.15em 0}
+hr.sep{border:none;border-top:1px solid var(--line);margin:.8em 0}
+.tag{display:inline-block;font-size:.7em;color:var(--ao);border:1px solid var(--ao);border-radius:999px;padding:0 .6em;margin-left:.3em}
+.pill{display:inline-block;font-size:.72em;color:var(--sub);border:1px solid var(--line);border-radius:999px;padding:0 .5em;margin:.1em}
+.badge{display:inline-block;font-size:.72em;padding:.15em .7em;border-radius:999px;margin-bottom:.4em}
+.badge.priv{background:#2a1e22;color:#e8b6b0;border:1px solid var(--shu)}
+.badge.pub{background:#132430;color:#bfe0f0;border:1px solid var(--ao)}
+.timer{font-size:2.8em;letter-spacing:.06em;text-align:center;margin:.1em 0}
+.timer.over{color:var(--warn)}
+.q{width:min(42em,100%);margin:.35em 0;padding-bottom:.35em;border-bottom:1px solid var(--line)}
+.sfx{display:inline-flex;align-items:center;gap:.3em;font-size:.72em;color:var(--ao);border:1px solid var(--ao);border-radius:999px;padding:0 .6em;margin:.2em}
+.ph img{display:block;width:100%}
+/* マップ選択 */
+.mapwrap{position:absolute;inset:0}
+.mapnode{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:.25em;
+  background:none;border:none;padding:0;cursor:pointer}
+.mapnode .pin{position:absolute;top:-1.4em;font-size:1.1em;filter:drop-shadow(0 2px 3px rgba(0,0,0,.6))}
+.nicon{position:relative;width:3.4em;height:3.4em;border-radius:.55em;overflow:hidden;border:2px solid rgba(233,228,214,.55);
+  background:linear-gradient(#1a1f2b,#0f131c);box-shadow:0 5px 14px rgba(0,0,0,.55);transition:.15s}
+.nicon img{width:100%;height:100%;object-fit:cover}
+.nicon .ficon{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:1.5em;color:var(--washi)}
+.nlabel{background:rgba(9,11,18,.85);border:1px solid var(--line);border-radius:.3em;padding:.05em .55em;font-size:.8em;white-space:nowrap;backdrop-filter:blur(1px)}
+.mapnode:hover .nicon{border-color:var(--ao);transform:translateY(-2px)}
+.mapnode.sel .nicon{border-color:var(--shu);box-shadow:0 0 0 2px var(--shu),0 6px 16px rgba(0,0,0,.6)}
+.mapnode.sel .nlabel{border-color:var(--shu);color:#fff}
+/* 手引きシート（和風・レイアウト固定＝タブや閉じるが動かない） */
+.sheet{position:fixed;inset:0;background:rgba(0,0,0,.74);z-index:50;display:none}
+.sheet.open{display:block}
+.sheet .inner{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:min(760px,94vw);height:min(84vh,640px);overflow:hidden;display:flex;flex-direction:column;
+  background:linear-gradient(180deg,#14100f,#0f1119);border:1px solid var(--shu);border-radius:12px;
+  box-shadow:0 20px 60px rgba(0,0,0,.7);padding:0}
+.sheet-head{flex:0 0 auto;display:flex;justify-content:space-between;align-items:center;padding:.7em 1em;
+  border-bottom:1px solid var(--line);background:linear-gradient(#1b1016,#12141d)}
+.sheet-title{color:var(--shu);letter-spacing:.45em;font-size:1.15em}
+.sheet-x{background:none;border:1px solid var(--line);color:var(--washi);border-radius:.4em;padding:.15em .6em;font-size:1em;cursor:pointer}
+.tabs{flex:0 0 auto;display:flex;gap:6px;overflow-x:auto;padding:.7em 1em;border-bottom:1px solid var(--line);background:rgba(0,0,0,.2)}
+.tab{white-space:nowrap;padding:.45em .9em;border:1px solid var(--line);border-radius:999px;background:var(--ink2);color:var(--sub);cursor:pointer;font-size:.85em}
+.tab.on{color:var(--washi);border-color:var(--shu);background:#241a1e}
+.sheet-body{flex:1 1 auto;overflow:auto;padding:1em 1.1em 1.6em}
+.sheet-body::-webkit-scrollbar{width:7px}.sheet-body::-webkit-scrollbar-thumb{background:#2a3040;border-radius:4px}
+/* ===== 横長：場面を左に、道具を右パネルにドッキング（マダミス/ココフォリア風） ===== */
+:root{--dock:min(480px,42vw)}
+@media (min-width:980px) and (orientation:landscape){
+  body.paneled{justify-content:flex-start}
+  body.paneled #app{
+    width:min(calc(100vw - var(--dock)), calc(100vh*16/9));
+    height:min(100vh, calc((100vw - var(--dock))*9/16));
+  }
+  /* パネル本体（右ドック・全高）。背景は透かして場面を残す */
+  body.paneled .sheet{background:transparent;pointer-events:none}
+  body.paneled .sheet.open{pointer-events:none}
+  .sheet.open .inner{pointer-events:auto}
+  @media (min-width:980px) and (orientation:landscape){
+    .sheet .inner{
+      left:auto;right:0;top:0;transform:none;
+      width:var(--dock);height:100vh;max-height:100vh;border-radius:0;
+      border:none;border-left:2px solid var(--shu);box-shadow:-14px 0 40px rgba(0,0,0,.55)}
+  }
 }
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;overflow-x:hidden}
-body{font-family:-apple-system,"Hiragino Kaku Gothic ProN","Yu Gothic UI","Meiryo",sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.6;padding-bottom:80px}
-button{font-family:inherit;font-size:inherit;color:inherit;background:none;border:none;cursor:pointer}
-input,textarea,select{font-family:inherit;font-size:inherit;color:inherit}
-header{padding:14px 16px 10px;text-align:center;background:linear-gradient(180deg,var(--bg) 0%,rgba(238,244,248,0) 100%);position:sticky;top:0;z-index:10;backdrop-filter:blur(6px)}
-header h1{font-size:16px;font-weight:700;color:var(--water-dark);letter-spacing:.02em}
-.screen{display:none;padding:8px 16px 24px;max-width:520px;margin:0 auto}
-.screen.active{display:block;animation:fadein .25s ease}
-@keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-.card{background:var(--card);border-radius:20px;padding:18px;margin-bottom:14px;box-shadow:6px 6px 16px var(--shadow-d),-6px -6px 16px var(--shadow-l)}
-.card-inset{background:var(--bg);border-radius:16px;padding:14px;box-shadow:inset 3px 3px 8px var(--shadow-d),inset -3px -3px 8px var(--shadow-l)}
-.btn{display:block;width:100%;padding:14px;border-radius:16px;font-weight:700;text-align:center;transition:transform .1s,box-shadow .2s;background:var(--card);color:var(--water-dark);box-shadow:4px 4px 10px var(--shadow-d),-4px -4px 10px var(--shadow-l)}
-.btn:active{transform:scale(.98);box-shadow:inset 2px 2px 6px var(--shadow-d),inset -2px -2px 6px var(--shadow-l)}
-.btn-primary{background:linear-gradient(135deg,var(--water) 0%,var(--water-dark) 100%);color:#fff;box-shadow:4px 4px 12px var(--shadow-d)}
-.btn-pink{background:linear-gradient(135deg,var(--pink) 0%,var(--pink-soft) 100%);color:#fff}
-.btn-google{background:#fff;color:#3c4043;box-shadow:4px 4px 10px var(--shadow-d),-4px -4px 10px var(--shadow-l);border:1px solid #eee}
-.btn-x{background:#000;color:#fff}
-.btn-ghost{background:transparent;box-shadow:none;color:var(--text-soft);font-weight:500;font-size:13px}
-.btn-small{padding:8px 14px;width:auto;display:inline-block;font-size:13px;border-radius:12px}
-.btn:disabled{opacity:.45;cursor:not-allowed}
-label{display:block;font-size:13px;font-weight:600;color:var(--text-soft);margin-bottom:6px}
-input[type=text],textarea,select{width:100%;padding:12px 14px;border-radius:14px;border:none;background:var(--bg);color:var(--text);box-shadow:inset 2px 2px 6px var(--shadow-d),inset -2px -2px 6px var(--shadow-l);outline:none}
-input[type=text]:focus,textarea:focus,select:focus{box-shadow:inset 2px 2px 6px var(--shadow-d),inset -2px -2px 6px var(--shadow-l),0 0 0 2px var(--water-light)}
-textarea{resize:vertical;min-height:60px;font-family:inherit}
-.field{margin-bottom:14px}
-.hint{font-size:11px;color:var(--text-soft);margin-top:4px;line-height:1.4}
-.counter{font-size:11px;color:var(--text-soft);text-align:right;margin-top:2px}
-.chips{display:flex;flex-wrap:wrap;gap:8px}
-.chip{padding:8px 14px;border-radius:14px;font-size:13px;font-weight:600;background:var(--card);color:var(--text-soft);box-shadow:3px 3px 8px var(--shadow-d),-3px -3px 8px var(--shadow-l);transition:all .15s}
-.chip.selected{background:linear-gradient(135deg,var(--water) 0%,var(--water-dark) 100%);color:#fff;box-shadow:inset 2px 2px 6px rgba(0,0,0,.15)}
-.chip.pink.selected{background:linear-gradient(135deg,var(--pink) 0%,var(--pink-soft) 100%)}
-.avatars{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
-.avatar-opt{aspect-ratio:1;border-radius:50%;background:var(--card);box-shadow:3px 3px 8px var(--shadow-d),-3px -3px 8px var(--shadow-l);display:flex;align-items:center;justify-content:center;font-size:32px;transition:all .15s;overflow:hidden}
-.avatar-opt img{width:100%;height:100%;object-fit:cover}
-.avatar-opt.selected{box-shadow:inset 3px 3px 8px var(--shadow-d),inset -3px -3px 8px var(--shadow-l);transform:scale(.94)}
-.photo-slot{width:80px;height:80px;border-radius:50%;background:var(--bg);display:inline-flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:inset 3px 3px 8px var(--shadow-d),inset -3px -3px 8px var(--shadow-l);font-size:36px;position:relative}
-.photo-slot img{width:100%;height:100%;object-fit:cover}
-.photo-badge{position:absolute;bottom:-2px;right:-2px;background:var(--pink);color:#fff;font-size:9px;font-weight:700;padding:2px 5px;border-radius:6px}
-.tabs{display:flex;gap:8px;margin-bottom:14px;background:var(--bg);padding:4px;border-radius:16px;box-shadow:inset 2px 2px 6px var(--shadow-d),inset -2px -2px 6px var(--shadow-l)}
-.tab{flex:1;padding:10px;border-radius:12px;font-size:13px;font-weight:600;color:var(--text-soft);text-align:center}
-.tab.active{background:var(--card);color:var(--water-dark);box-shadow:2px 2px 6px var(--shadow-d),-2px -2px 6px var(--shadow-l)}
-.tab.locked{opacity:.5}
-.status{padding:12px;border-radius:14px;text-align:center;font-weight:600;font-size:13px;margin-bottom:14px}
-.status.info{background:var(--water-light);color:#fff}
-.status.pink{background:var(--pink-soft);color:#fff}
-.empty{text-align:center;color:var(--text-soft);padding:40px 20px;font-size:14px}
-nav.bottom-nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);padding:8px 8px 12px;display:flex;justify-content:space-around;box-shadow:0 -4px 16px var(--shadow-d);z-index:20;padding-bottom:calc(12px + env(safe-area-inset-bottom))}
-.nav-btn{flex:1;padding:6px;display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--text-soft);font-size:11px;font-weight:600}
-.nav-btn .ico{font-size:22px;line-height:1}
-.nav-btn.active{color:var(--water-dark)}
-.lock-panel{text-align:center;padding:30px 20px}
-.lock-panel .lock-ico{font-size:56px;margin-bottom:16px;opacity:.6}
-.lock-panel h3{font-size:16px;margin-bottom:8px;color:var(--text)}
-.lock-panel p{font-size:13px;color:var(--text-soft);margin-bottom:20px;line-height:1.6}
-.modal-bg{position:fixed;inset:0;background:rgba(58,74,85,.4);z-index:100;display:none;align-items:center;justify-content:center;padding:20px}
-.modal-bg.active{display:flex}
-.modal{background:var(--card);border-radius:20px;padding:22px;max-width:400px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.2);max-height:82vh;overflow-y:auto}
-.modal h3{margin-bottom:10px;color:var(--water-dark)}
-.modal p{font-size:13px;color:var(--text-soft);margin-bottom:16px}
-.disclaimer{font-size:11px;color:var(--text-soft);text-align:center;padding:16px 12px;background:var(--bg);border-radius:12px;margin-bottom:14px;line-height:1.6}
-.disclaimer strong{color:var(--pink)}
-.loading{text-align:center;padding:30px;color:var(--text-soft);font-size:13px}
-.spinner{display:inline-block;width:20px;height:20px;border:2px solid var(--water-light);border-top-color:var(--water);border-radius:50%;animation:spin 1s linear infinite;vertical-align:middle;margin-right:8px}
-@keyframes spin{to{transform:rotate(360deg)}}
-.toast{position:fixed;top:60px;left:50%;transform:translateX(-50%);background:var(--text);color:#fff;padding:10px 18px;border-radius:14px;font-size:13px;font-weight:600;z-index:200;opacity:0;transition:opacity .3s;pointer-events:none;max-width:90%;text-align:center}
-.toast.show{opacity:1}
-.user-count{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;background:var(--card);border-radius:20px;box-shadow:3px 3px 8px var(--shadow-d),-3px -3px 8px var(--shadow-l);font-size:12px;font-weight:700;color:var(--water-dark);margin-bottom:16px}
-.user-count .dot{width:8px;height:8px;border-radius:50%;background:var(--ok);animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-/* 界隈カード */
-.scene-card{display:flex;align-items:center;gap:12px;padding:14px;border-radius:16px;background:var(--bg);margin-bottom:10px;box-shadow:inset 2px 2px 6px var(--shadow-d),inset -2px -2px 6px var(--shadow-l);transition:all .15s}
-.scene-card.selected{background:linear-gradient(135deg,var(--water-light),var(--water));color:#fff;box-shadow:3px 3px 8px var(--shadow-d)}
-.scene-card .sc-icon{width:44px;height:44px;border-radius:12px;background:var(--card);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;box-shadow:2px 2px 5px var(--shadow-d)}
-.scene-card.selected .sc-icon{background:rgba(255,255,255,.25)}
-.scene-card .sc-info{flex:1;min-width:0}
-.scene-card .sc-game{font-weight:700;font-size:15px}
-.scene-card .sc-detail{font-size:11px;opacity:.85;line-height:1.4}
-.scene-card .sc-share{font-size:11px;font-weight:700;padding:3px 8px;border-radius:8px;background:var(--pink-soft);color:#fff;flex-shrink:0}
-.scene-card.selected .sc-share{background:rgba(255,255,255,.3)}
-.mini-toggle{display:flex;gap:6px;margin-bottom:12px}
-.mini-toggle button{flex:1;padding:8px;border-radius:12px;font-size:13px;font-weight:600;color:var(--text-soft);background:var(--bg);box-shadow:inset 2px 2px 5px var(--shadow-d),inset -2px -2px 5px var(--shadow-l)}
-.mini-toggle button.active{background:var(--card);color:var(--water-dark);box-shadow:2px 2px 5px var(--shadow-d),-2px -2px 5px var(--shadow-l)}
-/* 集計バー */
-.stat-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
-.stat-row .stat-label{font-size:13px;font-weight:600;width:38%;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.stat-row .stat-bar-bg{flex:1;height:20px;background:var(--bg);border-radius:10px;overflow:hidden;box-shadow:inset 2px 2px 5px var(--shadow-d)}
-.stat-row .stat-bar{height:100%;background:linear-gradient(90deg,var(--water-light),var(--water));border-radius:10px;transition:width .5s}
-.stat-row .stat-num{font-size:12px;font-weight:700;color:var(--water-dark);width:44px;text-align:right;flex-shrink:0}
-/* 待機中リスト */
-.wait-item{display:flex;gap:10px;align-items:center;padding:10px;border-radius:14px;background:var(--bg);margin-bottom:8px}
-.wait-item .av{width:40px;height:40px;border-radius:50%;background:var(--card);display:flex;align-items:center;justify-content:center;font-size:20px;overflow:hidden;flex-shrink:0}
-.wait-item .av img{width:100%;height:100%;object-fit:cover}
-.wait-item .body{flex:1;min-width:0}
-.wait-item .name{font-weight:700;font-size:14px}
-.wait-item .loc{font-size:11px;color:var(--text-soft)}
-.wait-item .cats{display:flex;flex-wrap:wrap;gap:3px;margin-top:3px}
-.wait-item .cat{font-size:10px;padding:1px 6px;border-radius:6px;background:var(--water-light);color:#fff}
-/* スワイプ */
-.swipe-area{position:relative;height:500px;margin:10px auto 20px;max-width:340px;touch-action:none}
-.swipe-card{position:absolute;inset:0;background:var(--card);border-radius:24px;padding:20px;box-shadow:6px 6px 20px var(--shadow-d),-6px -6px 20px var(--shadow-l);display:flex;flex-direction:column;user-select:none;cursor:grab;transition:transform .3s ease,opacity .3s ease}
-.swipe-card.dragging{transition:none;cursor:grabbing}
-.swipe-card.stacked-1{transform:scale(.94) translateY(10px);z-index:1;opacity:.7}
-.swipe-card.stacked-2{transform:scale(.88) translateY(20px);z-index:0;opacity:.4}
-.swipe-card .av-big{width:100px;height:100px;border-radius:50%;background:var(--bg);margin:6px auto 12px;display:flex;align-items:center;justify-content:center;font-size:52px;box-shadow:inset 3px 3px 10px var(--shadow-d),inset -3px -3px 10px var(--shadow-l);overflow:hidden}
-.swipe-card .av-big img{width:100%;height:100%;object-fit:cover}
-.swipe-card .sc-name{text-align:center;font-size:20px;font-weight:700;color:var(--water-dark);margin-bottom:2px}
-.swipe-card .sc-sub{text-align:center;font-size:12px;color:var(--text-soft);margin-bottom:10px}
-.swipe-card .sc-body{flex:1;overflow-y:auto;font-size:13px;line-height:1.8}
-.swipe-card .sc-cats{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:8px 0}
-.swipe-card .sc-cat{font-size:12px;padding:4px 10px;border-radius:10px;background:var(--water-light);color:#fff;font-weight:600}
-.swipe-hint{position:absolute;top:20px;padding:6px 14px;border-radius:12px;font-weight:800;font-size:18px;opacity:0;pointer-events:none}
-.swipe-hint.like{right:20px;background:var(--pink);color:#fff;transform:rotate(15deg)}
-.swipe-hint.nope{left:20px;background:var(--text-soft);color:#fff;transform:rotate(-15deg)}
-.swipe-actions{display:flex;justify-content:center;gap:24px;margin-top:12px}
-.swipe-btn{width:60px;height:60px;border-radius:50%;background:var(--card);box-shadow:4px 4px 10px var(--shadow-d),-4px -4px 10px var(--shadow-l);font-size:26px;display:flex;align-items:center;justify-content:center;transition:transform .1s}
-.swipe-btn:active{transform:scale(.9)}
-.swipe-btn.like{color:var(--pink)}
-.swipe-btn.nope{color:var(--text-soft)}
-.friend-item{display:flex;gap:12px;align-items:center;padding:10px;border-radius:14px;background:var(--bg);margin-bottom:8px}
-.friend-item .av{width:44px;height:44px;border-radius:50%;background:var(--card);display:flex;align-items:center;justify-content:center;font-size:22px;overflow:hidden;flex-shrink:0}
-.friend-item .av img{width:100%;height:100%;object-fit:cover}
-.friend-item .body{flex:1;min-width:0}
-.friend-item .name{font-weight:700;font-size:14px}
-.friend-item .status-line{font-size:11px;color:var(--text-soft)}
-.online-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--ok);margin-right:4px;vertical-align:middle}
-.offline-dot{background:var(--text-soft);opacity:.4}
-.waiting-dot{background:var(--warn)}
-.auth-choice{display:flex;flex-direction:column;gap:10px}
-.x-badge{display:inline-block;background:#000;color:#fff;padding:2px 6px;border-radius:6px;font-size:10px;font-weight:700;margin-left:6px;vertical-align:middle}
-.g-badge{display:inline-block;background:#4285F4;color:#fff;padding:2px 6px;border-radius:6px;font-size:10px;font-weight:700;margin-left:6px;vertical-align:middle}
-/* 待機オーバーレイ */
-.wait-overlay{position:fixed;inset:0;background:linear-gradient(160deg,var(--water-dark),var(--water));z-index:150;display:none;flex-direction:column;align-items:center;justify-content:center;padding:24px;color:#fff;text-align:center;overflow-y:auto}
-.wait-overlay.active{display:flex}
-.wait-overlay .big-spinner{width:64px;height:64px;border:4px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin 1s linear infinite;margin-bottom:24px}
-.wait-overlay h2{font-size:20px;margin-bottom:8px}
-.wait-overlay .wo-sub{font-size:13px;opacity:.9;margin-bottom:20px;line-height:1.6}
-.wo-card{background:var(--card);color:var(--text);border-radius:24px;padding:24px;max-width:360px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3);animation:fadein .3s}
-.wo-card .av-big{width:96px;height:96px;border-radius:50%;background:var(--bg);margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:48px;overflow:hidden;box-shadow:inset 3px 3px 8px var(--shadow-d)}
-.wo-card .av-big img{width:100%;height:100%;object-fit:cover}
-.wo-loc-box{background:var(--bg);border-radius:16px;padding:16px;margin:10px 0;box-shadow:inset 2px 2px 6px var(--shadow-d)}
-.wo-loc-box .lb-label{font-size:11px;color:var(--text-soft)}
-.wo-loc-box .lb-val{font-size:20px;font-weight:800;color:var(--water-dark);letter-spacing:.03em;word-break:break-all}
-.wo-timer{font-size:12px;opacity:.8;margin-top:14px}
-.match-pop{animation:pop .4s cubic-bezier(.2,1.4,.4,1)}
-@keyframes pop{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
-.like-badge{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:10px;font-size:12px;font-weight:700;margin:4px}
-.like-badge.on{background:var(--pink);color:#fff}
-.like-badge.off{background:var(--bg);color:var(--text-soft)}
-/* プロフィールカード（カスタム可） */
-.pcard{border-radius:22px;padding:22px;text-align:center;position:relative;overflow:hidden;color:#fff}
-.pcard .pc-shadow-text{text-shadow:0 1px 4px rgba(0,0,0,.45)}
-.pcard .pc-av{width:88px;height:88px;border-radius:50%;background:rgba(255,255,255,.25);margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:46px;overflow:hidden;box-shadow:0 4px 14px rgba(0,0,0,.2)}
-.pcard .pc-av img{width:100%;height:100%;object-fit:cover}
-.pcard .pc-name{font-size:20px;font-weight:800}
-.pcard .pc-tags{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin-top:8px}
-.pcard .pc-tag{font-size:11px;padding:3px 9px;border-radius:9px;background:rgba(255,255,255,.28);font-weight:600}
-.pcard .pc-row{font-size:12px;margin-top:4px;opacity:.95}
-.pat-dots{background-image:radial-gradient(rgba(255,255,255,.25) 1.5px,transparent 1.5px);background-size:14px 14px}
-.pat-stripe{background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.12) 0,rgba(255,255,255,.12) 8px,transparent 8px,transparent 16px)}
-.pat-grid{background-image:linear-gradient(rgba(255,255,255,.18) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.18) 1px,transparent 1px);background-size:18px 18px}
-.pat-hearts{background-image:radial-gradient(circle at 50% 60%,rgba(255,255,255,.2) 3px,transparent 4px);background-size:20px 20px}
-/* 作業画面 */
-.work-screen{position:fixed;inset:0;z-index:160;display:none;flex-direction:column;background:var(--bg)}
-.work-screen.active{display:flex}
-.ws-header{padding:14px 16px;padding-top:calc(14px + env(safe-area-inset-top));color:#fff;background:linear-gradient(135deg,var(--water),var(--water-dark));box-shadow:0 3px 12px var(--shadow-d)}
-.ws-header .ws-loc{font-size:20px;font-weight:800;letter-spacing:.03em;word-break:break-all;text-shadow:0 1px 3px rgba(0,0,0,.3)}
-.ws-header .ws-sub{font-size:12px;opacity:.9}
-.ws-body{flex:1;overflow-y:auto;padding:14px 16px 90px;max-width:560px;margin:0 auto;width:100%}
-.ws-pair{display:flex;gap:10px;align-items:center;margin-bottom:12px}
-.ws-person{flex:1;text-align:center;background:var(--card);border-radius:16px;padding:10px;box-shadow:3px 3px 8px var(--shadow-d),-3px -3px 8px var(--shadow-l)}
-.ws-person .av{width:44px;height:44px;border-radius:50%;background:var(--bg);margin:0 auto 4px;display:flex;align-items:center;justify-content:center;font-size:22px;overflow:hidden}
-.ws-person .av img{width:100%;height:100%;object-fit:cover}
-.ws-person .nm{font-size:13px;font-weight:700}
-.ws-counter{font-size:22px;font-weight:800;color:var(--pink)}
-.ws-counter.done{color:var(--ok)}
-.todo-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:12px;background:var(--bg);margin-bottom:6px;box-shadow:inset 2px 2px 5px var(--shadow-d),inset -2px -2px 5px var(--shadow-l)}
-.todo-item.done .tt{text-decoration:line-through;color:var(--text-soft)}
-.todo-item .tt{flex:1;font-size:13px}
-.todo-check{width:22px;height:22px;border-radius:7px;background:var(--card);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;box-shadow:2px 2px 5px var(--shadow-d)}
-.todo-check.on{background:var(--ok);color:#fff}
-.ws-fab{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom));right:20px;display:flex;flex-direction:column;gap:10px;z-index:5}
-.ws-fab button{width:52px;height:52px;border-radius:50%;background:var(--card);box-shadow:4px 4px 12px var(--shadow-d);font-size:22px;display:flex;align-items:center;justify-content:center}
-.comment-bubble{background:var(--pink-soft);color:#fff;border-radius:14px;padding:8px 12px;font-size:12px;margin-bottom:6px;box-shadow:2px 2px 6px var(--shadow-d)}
-/* フレンド申請 */
-.req-item{display:flex;gap:10px;align-items:center;padding:10px;border-radius:14px;background:var(--bg);margin-bottom:8px}
-.req-item .av{width:44px;height:44px;border-radius:50%;background:var(--card);display:flex;align-items:center;justify-content:center;font-size:22px;overflow:hidden;flex-shrink:0}
-.req-item .av img{width:100%;height:100%;object-fit:cover}
-.req-item .body{flex:1;min-width:0}
-.req-btns{display:flex;gap:6px}
-.req-btns button{padding:6px 12px;border-radius:10px;font-size:12px;font-weight:700}
-.badge-count{display:inline-block;min-width:16px;height:16px;line-height:16px;background:var(--danger);color:#fff;border-radius:8px;font-size:10px;font-weight:700;padding:0 4px;margin-left:3px}
-/* 円アイコン（プロフ画像から切り抜き） */
-.ic{border-radius:50%;overflow:hidden;background:var(--water-light);display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;background-repeat:no-repeat}
-/* 縦カード（9:16） */
-.vcard{position:relative;width:100%;aspect-ratio:9/16;max-height:72vh;border-radius:22px;overflow:hidden;background:linear-gradient(135deg,var(--water),var(--water-dark));box-shadow:6px 6px 18px var(--shadow-d)}
-.vcard .vc-img{position:absolute;inset:0;background-size:cover;background-position:center;background-repeat:no-repeat}
-.vcard .vc-grad{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.05) 0%,rgba(0,0,0,0) 35%,rgba(0,0,0,.55) 100%)}
-.vcard .vc-top{position:absolute;top:12px;left:14px;right:14px;display:flex;justify-content:space-between;align-items:flex-start;color:#fff}
-.vcard .vc-scene{font-size:12px;font-weight:700;background:rgba(0,0,0,.35);padding:4px 10px;border-radius:12px;backdrop-filter:blur(4px);text-shadow:0 1px 2px rgba(0,0,0,.4)}
-.vcard .vc-info{position:absolute;left:16px;right:70px;bottom:16px;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.6)}
-.vcard .vc-name{font-size:24px;font-weight:800;line-height:1.2}
-.vcard .vc-sub{font-size:12px;opacity:.95;margin-top:2px}
-.vcard .vc-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
-.vcard .vc-tag{font-size:11px;padding:3px 9px;border-radius:9px;background:rgba(255,255,255,.28);font-weight:600;backdrop-filter:blur(3px)}
-.vcard .vc-line{font-size:12px;margin-top:6px}
-.vcard .vc-actions{position:absolute;right:12px;bottom:20px;display:flex;flex-direction:column;gap:14px;align-items:center}
-.vcard .vc-abtn{width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,.9);display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 4px 12px rgba(0,0,0,.25);transition:transform .1s}
-.vcard .vc-abtn:active{transform:scale(.88)}
-.vcard .vc-abtn.on{background:var(--pink);color:#fff}
-.vcard .vc-abtn small{font-size:9px}
-.vcard.blurred .vc-img{filter:blur(18px);transform:scale(1.1)}
-.vcard.blurred .vc-info,.vcard.blurred .vc-actions,.vcard.blurred .vc-top{filter:blur(5px);pointer-events:none}
-/* ホームのマッチ起動オーバーレイ */
-.home-match{position:absolute;top:12px;left:50%;transform:translateX(-50%);z-index:3;width:calc(100% - 40px);max-width:340px}
-.home-match .hm-main{width:100%;padding:16px;border-radius:18px;background:rgba(224,88,143,.95);color:#fff;font-weight:800;font-size:17px;box-shadow:0 6px 20px rgba(0,0,0,.3);backdrop-filter:blur(6px)}
-.home-match .hm-choices{display:flex;gap:8px;margin-top:8px}
-.home-match .hm-choices button{flex:1;padding:12px 8px;border-radius:14px;background:rgba(255,255,255,.95);color:var(--water-dark);font-weight:700;font-size:14px;box-shadow:0 4px 12px rgba(0,0,0,.2)}
-.home-match .hm-choices button .n{display:block;font-size:11px;color:var(--pink);font-weight:800}
-/* フィード（さがす） */
-.feed{position:relative;height:calc(100vh - 190px);min-height:420px}
-.feed-card{position:absolute;inset:0;display:none}
-.feed-card.active{display:block}
-.feed-nav{position:absolute;right:12px;top:50%;transform:translateY(-50%);z-index:4;display:flex;flex-direction:column;gap:8px}
-.feed-hintbar{text-align:center;font-size:11px;color:var(--text-soft);padding:6px}
-.feed-lock{position:absolute;inset:0;z-index:6;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#fff;background:rgba(58,74,85,.35);padding:24px}
-.feed-lock .fl-card{background:rgba(255,255,255,.95);color:var(--text);border-radius:20px;padding:22px;max-width:300px;box-shadow:0 12px 40px rgba(0,0,0,.3)}
-/* コピーボタン */
-.copy-btn{background:rgba(255,255,255,.25);color:#fff;border-radius:10px;padding:4px 10px;font-size:12px;font-weight:700;margin-left:8px}
-/* 作業画面カウンター */
-.wc-counter{display:flex;align-items:center;justify-content:center;gap:14px;margin-top:8px}
-.wc-counter .cbtn{width:40px;height:40px;border-radius:50%;background:var(--card);box-shadow:3px 3px 8px var(--shadow-d),-3px -3px 8px var(--shadow-l);font-size:22px;display:flex;align-items:center;justify-content:center}
-.wc-counter .cval{font-size:26px;font-weight:800;color:var(--pink);min-width:80px;text-align:center}
-.wc-counter .cval.done{color:var(--ok)}
-.ws-person2{text-align:center;background:var(--card);border-radius:18px;padding:14px 10px;box-shadow:4px 4px 10px var(--shadow-d),-4px -4px 10px var(--shadow-l)}
-/* PIP ミニ窓 */
-.pip{position:fixed;right:12px;bottom:80px;width:150px;z-index:170;background:var(--card);border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,.3);padding:12px;display:none;text-align:center;cursor:move}
-.pip.active{display:block}
-.pip .pip-title{font-size:12px;font-weight:700;color:var(--water-dark)}
-.pip .pip-sub{font-size:11px;color:var(--text-soft);margin:4px 0}
-.pip .pip-close{position:absolute;top:4px;right:8px;font-size:14px;color:var(--text-soft)}
-.icon-cropper{position:relative;width:180px;height:320px;margin:0 auto;border-radius:14px;overflow:hidden;background:#000;touch-action:none}
-.icon-cropper .cimg{position:absolute;inset:0;background-size:cover;background-position:center}
-.icon-cropper .ccircle{position:absolute;border:3px solid #fff;border-radius:50%;box-shadow:0 0 0 2000px rgba(0,0,0,.45);cursor:move}
+.sheet .card{background:var(--ink2);backdrop-filter:none;animation:none}
+.sheet ul{margin:.3em 0 .3em 1.1em;padding:0}
+/* 一時停止 */
+.pauseOverlay{position:fixed;inset:0;background:rgba(5,6,10,.92);z-index:60;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px}
+.pauseOverlay.on{display:flex}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+/* 上部フェイズ帯（常時：今なにをする＋話していい/ミュート） */
+.topbar{position:absolute;top:0;left:0;right:0;z-index:9;display:flex;align-items:center;gap:.55em;
+  padding:.5em .8em;background:linear-gradient(rgba(6,7,12,.85),rgba(6,7,12,.2));pointer-events:none}
+.topbar .pb{display:flex;flex-direction:column;line-height:1.15;min-width:0}
+.topbar .pbl{font-size:.94em;letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.topbar .pbs{font-size:.72em;color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:22em}
+.voice{font-size:.74em;border-radius:999px;padding:.15em .7em;border:1px solid;white-space:nowrap}
+.voice.talk{color:#8fd6ac;border-color:#3f7d63;background:rgba(63,125,99,.15)}
+.voice.mute{color:#e6aaaa;border-color:var(--shu);background:rgba(201,70,60,.12)}
+.voice.listen{color:#bfe0f0;border-color:var(--ao);background:rgba(90,143,176,.14)}
+.topbar .spacer{flex:1}
+.tbtn{pointer-events:auto;background:rgba(20,24,36,.74);border:1px solid var(--line);color:var(--washi);
+  border-radius:999px;padding:.3em .7em;font-size:.8em;white-space:nowrap}
+.tbtn:hover{border-color:var(--ao)}
+.readbtn{pointer-events:auto;background:none;border:none;color:var(--sub);font-size:1.05em;cursor:pointer;padding:.1em .3em}
+.readbtn:hover{color:var(--washi)}
+/* 手がかりの“照合しるし” */
+.washi .link{font-size:.66em;color:#9a7c3c;border:1px solid #b7a880;border-radius:999px;padding:0 .5em;white-space:nowrap}
+.washi.secret .link{color:#cc9;border-color:var(--shu)}
+/* 場所の概要（マップ選択で選んだ拠点） */
+.locinfo{position:absolute;left:4%;right:4%;bottom:.4em;z-index:7;text-align:center;
+  background:rgba(9,11,18,.82);border:1px solid var(--line);border-radius:.5em;padding:.5em .8em;font-size:.85em;line-height:1.5}
+.locinfo b{color:var(--washi)}
+/* 参加者チップ（ロビー） */
+.roster{position:absolute;top:2.6em;left:0;right:0;z-index:8;display:flex;gap:.5em;flex-wrap:wrap;justify-content:center;padding:0 4%}
+.rchip{display:flex;align-items:center;gap:.4em;background:rgba(20,24,36,.78);border:1px solid var(--line);border-radius:999px;padding:.25em .8em;font-size:.82em}
+.rchip .rc{width:.7em;height:.7em;border-radius:50%;background:#3a3f57}
+.rchip.done .rc{background:var(--ok)}
+.rchip .rn{color:var(--washi)}.rchip .rk{color:var(--sub)}
+/* クルーボード */
+.bloc{margin:.55em 0;border:1px solid var(--line);border-radius:.5em;padding:.55em .7em;background:rgba(20,24,36,.4)}
+.blname{color:var(--shu);font-size:.98em;margin-bottom:.15em;letter-spacing:.05em}
+.blov{color:var(--sub);font-size:.78em;margin-bottom:.35em}
+.bcard{background:linear-gradient(#efe6cf,#e2d6ba);color:var(--paperink);border:1px solid #b7a880;border-radius:.3em;padding:.5em .6em;margin:.35em 0;font-size:.9em;line-height:1.55}
+.bcard.shared{background:linear-gradient(#e6ecf3,#d6dde8)}
+.bcard .wt{display:flex;justify-content:space-between;gap:.4em;font-weight:600;margin-bottom:.2em;align-items:baseline;flex-wrap:wrap}
+.bcard .pill{color:#8a7c5c;border-color:#b7a880}
+.bcard.shared .pill{color:#5a6b86;border-color:#9fb0c8}
+.brow{margin-top:.35em;display:flex;gap:.45em;align-items:center;flex-wrap:wrap}
+.pubsel{background:#1d2231;color:var(--washi);border:1px solid var(--line);border-radius:.3em;padding:.25em .4em;font-size:.82em}
+/* ボード：未発見=裏／内容ロック */
+.bcard.facedown{background:repeating-linear-gradient(45deg,#171a24,#171a24 8px,#1b1f2b 8px,#1b1f2b 16px);color:#5b6079;border:1px dashed #333a52;text-align:center;font-size:.85em}
+.bcard.locked{background:linear-gradient(#262b39,#1d222e);color:#aeb4c8;border-color:#3a4159}
+.bcard.locked .pill{color:#9aa0b4;border-color:#3a4159}
+.bcard .who{font-size:.72em;color:#8a7c5c}
+.bcard.locked .who,.bcard.shared .who{color:inherit}
+/* 密談チャット */
+.dmlog{max-height:52vh;overflow:auto;display:flex;flex-direction:column;gap:.4em;margin:.6em 0;padding:.2em}
+.dmmsg{align-self:flex-start;max-width:82%;background:var(--ink2);border:1px solid var(--line);border-radius:.6em;padding:.4em .7em;font-size:.92em;line-height:1.5}
+.dmmsg.mine{align-self:flex-end;background:#2a1e22;border-color:var(--shu)}
+.dmname{display:block;font-size:.68em;color:var(--sub);margin-bottom:.1em}
+.dmin{display:flex;gap:.5em;margin-top:.4em}
+.dmin .txt{flex:1}
+/* 事件の再構成 */
+.tlitem{display:flex;align-items:center;gap:.6em;background:rgba(20,24,36,.55);border:1px solid var(--line);border-radius:.4em;padding:.5em .6em;margin:.3em 0}
+.tlno{flex:0 0 1.6em;height:1.6em;border-radius:50%;background:var(--shu);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.8em}
+.tltext{flex:1;font-size:.9em;line-height:1.4}
+.tlbtns{display:flex;gap:.25em}
+/* マップ拠点のカード枠ピップ＆一覧 */
+.npips{display:flex;gap:2px;justify-content:center;margin-top:2px;flex-wrap:wrap;max-width:5em}
+.npip{width:.5em;height:.5em;border-radius:1px;background:#2a3040;border:1px solid #464d66}
+.npip.open{background:var(--ao);border-color:var(--ao)}
+.slotlist{margin:.4em 0;max-height:9em;overflow:auto}
+.slotrow{display:flex;justify-content:space-between;gap:.6em;font-size:.8em;padding:.15em 0;border-bottom:1px solid rgba(255,255,255,.06)}
+.slotrow .sn{color:var(--washi)}
+.slotrow .sd{color:var(--sub);white-space:nowrap}
+/* ロビー：上部の部屋バー（作成/合言葉＋参加者名） */
+.roombar{position:absolute;top:2.6em;left:3%;right:3%;z-index:8;background:rgba(9,11,18,.86);border:1px solid var(--line);border-radius:.6em;padding:.55em .8em;display:flex;flex-direction:column;gap:.45em;backdrop-filter:blur(2px)}
+.rbrow{display:flex;gap:.5em;align-items:center;flex-wrap:wrap}
+.txt.sm{padding:.45em;font-size:.92em;margin:0;width:auto}
+.btn.sm{padding:.45em .9em;margin:0;font-size:.92em;width:auto}
+.rblabel{font-size:.82em;color:var(--sub)}
+.rbor{color:var(--sub);font-size:.82em}
+.rbcode{color:var(--shu);font-size:1.25em;letter-spacing:.16em;font-weight:600}
+.roster2{display:flex;gap:.4em;flex-wrap:wrap}
+.charstage.dim{opacity:.45;filter:grayscale(.5)}
+.charstage.dim .charpick{cursor:default}
 </style>
 </head>
 <body>
+<div id="app"></div>
 
-<header><h1>作業仲間さがし</h1></header>
+<!-- 常時参照ボタン -->
+<div class="sheet" id="sheet"><div class="inner">
+  <div class="sheet-head"><span class="sheet-title">手引</span><button class="sheet-x" onclick="closeSheet()">✕</button></div>
+  <div class="tabs" id="tabs"></div>
+  <div class="sheet-body" id="sheetBody"></div>
+</div></div>
 
-<main>
+<!-- クルーボード（狂気山脈式：拠点ごとに手がかりを置いて共有） -->
+<div class="sheet" id="board"><div class="inner">
+  <div class="sheet-head"><span class="sheet-title">ボード</span><button class="sheet-x" onclick="closeBoard()">✕</button></div>
+  <div class="sheet-body" id="boardBody"></div>
+</div></div>
 
-<!-- ========== スタート ========== -->
-<section id="screen-start" class="screen active">
-  <div style="text-align:center">
-    <div class="user-count"><span class="dot"></span>登録者 <span id="user-count-display">…</span> 人</div>
-  </div>
-  <div class="card" style="text-align:center;padding:28px 20px">
-    <div style="font-size:56px;margin-bottom:8px">☕✏️</div>
-    <h2 style="font-size:18px;color:var(--water-dark);margin-bottom:10px">一緒に作業してくれる<br>心強い作業友を見つけよう</h2>
-    <p style="font-size:13px;color:var(--text-soft);line-height:1.7">
-      どんなゲーム・どんな作業場所でもOK。<br>
-      同じ時間に集中したい仲間を<br>
-      サッと見つけられます。
-    </p>
-  </div>
-  <div class="disclaimer">
-    <strong>恋愛・出会い目的の利用は禁止</strong>しています。<br>
-    作業に集中する仲間を見つけるためのサイトです。
-  </div>
-  <div class="auth-choice">
-    <button class="btn btn-google" onclick="app.loginGoogle()">Ⓖ Googleではじめる</button>
-    <button class="btn btn-x" onclick="app.loginX()">𝕏 Xではじめる</button>
-    <button class="btn" onclick="app.startGuest()">👤 ゲストではじめる（この端末に保存）</button>
-  </div>
-  <div style="font-size:11px;color:var(--text-soft);text-align:center;margin-top:14px;line-height:1.7">
-    ログインすると、探し・フレンド・画像・データ復元が使えます。<br>
-    ゲストはこの端末にデータを保存します。
-  </div>
-  <button class="btn btn-ghost" onclick="app.showTerms()" style="margin-top:10px">利用について・免責事項</button>
-</section>
+<!-- 密談（二人だけの秘密チャット。他の人には存在も見えない） -->
+<div class="sheet" id="dm"><div class="inner">
+  <div class="sheet-head"><span class="sheet-title" id="dmTitle">密談</span><button class="sheet-x" onclick="closeDM()">✕</button></div>
+  <div class="sheet-body" id="dmBody"></div>
+</div></div>
 
-<!-- ========== オンボーディング（名前＋界隈だけ） ========== -->
-<section id="screen-onboard" class="screen">
-  <div class="card">
-    <h2 style="color:var(--water-dark);font-size:16px;margin-bottom:4px">はじめる前に2つだけ</h2>
-    <p class="hint" style="margin-bottom:16px">あとで細かい設定もできます</p>
-    <div class="field">
-      <label>なまえ <span style="color:var(--pink)">*</span></label>
-      <input type="text" id="ob-handle" maxlength="15" placeholder="ゆめ">
-      <div class="counter"><span id="ob-handle-count">0</span>/15</div>
-    </div>
-    <div class="field">
-      <label>どの界隈で作業する？ <span style="color:var(--pink)">*</span></label>
-      <input type="text" id="ob-scene-search" placeholder="ゲーム名で検索（英字）" autocomplete="off">
-      <p class="hint">みんなが登録した界隈。人気・新規で切り替えて選べます。</p>
-      <div class="mini-toggle" style="margin-top:10px">
-        <button class="active" id="tg-popular" onclick="app.setSceneSort('popular')">🔥 人気</button>
-        <button id="tg-new" onclick="app.setSceneSort('new')">✨ 新規</button>
-      </div>
-      <div id="ob-scene-list"><div class="loading"><span class="spinner"></span>界隈を読み込み中…</div></div>
-      <button class="btn btn-ghost" id="scene-more-btn" onclick="app.moreScenes()" style="display:none">もっと見る</button>
-      <button class="btn btn-small btn-pink" onclick="app.goto('scene-create')" style="margin-top:8px">＋ 新しい界隈を作る</button>
-    </div>
-    <div id="ob-selected-scene" style="display:none"></div>
-  </div>
-  <button class="btn btn-primary" onclick="app.finishOnboard()">この界隈ではじめる</button>
-</section>
-
-<!-- ========== 界隈を作る ========== -->
-<section id="screen-scene-create" class="screen">
-  <div class="card">
-    <h2 style="color:var(--water-dark);font-size:16px;margin-bottom:4px">新しい界隈を作る</h2>
-    <p class="hint" style="margin-bottom:16px">作業場所の入力ルールを決めると、みんなが迷わず入力できます</p>
-    <div class="field">
-      <label>ゲーム／プラットフォーム名 <span style="color:var(--pink)">*</span></label>
-      <input type="text" id="sc-game" maxlength="24" placeholder="英字で入力（例: gogh, Minecraft）">
-      <p class="hint">英字のみ入力できます</p>
-    </div>
-    <div class="field">
-      <label>作業場所の呼び名 <span style="color:var(--pink)">*</span></label>
-      <input type="text" id="sc-loclabel" maxlength="16" placeholder="例: 部屋ID / ワールド名 / フレンドコード">
-    </div>
-    <div class="field">
-      <label>作業場所の入力形式 <span style="color:var(--pink)">*</span></label>
-      <div class="chips" id="sc-format"></div>
-      <p class="hint">この界隈で作業場所を入力するときのルール</p>
-    </div>
-    <div class="field">
-      <label>アイコン</label>
-      <div class="chips" id="sc-icon"></div>
-    </div>
-    <div class="field">
-      <label>制作者名（任意・空欄なら匿名さん）</label>
-      <input type="text" id="sc-creator" maxlength="15" placeholder="匿名さん">
-    </div>
-  </div>
-  <button class="btn btn-primary" onclick="app.createScene()">界隈を作って選ぶ</button>
-  <button class="btn btn-ghost" onclick="app.goto('onboard')">もどる</button>
-</section>
-
-<!-- ========== ホーム ========== -->
-<section id="screen-home" class="screen">
-  <div class="tabs">
-    <button class="tab active" data-tab="match" onclick="app.switchTab('match')">🤝 マッチ<span id="tab-match-n" style="opacity:.8;font-weight:700"></span></button>
-    <button class="tab" data-tab="find" onclick="app.switchTab('find')">🔍 さがす<span id="tab-find-n" style="opacity:.8;font-weight:700"></span></button>
-  </div>
-  <div id="tab-match"></div>
-  <div id="tab-find" style="display:none"></div>
-</section>
-
-<!-- ========== プロフィール ========== -->
-<section id="screen-profile" class="screen">
-  <div class="card">
-    <h2 style="color:var(--water-dark);font-size:16px;margin-bottom:16px">プロフィール</h2>
-    <div id="my-profile-view"></div>
-    <button class="btn btn-small" onclick="app.goto('profile-edit')" style="margin-top:14px">編集する</button>
-  </div>
-  <div class="card" id="account-card">
-    <h3 style="color:var(--water-dark);font-size:14px;margin-bottom:10px">アカウント</h3>
-    <div id="account-body"></div>
-  </div>
-</section>
-
-<!-- ========== プロフィール編集（詳細） ========== -->
-<section id="screen-profile-edit" class="screen">
-  <div class="card">
-    <h2 style="color:var(--water-dark);font-size:16px;margin-bottom:10px">プロフィール編集</h2>
-    <label>プレビュー</label>
-    <div id="pe-card-preview" style="margin-bottom:16px"></div>
-    <div class="field">
-      <label>カードの色</label>
-      <div class="chips" id="pe-cardcolor"></div>
-    </div>
-    <div class="field">
-      <label>カードの柄</label>
-      <div class="chips" id="pe-cardpattern"></div>
-    </div>
-    <div class="field">
-      <label>なまえ <span style="color:var(--pink)">*</span></label>
-      <input type="text" id="pe-handle" maxlength="15">
-    </div>
-    <div class="field">
-      <label>アバター</label>
-      <div class="avatars" id="pe-avatars"></div>
-    </div>
-    <div class="field" id="pe-photo-field" style="display:none">
-      <label>プロフィール画像（9:16・さがすで表示）</label>
-      <input type="file" id="pe-photo-input" accept="image/*" style="display:none">
-      <div id="pe-crop-wrap" style="display:none">
-        <div style="display:flex;gap:14px;align-items:flex-start">
-          <div class="icon-cropper" id="pe-cropper"><div class="cimg" id="pe-cimg"></div><div class="ccircle" id="pe-ccircle"></div></div>
-          <div style="flex:1">
-            <div style="font-size:12px;color:var(--text-soft);margin-bottom:6px">アイコンのプレビュー</div>
-            <div id="pe-icon-preview"></div>
-            <label style="margin-top:12px">円の大きさ</label>
-            <input type="range" id="pe-icon-size" min="20" max="90" value="55" style="width:100%">
-            <p class="hint">円をドラッグで位置、スライダーで大きさ。この2つだけ保存します。</p>
-          </div>
-        </div>
-      </div>
-      <div style="display:flex;gap:8px;margin-top:8px">
-        <button class="btn btn-small" onclick="document.getElementById('pe-photo-input').click()">画像を選ぶ</button>
-        <button class="btn btn-small btn-ghost" onclick="app.removePhoto()" id="pe-photo-remove" style="display:none">削除</button>
-      </div>
-    </div>
-    <div class="field">
-      <label>界隈（作業する場所）</label>
-      <div id="pe-scene-display" class="card-inset" style="font-size:13px"></div>
-      <button class="btn btn-small btn-ghost" onclick="app.changeScene()" style="margin-top:6px">界隈を変える</button>
-    </div>
-    <div class="field">
-      <label>作業カテゴリー</label>
-      <div class="chips" id="pe-categories"></div>
-    </div>
-    <div class="field">
-      <label>よく作業する時間帯</label>
-      <div class="chips" id="pe-timeslots"></div>
-    </div>
-    <div class="field">
-      <label>集中スタイル</label>
-      <div class="chips" id="pe-focus"></div>
-    </div>
-    <div class="field">
-      <label>お隣（同じ空間）で作業OK？</label>
-      <div class="chips" id="pe-neighbor"></div>
-    </div>
-    <div class="field">
-      <label>いま頑張っていること</label>
-      <input type="text" id="pe-goal" maxlength="60" placeholder="秋の資格試験、新刊の作画 など">
-    </div>
-  </div>
-  <button class="btn btn-primary" onclick="app.saveProfileEdit()">保存する</button>
-  <button class="btn btn-ghost" onclick="app.goto('profile')">もどる</button>
-</section>
-
-<!-- ========== フレンド ========== -->
-<section id="screen-friends" class="screen">
-  <div id="friend-requests-area"></div>
-  <div id="friends-list-area"></div>
-</section>
-
-</main>
-
-<nav class="bottom-nav" id="bottom-nav" style="display:none">
-  <button class="nav-btn active" data-nav="home" onclick="app.goto('home')"><span class="ico">🏠</span>ホーム</button>
-  <button class="nav-btn" data-nav="friends" onclick="app.goto('friends')"><span class="ico">💛</span><span id="friend-nav-label">フレンド</span></button>
-  <button class="nav-btn" data-nav="profile" onclick="app.goto('profile')"><span class="ico">👤</span>プロフィール</button>
-</nav>
-
-<div class="modal-bg" id="modal-bg">
-  <div class="modal" id="modal">
-    <h3 id="modal-title"></h3>
-    <div id="modal-body"></div>
-    <div id="modal-actions" style="margin-top:14px"></div>
-  </div>
+<!-- 一時停止 -->
+<div class="pauseOverlay" id="pause">
+  <div style="font-size:2rem">🐈‍⬛</div>
+  <h2>誰かが席を外しているよ</h2>
+  <p class="sub" id="pauseWho"></p>
+  <p class="sub">全員そろうまで、そっと待とうね。</p>
 </div>
-<div class="wait-overlay" id="wait-overlay"><div id="wait-overlay-content"></div></div>
-<div class="work-screen" id="work-screen">
-  <div class="ws-header">
-    <div style="display:flex;justify-content:space-between;align-items:flex-start">
-      <div style="flex:1;min-width:0">
-        <div style="font-size:11px;opacity:.85" id="ws-loc-label">作業場所</div>
-        <div class="ws-loc" id="ws-loc-value">-</div>
-      </div>
-      <button class="btn btn-small" style="background:rgba(255,255,255,.25);color:#fff;box-shadow:none" onclick="app.leaveWorkScreen()">退出</button>
-    </div>
-    <div class="ws-sub" id="ws-partner-line"></div>
-  </div>
-  <div class="ws-body" id="ws-body"></div>
-  <div class="ws-fab" id="ws-fab"></div>
-</div>
-<div class="pip" id="pip">
-  <span class="pip-close" onclick="app.fromPip()">✕</span>
-  <div class="pip-title" id="pip-title">作業中</div>
-  <div class="pip-sub" id="pip-sub"></div>
-  <button class="btn btn-small btn-pink" onclick="app.fromPip()" style="width:100%">もどす</button>
-</div>
-<div class="toast" id="toast"></div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
-import {
-  getAuth, signInAnonymously, signInWithPopup, signInWithRedirect, getRedirectResult,
-  GoogleAuthProvider, TwitterAuthProvider, onAuthStateChanged, signOut
-} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
-import {
-  getFirestore, doc, setDoc, getDoc, updateDoc, collection, addDoc, query, where,
-  onSnapshot, serverTimestamp, deleteDoc, orderBy, limit, getDocs, Timestamp, increment
-} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
-import {
-  getDatabase, ref, onValue, onDisconnect, set as rtdbSet, serverTimestamp as rtdbTimestamp
-} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-database.js";
-import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-analytics.js";
+<!-- ▼▼ Firebase compat SDK ▼▼ -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 
+<script>
+/* ============================================================
+   ★★ ここにキミのFirebase設定を貼ってね ★★
+   Firebaseコンソール → プロジェクト設定 → 全般 → マイアプリ(ウェブ)
+   の firebaseConfig をそのままコピペ。Realtime Database を作成しておくこと。
+   （貼るまでは設定画面が出ます）
+   ============================================================ */
 const firebaseConfig = {
-  apiKey: "AIzaSyDVjaGY0aeXO971aE1JmTJNx04LrpxCAb0",
-  authDomain: "workmatch-d76f8.firebaseapp.com",
-  databaseURL: "https://workmatch-d76f8-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "workmatch-d76f8",
-  storageBucket: "workmatch-d76f8.firebasestorage.app",
-  messagingSenderId: "974887147532",
-  appId: "1:974887147532:web:e943ea732a9865428b7629",
-  measurementId: "G-1MGJJD82NW"
+  apiKey: "AIzaSyA0VAFojziXnQRsnaTSMm1A3SE5OQvctpE",
+  authDomain: "mura-17ef8.firebaseapp.com",
+  databaseURL: "https://mura-17ef8-default-rtdb.asia-southeast1.firebasedatabase.app", // asia-southeast1
+  projectId: "mura-17ef8",
+  storageBucket: "mura-17ef8.firebasestorage.app",
+  messagingSenderId: "722721046231",
+  appId: "1:722721046231:web:9e94765b01aebabcfd7a92",
+  measurementId: "G-B2R1E886J0"
 };
-const fbApp = initializeApp(firebaseConfig);
-const auth = getAuth(fbApp);
-const db = getFirestore(fbApp);
-const rtdb = getDatabase(fbApp);
-try { getAnalytics(fbApp); } catch(e) { /* file://やローカルでは無効でもOK */ }
+// databaseURL未設定なら自動で補う（保険）
+if(!firebaseConfig.databaseURL && firebaseConfig.projectId){
+  firebaseConfig.databaseURL = "https://"+firebaseConfig.projectId+"-default-rtdb.firebaseio.com";
+}
 
-// ---------- マスターデータ ----------
-const AVATARS = ["🐱","🐶","🐰","🐻","🦊","🐼","🐨","🦁","🐸","🦉","🐧","🦆"];
-const SCENE_ICONS = ["🎮","🕹️","💻","📚","🎨","✏️","🎧","🌙","☕","🖥️","📱","🎯"];
-const CATEGORIES = ["勉強","お絵かき","執筆","プログラミング","読書","事務作業","その他"];
-const TIMESLOTS = ["朝(5-9)","昼(9-17)","夜(17-23)","深夜(23-5)"];
-const FOCUS_STYLES = ["黙々","ポモドーロ","スタンプで励まし"];
-const LOC_FORMATS = {
-  free:  {label:"自由入力",     re:null,               ph:"自由に入力"},
-  num:   {label:"数字だけ",     re:/^[0-9]+$/,         ph:"例: 123456"},
-  alpha: {label:"英字だけ",     re:/^[a-zA-Z]+$/,      ph:"例: abcXYZ"},
-  upper: {label:"英大文字だけ",  re:/^[A-Z]+$/,         ph:"例: ABCDEF"},
-  lower: {label:"英小文字だけ",  re:/^[a-z]+$/,         ph:"例: abcdef"},
-  alnum: {label:"英数字",       re:/^[a-zA-Z0-9]+$/,   ph:"例: abc123"},
-  upnum: {label:"大文字＋数字",  re:/^[A-Z0-9]+$/,      ph:"例: ABC123"},
-  hira:  {label:"ひらがな",     re:/^[ぁ-んー]+$/,     ph:"例: あいうえお"},
+/* ============================================================
+   素材リスト（イラスト/音）
+   ここの番号のファイルを同じフォルダに置くと自動で表示・再生されます。
+   置くまでは「〇〇のイラスト」の文字が出ます。
+   ============================================================ */
+const ART = {
+  neko:   {file:"neko.png",   cap:"黒猫GMのイラスト"},
+  t_chikage:{file:"chikage.png", cap:"千景の立ち絵"},
+  t_toru:   {file:"toru.png",    cap:"透の立ち絵"},
+  t_renji:  {file:"renji.png",   cap:"蓮司の立ち絵"},
+  t_sara:   {file:"sara.png",    cap:"紗良の立ち絵"},
+  title:  {file:"1.png",  cap:"タイトル：雨の宵影村（夜・山あいの村）"},
+  scene:  {file:"16.png", cap:"宵影村の夜（汎用の背景）"},
+  map:    {file:"map.png", cap:"宵影村の全体マップ（見下ろし・6つの場所）"},
+  prologue:{file:"2.png", cap:"プロローグ：崖の下で見つかった巌"},
+  L_sekihi:{file:"3.png", cap:"石碑（四人の名＋削られた五つ目の枠）"},
+  L_kou:  {file:"4.png",  cap:"旧校舎（黒板と、名のない少女の絵）"},
+  L_sui:  {file:"5.png",  cap:"水車小屋（古い録音機）"},
+  L_sai:  {file:"6.png",  cap:"神社（名預けの古い巻物）"},
+  L_son:  {file:"7.png",  cap:"村長宅（17年前の集合写真・空白の一人分）"},
+  L_san:  {file:"8.png",  cap:"山道（崖・濡れた足跡）"},
+  memory: {file:"9.png",  cap:"記憶投票（誰の記憶を知りたい？）"},
+  deduction:{file:"10.png",cap:"最終推理（12問）"},
+  ed1:{file:"11.png",cap:"ED-1 帰還"},
+  ed2:{file:"12.png",cap:"ED-2 残響"},
+  ed3:{file:"13.png",cap:"ED-3 閉鎖"},
+  ed4:{file:"14.png",cap:"ED-4 白紙"},
+  ed5:{file:"15.png",cap:"ED-5 誤った犯人"},
 };
-const PHOTO_COOLDOWN_MS = 30*24*60*60*1000;
-const LOCAL_KEY = "osagyou_local_profile";
-
-const state = {
-  uid:null, authType:"anon", isLoggedIn:false,
-  profile:null,
-  sceneCache:[], sceneSort:"popular", sceneShown:5, selectedScene:null,
-  editing:{},
-  swipeQueue:[], swipeIndex:0,
-  friends:[], presenceMap:{_unsubs:{}},
-  waitUnsub:null, photoDataURL:null, totalUsers:0,
-  match:{active:false}, work:null, excluded:new Set(),
-  matchesGlobalUnsub:null, invitesUnsub:null,
+const SFX = {
+  rain:  {file:"1.mp3", cap:"雨の環境音"},
+   timeup:{file:"2.mp3", cap:"時間切れの合図"},
+  reveal:{file:"3.mp3", cap:"カード公開の音"},
+  vote:  {file:"4.mp3", cap:"投票確定の音"},
+  fall:  {file:"5.mp3", cap:"転落の音（ED演出）"},
 };
 
-const $ = (id)=>document.getElementById(id);
-const toast = (m)=>{const t=$("toast");t.textContent=m;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2500);};
-const esc = (s)=> s==null?"":String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const escA = (s)=> s==null?"":String(s).replace(/'/g,"\\'").replace(/"/g,"&quot;");
-function relTime(ts){
-  if(!ts) return "不明";
-  const t = ts.toMillis ? ts.toMillis() : (typeof ts==="number"?ts:new Date(ts).getTime());
-  const d = Date.now()-t;
-  if(d<60000) return "たった今";
-  if(d<3600000) return Math.floor(d/60000)+"分前";
-  if(d<86400000) return Math.floor(d/3600000)+"時間前";
-  return Math.floor(d/86400000)+"日前";
-}
-function iconStyle(p,S){
-  if(!(p&&p.photoData)) return null;
-  const c=p.iconCrop||{cx:0.5,cy:0.35,size:0.6};
-  const dispW=S/c.size, dispH=dispW*(16/9);
-  const posX=S/2 - c.cx*dispW, posY=S/2 - c.cy*dispH;
-  return `background-image:url('${p.photoData}');background-size:${dispW}px ${dispH}px;background-position:${posX}px ${posY}px`;
-}
-function iconEl(p,S){
-  const st=iconStyle(p,S);
-  if(st) return `<span class="ic" style="width:${S}px;height:${S}px;${st}"></span>`;
-  return `<span class="ic" style="width:${S}px;height:${S}px;font-size:${Math.round(S*0.55)}px;background:var(--bg)">${AVATARS[p?.avatarId??0]||"🐱"}</span>`;
-}
-function avatarHtml(p){ const st=iconStyle(p,44); return st?`<span class="ic" style="width:100%;height:100%;${st}"></span>`:(AVATARS[p?.avatarId??0]||"🐱"); }
+/* ============================================================
+   シナリオデータ（宵影村『四つの名前』v8）
+   ============================================================ */
+const CHARS = {
+  chikage:{name:"千景", art:"t_chikage", tagline:"行動が早い、面倒見のいい姉御肌。", ho:{
+    prof:"22歳／女性／村役場職員。行動が早く、面倒見がいい。巌を兄のように慕っていた。",
+    memory:"子どもの頃、あなたには仲のいい友達がいた。透、蓮司、紗良……そして、もう一人。どうしても顔と名前の思い出せない“あの子”が、いた気がする。\n巌は、みんなの兄貴分だった。\n三週間ほど前から、巌は何かを熱心に調べていた。事件の少し前、巌はあなたにこう頼んだ。『石碑の裏に、古い記録がある。持ち出してくれ。ただし、四人が揃うまで、誰にも見せるな』。\n事件の夜、あなたは一人で石碑の裏へ回り、隠し棚の鍵を開けた。中にあったのは、一枚の古い木札。そこには――『千代』と書かれていた。\n千代。あなたはその時はじめて、忘れていた“あの子”の名前を知った。胸が、ざわついた。\n巌が本当は何をしようとしていたのかは、まだ分からない（？？？）。",
+    secret:"石碑の裏で『千代』と記された木札を見つけたが、隠している。巌に『四人が揃ってから見せろ』と言われたから。……でも、あなたが鍵を開けて木札を動かしたことで、“証拠が動いた”と、誰かに気づかれたかもしれない。",
+    alibi:"あの夜、あなたは一人で石碑の裏にいた。誰も見ていない。木札を持ち出したと知られれば、真っ先に『証拠を隠した』と疑われる。だから、簡単には言えない。",
+    reveal:{title:"木札『千代』",text:"石碑の裏の隠し棚にあった古い木札。表に『千代』、裏に『預けた名は、消すためにあらず』。――忘れられていた“あの子”には、千代という名があった。",note:"公開すれば“あの子＝千代”が全員の共通認識になるが、証拠を動かしたのが自分だと露見する。"},
+    fear:"自分が木札を動かしたせいで、巌が狙われたのではないか。",
+    goal:["木札の意味を確かめる","“あの子”が誰だったのかを明らかにする","巌が遺そうとしたものを、四人に届ける"],
+    want:["巌が本当は何をしようとしていたのか","巌は、誰に殺されたのか"],
+    axis:"善意で動いたのに、それが事件を動かしたのかもしれない。全部を最初から話す必要はない。"
+  }},
+  toru:{name:"透", art:"t_toru", tagline:"記録を重んじる、冷静な理屈屋。", ho:{
+    prof:"23歳／男性／図書館職員。記録を重んじる理屈屋。17年前の火災で、幼い弟を亡くしている。父は、今の村長。",
+    memory:"幼なじみは、千景・蓮司・紗良、そして巌。……もう一人いた気もするが、思い出せない。\n17年前、旧校舎が火事になり、あなたは弟を失った。村は『子どものいたずらが原因』だと言った。だがあなたは、ずっと前から気づいていた――火災の夜、防災倉庫の鍵を持ち出したのは、あなたの父だと。\nだから、巌が古い鍵台帳を見つけ、『お前の父が鍵を持ち出した証拠がある。千代の名を戻す』と言い出したとき、あなたは凍りついた。真実が明るみに出れば、父も、家も、村も終わる。\n事件の夜、あなたは証拠帳だけを奪うつもりで、水車小屋の巌に会いに行った。口論になった。巌の腕をつかみ、揉み合った。巌は崖際へ逃げ、あなたは一度、手を離した。\n――だが巌が言った。『千代の名前を消したのは、お前の父親だ』。\nかっとなって、あなたは巌の肩を強く押した。巌は、足を滑らせて落ちた。\nあなたは証拠帳を拾い、通報しようとして――まだ息のある巌に気づいた。巌は『……四人に、名前を』と言った。あなたは、自分の罪が露見するのが怖くて、通報を遅らせた。\nあなたが、巌を殺した。それは、消せない。",
+    secret:"あなたが巌を殺し、証拠帳を奪い、通報を遅らせた。父が17年前の火災の鍵を持ち出したことを、あなたは以前から知っている。――これが全員に知られたら、終わりだ。",
+    alibi:"事件の夜、あなたは水車小屋で巌と会っていた。二人きりで。もしそこにいたと知られれば、真っ先に疑われる。何としても、隠し通すしかない。",
+    reveal:{title:"破れた証拠帳",text:"あなたが巌から奪った証拠帳。その破れた角と、あなたの上着に残る同じ紙の繊維。――これが出れば、巌を殺したのがあなただと確定する。",note:"これは、あなたの罪そのもの。公開すれば、自白になる。"},
+    fear:"父の罪と、自分の罪が、同時に暴かれること。",
+    goal:["自分が犯人だと悟られない","証拠帳を、誰にも見つけさせない","疑いを、他の誰かへ向ける","できれば、父の名も守る"],
+    want:["誰が、どこまで気づいているか","蓮司は、あの夜の何を見たのか"],
+    axis:"あなたは冷血な悪人ではない。父を憎みながら、家と村を守りたい気持ちと、罪の重さの間で揺れている。追い詰められたら、感情的になってもいい。"
+  }},
+  renji:{name:"蓮司", art:"t_renji", tagline:"巌の親友。まっすぐで、面倒見がいい。", ho:{
+    prof:"24歳／男性／消防団員。巌の一番の親友。",
+    memory:"千景、透、紗良、巌。物心ついた頃から一緒だった。……本当は、もう一人いた気がする。名前は、出てこない。\n巌は、兄弟みたいな存在だった。\n事件の夜、あなたは山道で巌に会った。巌は何かを急いでいて、『透を追うな』と言った。意味が分からないまま、あなたは巌の後を追った。\n崖のきわで、あなたは巌の腕をつかんだ。次の瞬間、巌は落ちた。\nあなたは、自分が最後に巌に触れたのだと思った。だから――殺したと疑われるのが怖くて、あの夜のことを、誰にも言えていない。\nでも本当は、あなたが腕をつかんだのは、巌が落ちる“直前”のこと。その少し前、崖際で何があったのかを、あなたは見ていない（？？？）。",
+    secret:"山道で最後に巌に触れたのは自分だと思い込み、殺人を疑われるのが怖くて黙っている。実際にあなたが触れたのは、巌が落ちる直前――その少し前に何があったかは、見ていない。",
+    alibi:"あなたは山道で、最後に巌の腕をつかんだ。二人きりで、証人はいない。『自分は落としていない』を証明する手立ては、ほとんどない。",
+    reveal:{title:"巌の封筒",text:"巌から預かった封筒。中の手紙にはこうある。『千代の名前を戻すため、四人全員の記憶を照合してほしい』。――巌の本当の目的。",note:"公開すれば巌の目的が一気に見えるが、黙っていたことも露見する。"},
+    fear:"自分のせいで巌が死んだのではないか、という思い。",
+    goal:["自分が落としたのではないと確かめたい","崖際で本当は何があったのかを知る","巌の目的を、無駄にしない"],
+    want:["巌が『透を追うな』と言った理由","崖際で、巌に何が起きたのか"],
+    axis:"あなたは一度、最有力の容疑者になる。疑われても、怒っても黙ってもいい。だが本当は、あなたは“最後の一押し”を見ていない。"
+  }},
+  sara:{name:"紗良", art:"t_sara", tagline:"村の言い伝えを知る、物静かな観察者。", ho:{
+    prof:"22歳／女性／神社の手伝い。『名預け』の古い記録を、誰よりよく知っている。",
+    memory:"幼なじみは、千景・透・蓮司・巌。そして――名前の思い出せない、“あの子”。\nあなたは神社で古い言い伝えを守るうち、ひとつの真実を知った。『名預け』は、名を“消す”儀式ではない。失われそうな名を“預けて、後世へ残す”仕組みだ。石碑の裏には、預けた名を戻すための作法さえある。\nそして、17年前。旧校舎の火災のあと、“あの子”が大人たちに連れて行かれる直前――あなたは見た。透の父と、村長の父が、『あの子一人にすればいい』と言い争っているのを。\nあなたは、それを今まで誰にも話していない。\n巌が『名を戻す』と動き出したとき、あなたは薄々、彼の目的を察していた。止める方法も知っていた。でも――話せば、透の父を告発することになる。透まで、巻き込んでしまう。だから、動けなかった。",
+    secret:"名預けが『名を消す儀式』ではなく『名を戻せる仕組み』だと知っている。そして17年前、透の父と村長の父が“あの子”に罪を着せる相談をしていたのを見た。黙っていたのは――話せば透まで巻き込むと思ったから。",
+    alibi:"あなたは多くを知りながら、何も言わずにきた。それが知られれば、『本当は共犯だったのでは』と疑われかねない。",
+    reveal:{title:"17年前の目撃",text:"“あの子”が連れて行かれる直前、透の父と村長の父が『あの子一人にすればいい』と言い争っていた。――火災の罪は、あの子に着せられたものだった。",note:"公開すれば千代の無罪と17年前の構図が見えるが、透の父＝村長を告発することになり、透を追い詰める。"},
+    fear:"自分が黙っていたことが、巌の死につながったのではないか。",
+    goal:["“あの子”が無実だったことを明らかにする","名預けの本当の意味を伝える","透を壊さずに、真実を残す方法を探す"],
+    want:["巌は、誰に殺されたのか","千景が石碑で見つけたものは何か"],
+    axis:"あなたは四人の中で最も多くを知っている。だが全部話せば、透を壊す。『今、誰に、どこまで話すか』を選ぶのが、あなたの役割。"
+  }},
+};
+const CHAR_ORDER=["chikage","toru","renji","sara"]; // 4人固定。将来: 人間GM(黒猫役)を5人目に
 
-// ---------- ローカル保存（匿名用） ----------
-function saveLocal(){
-  if(state.isLoggedIn) return; // ログイン中はローカル無視
-  try{ localStorage.setItem(LOCAL_KEY, JSON.stringify(state.profile||{})); }catch(e){}
-}
-function loadLocal(){
-  try{ const s=localStorage.getItem(LOCAL_KEY); return s?JSON.parse(s):null; }catch(e){ return null; }
-}
-function clearLocal(){ try{ localStorage.removeItem(LOCAL_KEY); }catch(e){} }
+// 三つの系統（真相の柱）
+const KEI = {past:"17年前の火災", name:"名預けと千代", murder:"巌殺し"};
 
-// ---------- 画面遷移 ----------
-function goto(screen){
-  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
-  const t=$("screen-"+screen); if(t)t.classList.add("active");
-  document.querySelectorAll(".nav-btn").forEach(b=>b.classList.toggle("active",b.dataset.nav===screen));
-  window.scrollTo(0,0);
-  if(screen==="onboard") initOnboard();
-  if(screen==="scene-create") initSceneCreate();
-  if(screen==="home"){ switchTab("match"); }
-  if(screen==="friends") loadFriendsScreen();
-  if(screen==="profile") renderProfileView();
-  if(screen==="profile-edit") initProfileEdit();
-}
+// 6地点：第一/第二カード（v5）。系統kei / 事前必須req(C01→C02)
+const LOCS = {
+  sekihi:{name:"石碑", art:"L_sekihi",
+    overview:"村の中央にある古い石碑。『名預け』に関わる。裏に、鍵のかかった隠し棚があるらしい。",
+    first:[{id:"A01",name:"開けられた隠し棚",kei:"name",combo:1,text:"石碑の裏、鍵のかかっていたはずの隠し棚が開けられている。中の木札が一枚だけ、最近になって持ち去られた跡。"}],
+    second:[{id:"A02",name:"石碑裏の刻み",kei:"name",combo:1,text:"石碑の裏に、古い一文が刻まれている。『預けた名は、消すためにあらず』。"}]},
+  kou:{name:"旧校舎", art:"L_kou",
+    overview:"17年前の火災で焼けた学校。今は使われていない。子どもたちの痕跡が残る。",
+    first:[{id:"B01",name:"塗り潰された落書き",kei:"past",combo:1,text:"焼け残った壁に、子ども五人分の落書き。だが、一人分の名前だけが、あとから黒く塗り潰されている。"}],
+    second:[{id:"B02",name:"防災倉庫の鍵台帳",kei:"past",combo:1,text:"焼け残りの記録。防災倉庫の鍵貸出台帳。火災当夜に鍵を持ち出した欄が、墨で塗り潰されている。紙の凹みには、消しきれない筆圧が残っている。"}]},
+  sui:{name:"水車小屋", art:"L_sui",
+    overview:"村外れの古い水車小屋。巌がよく出入りしていた。何かを録音していたらしい。",
+    first:[{id:"C01",name:"録音・前半",kei:"murder",combo:1,text:"巌が残した録音。前半――『蓮司、お前にしか頼めないことがある』。"}],
+    second:[{id:"C02",name:"録音・後半",kei:"murder",req:"C01",combo:1,text:"録音の続き。『……戻れなかったら、四人に、名前を』。"}]},
+  sai:{name:"神社", art:"L_sai",
+    overview:"村の神社。『名預け』の古い作法が記録として残されている。紗良が手伝っている。",
+    first:[{id:"D01",name:"名預けの巻物",kei:"name",combo:1,text:"『名預け』の作法が記された古い巻物。だが、肝心の“名の戻し方”の頁が、破り取られている。"}],
+    second:[{id:"D02",name:"破られた頁の写し",kei:"name",combo:1,text:"別に残されていた写し。『四つの名が揃うとき、預けられた名は戻る』。――名預けは、消す儀式ではない。"}]},
+  son:{name:"村長宅", art:"L_son",
+    overview:"村の記録が保管されている、村長の家。巌が最近ここへ出入りしていた。",
+    first:[{id:"E01",name:"書き換えの痕",kei:"past",combo:1,text:"書斎の古文書の一部が、最近になって書き換えられた痕跡。新しい墨が、古い紙に浮いている。"}],
+    second:[{id:"E02",name:"巌のメモ",kei:"murder",combo:1,text:"巌が残した走り書き。『鍵台帳／17年前／T父』。そして、台帳から一枚、ページが抜き取られた跡。"}]},
+  san:{name:"山道", art:"L_san",
+    overview:"巌が最後に向かった場所。雨で足場が悪く、崖もある。",
+    first:[{id:"F01",name:"二種類の足跡",kei:"murder",combo:1,text:"崖のきわ、ぬかるみに二種類の足跡。一つは崖から離れていく向き。もう一つは、崖のふちへ強く踏み込んでいる。"}],
+    second:[{id:"F02",name:"袖口の繊維",kei:"murder",combo:1,text:"巌の袖口に、別の誰かの上着の繊維が強く食い込んでいる。掴まれた跡だ。だが、掴んだだけでは、突き落としたことにはならない。"}]},
+};
+const LOC_ORDER=["sekihi","kou","sui","sai","son","san"];
 
-// ---------- 認証 ----------
-onAuthStateChanged(auth, async (user)=>{
-  if(!user) return;
-  state.uid = user.uid;
-  const provs = user.providerData.map(p=>p.providerId);
-  state.isLoggedIn = !user.isAnonymous;
-  state.authType = user.isAnonymous ? "anon" : (provs.includes("google.com")?"google":(provs.includes("twitter.com")?"x":"login"));
-  setupPresence(user.uid);
-  await loadProfileAfterAuth();
-});
-getRedirectResult(auth).catch(e=>{ if(e&&e.code) console.error("redirect",e); });
+// 照合カード（2人で同じ場所へ行くと読める・共通・1回）
+const COLLATION = {
+  sekihi:{id:"XA",name:"照合・石碑",kei:"name",combo:1,text:"隠し棚には本来、“預けた名”を記した木札が納められていた。最近、一枚だけ持ち去られた跡。誰かが、この石碑から“ある名”を持ち出している。"},
+  kou:{id:"XB",name:"照合・旧校舎",kei:"past",combo:1,text:"鍵台帳の黒塗りの下、筆圧をなぞると『T・父』らしき字。火災当夜に鍵を持ち出したのは、村側――透の父だった可能性が浮かぶ。"},
+  sui:{id:"XC",name:"照合・水車小屋",kei:"murder",combo:1,text:"録音の前半と後半をつなぐと――『頼む』は蓮司への指示ではなく、死を予感した巌が“四人に真実を託した”言葉だと分かる。"},
+  sai:{id:"XD",name:"照合・神社",kei:"name",combo:1,text:"巻物と写しを合わせると、名預けは名を“消す”のではなく“預けて残す”仕組みだと分かる。誰かが、それを消す方向に悪用してきた。"},
+  son:{id:"XE",name:"照合・村長宅",kei:"past",combo:1,text:"書き換えられた古文書と鍵台帳を合わせると、17年前の火災の責任が村側にあり、それを隠すために記録が改ざんされたと分かる。"},
+  san:{id:"XF",name:"照合・山道",kei:"murder",combo:1,text:"足跡の向き、袖の繊維、肩に残った土を合わせると――巌は“後ろから”ではなく“正面から強く押されて”落ちた。蓮司が掴んだだけでは、説明がつかない。"},
+};
+const COL_ORDER=["sekihi","kou","sui","sai","son","san"];
 
-async function loadProfileAfterAuth(){
-  try{
-    const snap = await getDoc(doc(db,"users",state.uid));
-    if(snap.exists()){
-      state.profile = snap.data();
-      if(state.isLoggedIn) clearLocal(); // 重複防止
-      touchActive();
-      showBottomNav(); goto("home");
-    } else if(state.isLoggedIn){
-      // ログイン初回：ローカルに匿名データがあれば引き継ぐ
-      const local = loadLocal();
-      if(local && local.handle){
-        state.profile = local;
-        await persistProfile(true);
-        clearLocal();
-        touchActive();
-        showBottomNav(); goto("home");
-      } else {
-        goto("onboard");
-      }
-    } else {
-      // 匿名初回
-      const local = loadLocal();
-      if(local && local.handle){
-        state.profile = local;
-        await persistProfile(true);
-        touchActive();
-        showBottomNav(); goto("home");
-      } else {
-        goto("onboard");
-      }
-    }
-  }catch(e){ console.error(e); toast("読み込みに失敗しました"); }
-}
+// 救済：第二探索終了時、足りない系統を黒猫が補う（代表カード）
+// ④ 救済は“答え”を出さず、見落としの方向をぼかして示すだけ（系統は自動で埋めない）
+const RESCUE = {
+  past:{hint:"〔17年前の火災〕の真相に、まだ誰も届いていない。旧校舎の焼け跡と、村長宅の記録に、見落としがあるかもしれない。"},
+  name:{hint:"〔名預けと“あの子”〕――あの子が誰で、名預けが本当は何なのか、まだ言葉になっていない。石碑と神社に、鍵がある。"},
+  murder:{hint:"〔巌の死〕は、本当に事故だったのか。水車小屋の録音と、山道の跡を、もう一度たどってみて。"},
+};
 
-async function startGuest(){
-  try{ if(!state.uid){ await signInAnonymously(auth);} }
-  catch(e){ console.error(e); toast("接続できませんでした"); }
-}
-async function loginGoogle(){ await doProviderLogin(new GoogleAuthProvider()); }
-async function loginX(){ await doProviderLogin(new TwitterAuthProvider()); }
-async function doProviderLogin(provider){
-  try{
-    try{ await signInWithPopup(auth, provider); }
-    catch(err){
-      if(err.code==="auth/popup-blocked"||err.code==="auth/popup-closed-by-user"||err.code==="auth/cancelled-popup-request"){
-        await signInWithRedirect(auth, provider); return;
-      }
-      if(err.code==="auth/operation-not-allowed"){ toast("このログイン方法が未設定です（管理者に連絡）"); return; }
-      throw err;
-    }
-  }catch(e){ console.error(e); toast("ログイン失敗: "+(e.code||e.message||"")); }
-}
-async function doSignOut(){
-  if(!confirm("サインアウトしますか？")) return;
-  try{ await signOut(auth); location.reload(); }catch(e){ console.error(e); }
-}
+// ⑤-① 事件の再構成（正しい順） / ⑤-② 四人の行動
+const TIMELINE = [
+  {id:"t1",text:"17年前、千代の名が村の記録から消された"},
+  {id:"t2",text:"巌が、名預けの本当の意味を知る"},
+  {id:"t3",text:"千景が、石碑の隠し棚から木札を持ち出す"},
+  {id:"t4",text:"透が、巌を止めようと古文書を書き換える"},
+  {id:"t5",text:"紗良が、止める方法を知りながら使わなかった"},
+  {id:"t6",text:"蓮司が腕をつかみ、巌が転落する"},
+];
+const TL_CORRECT = ["t1","t2","t3","t4","t5","t6"];
+const DEDUCT_ACTIONS = [
+  {q:"千景は、何をした？",opt:["石碑の隠し棚を開け、木札を持ち出した","巌を突き落とした","録音を消した","何もしていない"],a:0},
+  {q:"透は、何をした？",opt:["巌を山道へ誘い出した","古文書を書き換え、一文を消した","千代を記録から消した","何もしていない"],a:1},
+  {q:"紗良は、何をした？",opt:["巌を突いた","止める方法を知りながら、使わなかった","写真を隠した","何も知らなかった"],a:1},
+  {q:"蓮司は、何をした？",opt:["殺意を持って突き落とした","腕をつかんだ（が、突き落としてはいない）","山道に行っていない","巌を毒殺した"],a:1},
+];
 
-function showBottomNav(){ $("bottom-nav").style.display="flex"; subscribeMyMatches(); subscribeWorkInvites(); refreshFriendBadge(); }
+// エンディング（v5）
+const ENDINGS = {
+  "1":{name:"四つの名前",art:"ed1",text:"犯人は透。透は、罪を認めた。\nあの子――千代は無実だったと記録され、その名は村の記録へ戻された。そして四人は、十七年前に村側が何をしたのかも、隠さず書き残した。\n誰か一人を消して終わらせる、そのやり方を、村は初めて手放した。千代の名前だけでなく、四人がそれぞれ何を隠し、何を選んだかも――四つの名前として、残った。"},
+  "2":{name:"千代は戻った",art:"ed2",text:"犯人は透。千代の名は、記録へ戻った。\nだが、罪を負ったのは透ひとり。十七年前の大人たちの責任は、曖昧なまま残された。\n正しい一歩ではある。けれど、完全な清算では、なかった。"},
+  "3":{name:"また一人",art:"ed3",text:"村は『透さえ悪かったのだ』として、事件を閉じた。千代の名前は、再び記録から外された。\n十七年前と、同じやり方で。一人を消せば、みんなが安心できる。\n……また、一人。石碑の奥で、何かが静かに息をひそめた。"},
+  "4":{name:"事故の村",art:"ed4",text:"証拠は、足りなかった。犯人を確かめることも、あの子が誰なのかも、はっきりしないまま。\n村は、巌の死を「事故」として処理した。\n四人は、それぞれの秘密を抱えたまま、村を去っていく。まだ、誰も終われない。"},
+  "5":{name:"名前だけの救済",art:"ed5",text:"犯人は透。千代の名は戻された。だが村は、透ひとりを追放し、十七年前の責任は、どこにも記録しなかった。\n表向きは、救済。けれどそれは――責任を一人に押しつけて終わらせる、いつものやり方の、繰り返しだった。"},
+};
 
-// アクティブ時刻の更新
-async function touchActive(){
-  if(!state.uid||!state.profile) return;
-  try{ await updateDoc(doc(db,"users",state.uid),{ lastActive:serverTimestamp() }); }catch(e){}
-}
+const BRIEFING = `【 村の事情 】
 
-// ---------- presence ----------
-function setupPresence(uid){
-  const sref=ref(rtdb,"presence/"+uid), cref=ref(rtdb,".info/connected");
-  onValue(cref,snap=>{
-    if(snap.val()===true){
-      onDisconnect(sref).set({online:false,lastSeen:rtdbTimestamp()});
-      rtdbSet(sref,{online:true,lastSeen:rtdbTimestamp()});
-    }
-  });
-}
-function watchPresence(uids){
-  Object.values(state.presenceMap._unsubs||{}).forEach(fn=>fn());
-  state.presenceMap={_unsubs:{}};
-  uids.forEach(uid=>{
-    const un=onValue(ref(rtdb,"presence/"+uid),s=>{ state.presenceMap[uid]=s.val()||{online:false}; renderFriendsIfActive(); });
-    state.presenceMap._unsubs[uid]=un;
-  });
-}
+宵影村（よいかげむら）には、『名預け（なあずけ）』という古い仕組みがある。
+本来は、災害や家系の断絶で失われそうな“名前”や“出来事”を、村の記録庫と石碑に預け、後世へ残すためのもの――だと言われている。
 
-// ---------- 登録者数 ----------
-async function loadUserCount(){
-  try{ const s=await getDoc(doc(db,"stats","users")); const c=s.exists()?(s.data().count||0):0; state.totalUsers=c; $("user-count-display").textContent=c.toLocaleString(); }
-  catch(e){ $("user-count-display").textContent="?"; }
-}
-loadUserCount();
+村の中央には古い石碑があり、その裏には、鍵のかかった隠し棚があるらしい。
 
-// ---------- 界隈 ----------
-async function loadScenes(){
-  if(state.sceneCache.length) return state.sceneCache;
-  try{
-    const snap=await getDocs(query(collection(db,"scenes"),limit(200)));
-    const arr=[]; let total=0;
-    snap.forEach(d=>{ const s={id:d.id,...d.data()}; arr.push(s); total+=(s.userCount||0); });
-    arr._total=total; state.sceneCache=arr; return arr;
-  }catch(e){ console.error(e); return []; }
-}
-function setSceneSort(sort){
-  state.sceneSort=sort; state.sceneShown=5;
-  $("tg-popular").classList.toggle("active",sort==="popular");
-  $("tg-new").classList.toggle("active",sort==="new");
-  renderSceneList();
-}
-function moreScenes(){ state.sceneShown+=5; renderSceneList(); }
-function renderSceneList(){
-  const box=$("ob-scene-list");
-  const kw=($("ob-scene-search").value||"").toLowerCase().trim();
-  let arr=[...state.sceneCache];
-  if(kw) arr=arr.filter(s=>(s.gameName||"").toLowerCase().includes(kw));
-  if(state.sceneSort==="popular") arr.sort((a,b)=>(b.userCount||0)-(a.userCount||0));
-  else arr.sort((a,b)=>((b.createdAt&&b.createdAt.toMillis?b.createdAt.toMillis():0)-(a.createdAt&&a.createdAt.toMillis?a.createdAt.toMillis():0)));
-  const total=state.sceneCache._total||0;
-  const shown=arr.slice(0,state.sceneShown);
-  if(shown.length===0){
-    box.innerHTML=`<div class="empty" style="padding:20px;font-size:13px">まだ界隈がありません。<br>下のボタンで作ってみましょう。</div>`;
-    $("scene-more-btn").style.display="none"; return;
+そして昨夜、巌（いわお）が崖の下で死んだ。村は「事故」として処理しようとしている。
+だが巌は、この数週間、何かを熱心に調べていた。そして四人それぞれに、別々の“何か”を託していた。
+
+巌が遺したメモには、こう書かれていた。
+「四つの名前を、集めろ」。
+
+――あなたたち四人には、子どもの頃、もう一人、一緒に遊んだ友達がいた気がする。
+けれど、その子の顔も名前も、どうしても思い出せない。`;
+
+const PROLOGUE = `雨は、夕方からずっと降っていた。
+山の夜は早い。村の灯りが、一つ、また一つと消えていく。
+
+その夜、巌が死んだ。崖の下で見つかったとき、その手には、何もなかった。村は「足を滑らせたのだろう」と言う。
+けれど、あなたたち四人は知っている。巌は、この数週間、取り憑かれたように何かを調べていた。そして昨日、それぞれに違う言葉と、違うものを、残していった。
+
+巌の部屋の机には、走り書きのメモが一枚。
+「四つの名前を、集めろ」。
+
+……四つの名前? 四人の名前だろうか。それとも――。
+ふと、胸の奥が痛む。子どもの頃、あなたたちは五人で遊んでいた。そう、四人ではなかった。けれど、五人目の顔も名前も、どうしても思い出せない。
+
+今夜、あなたたちは巌の死について話す。巌は本当に、足を滑らせただけなのか。あの子は、誰だったのか。そして、なぜこの村では――「名前」が消えるのか。`;
+
+const SYNOPSIS = `雨の夜、山あいの「宵影村」で巌（いわお）が崖下から見つかった。村は事故と言うが、巌はこの数週間、村の古い記録を調べ、幼なじみの四人＝千景・透・蓮司・紗良に、それぞれ違う“何か”を託していた。
+遺されたメモには「四つの名前を集めろ」。そして四人には、思い出せない“五人目の友達”がいた。
+四人でその夜と十七年前をたどり、最後に『巌は殺されたのか』『犯人は誰か』『あの子は本当に犯人だったのか』『名前を戻すか』『責任を一人に集めるか』を選ぶ物語。`;
+
+const GLOSSARY = [
+  ["名預け（なあずけ）","村に古くから伝わる、名前や出来事を石碑と記録庫に“預けて残す”ための仕組み――とされる。だが、その実態には諸説あるらしい。石碑の裏に、何か鍵がある。"],
+  ["石碑","村の中央にある古い石碑。裏に、鍵のかかった隠し棚がある。"],
+  ["巌（いわお）","四人の兄貴分。この数週間、村の古い記録を調べていた。昨夜、崖下で亡くなった。"],
+  ["“あの子”／五人目","子どもの頃、四人と一緒に遊んだ、もう一人。だが顔も名前も、誰も思い出せない。"],
+  ["旧校舎","十七年前の火災で焼けた学校。今は使われていない。"],
+  ["照合","二人で同じ場所へ行くと読める、その場所だけの共通の手がかり（その分、他の場所を逃す）。"],
+  ["録音（前半・後半）","水車小屋の録音。前半を聞いていないと、後半は手に入らない。"],
+];
+
+const RULES = `【目的】巌の死の真相をたどり、十七年前に何があったのかを解き明かす。そして最後に、村の“終わらせ方”を選ぶ。
+【探索】1人1地点×2回。二人で同じ場所へ行くと、その場所の“照合”が読める（その分、他を逃す）。同じ場所の再訪も可。
+【情報】発見は基本、自分だけのもの。話すかどうかは自由。カード本文の偽造は禁止。ただし自分の行動や記憶についての嘘は自由。
+【救済】探索の終わりに、まだ触れていない筋を、黒猫がそっと示す（答えは言わない）。
+【告白】各自が“決定的情報”を、公開するか隠すか、自分で決める。
+【最終投票】①巌は殺されたか ②犯人は誰か ③あの子は犯人だったか ④名前を戻すか ⑤責任を一人に集めるか、を別々に決める。
+【会話】アプリ内の雑談機能はなし。話し合いは通話（Discord等）で。密談だけは、アプリ内で二人だけの秘密チャットができる。`;
+
+const TRUTH = `――では、あの夜と、十七年前を、ひとつに。
+
+十七年前、祭りの夜。旧校舎が燃えた。原因は、村の防災倉庫に違法に置かれていた燃料への引火。管理していたのは、村側の大人たちだった。
+責任を恐れた彼らは、火の直前に倉庫へ入っていた五人の子どものうち、燃料の在り処を知っていた“あの子”ひとりに、罪を着せた。あの子は否定した。だが大人たちは『名預け』を悪用し、あの子の名を記録から外し、残る四人にも『あの子のことは話すな』と沈黙を強いた。
+あの子の名は――千代。火をつけてなど、いなかった。
+
+名前が消えたから記憶が消えたのではない。幼かったこと、話すことを禁じられたこと、記録から千代が消されたこと――それが重なって、名も顔も、曖昧になっていった。
+
+そして現在。巌は、古文書の改ざん痕と、防災倉庫の鍵台帳から、真相へたどり着く。火災当夜に鍵を持ち出したのは、今の村長――透の父だった。
+巌は千代の名を戻すため、四人の断片的な記憶をつなごうとした。千景に木札を、蓮司に封筒を、紗良には証言を託し、透にも父の記録を示した。
+だが透は、父を、家を、村を守るため――そして自分もまた、あの火災で弟を失った“被害者”であるがゆえに揺れながら――巌の証拠帳を奪おうとした。
+
+水車小屋から、山道へ。崖際で、巌は言った。『父親を守るために、また誰かの名前を消すのか』。
+透は逆上し、巌の肩を強く押した。巌は転落した。……そして透は、まだ息のある巌を見殺しにし、通報を遅らせた。
+これは事故ではない。透による、殺人だ。
+
+蓮司が巌の腕をつかんだのは、その“あと”。落ちる直前の一瞬だけを見て、自分が落としたと思い込んだ。
+
+だからこの物語の問いは、ひとつではない。巌を殺したのは誰か。十七年前、千代は本当に犯人だったのか。そして――また一人に責任を集めて終わらせるのか、それとも、村がしてきたことごと、記録に残すのか。
+
+さて。あなたたちは、どう終わらせた?`;
+
+const FLOW = [
+  {k:"prologue", act:"この夜のことを読む", cat:"よく来たね。……この村の、案内役。\nまずは、あの夜のことを。"},
+  {k:"briefing", act:"村の事情を知る", cat:"この村のことを、少しだけ。……知っておいたほうが、いい。"},
+  {k:"hoview", act:"自分のHOを読む", cat:"あなたが、誰なのか。何を覚えているか。ゆっくり、確かめて。\n（右上の🔊で読み上げもできるよ）"},
+  {k:"intro", act:"顔合わせ＆相談", cat:"はじめまして、の顔合わせ。あなたは、誰?"},
+  // 第一探索
+  {k:"select", r:1, act:"行き先を選ぶ", cat:"どこへ行く? ……足は、あなたが決める。"},
+  {k:"cards",  r:1, act:"自分の発見を確かめる", cat:"見てきたものは、あなただけのもの。話すかどうかは、あなたが決める。"},
+  {k:"discuss",r:1, sec:900, prompt:"", act:"話す", cat:"それぞれが、何かを持ち帰った。……話すも、黙るも、あなたたち次第。"},
+  // 第二探索
+  {k:"select", r:2, act:"行き先を選ぶ", cat:"もう一度。まだ見ていないものが、あるかもしれない。"},
+  {k:"cards",  r:2, act:"自分の発見を確かめる", cat:"同じ断片が、二度目は違って見える。"},
+  {k:"guarantee",r:2, act:"黒猫の補足を読む", cat:"足りない“系統”があれば、わたしが。答えは、言わないよ。"},
+  {k:"discuss",r:2, sec:1200, prompt:"", act:"話す", cat:"断片は、つながりはじめた? それとも、まだ。"},
+  // 終幕
+  {k:"confession", act:"決定的情報を出すか決める", cat:"あなたが握る、決定的なひとつ。……出すか、隠すか。真実は、誰かが口を開かなければ、闇のまま。"},
+  {k:"vote", act:"五つを選ぶ", cat:"最後に、五つ。巌は殺されたのか。犯人は。あの子は。名前は。責任は――誰に。"},
+  {k:"truth", act:"真相を聞く", cat:"――では。ほんとうのことを、話そうか。"},
+  {k:"ending", act:"結末を見る", cat:"あなたたちが選んだ、結末を。"},
+];
+function stepsCount(){return FLOW.length;}
+
+/* ============================================================
+   Firebase / 状態
+   ============================================================ */
+let db=null, fbOK=false;
+try{
+  if(firebaseConfig.databaseURL && !firebaseConfig.databaseURL.includes("PASTE")){
+    firebase.initializeApp(firebaseConfig); db=firebase.database(); fbOK=true;
   }
-  box.innerHTML=shown.map(s=>{
-    const share = total>0 ? Math.round((s.userCount||0)/total*100) : 0;
-    const sel = state.selectedScene && state.selectedScene.id===s.id;
-    return `<div class="scene-card ${sel?"selected":""}" onclick="app.pickScene('${s.id}')">
-      <div class="sc-icon">${s.icon||"🎮"}</div>
-      <div class="sc-info">
-        <div class="sc-game">${esc(s.gameName)}</div>
-        <div class="sc-detail">${esc(s.locationLabel)}・${s.userCount||0}人</div>
+}catch(e){ console.error(e); }
+
+let me = localStorage.getItem("yoikage_pid");
+if(!me){ me = "p"+Math.random().toString(36).slice(2,9); localStorage.setItem("yoikage_pid",me); }
+let myName = localStorage.getItem("yoikage_name")||"";
+let roomId=null, room=null, roomRef=null;
+
+const $=s=>document.querySelector(s);
+const app=$("#app");
+function esc(t){return (t||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+function nl2br(t){return esc(t).replace(/\n/g,"<br>");}
+
+/* 素材プレースホルダ：ファイルが無い間だけキャプション表示 */
+function artTag(key){
+  const a=ART[key]; if(!a) return "";
+  const id="art_"+Math.random().toString(36).slice(2,8);
+  return `<div class="ph">
+    <img src="${a.file}" alt="" onload="this.nextElementSibling.style.display='none'"
+      onerror="this.style.display='none'">
+    <div class="box"><div class="fn">${a.file}</div><div class="cap">${esc(a.cap)}</div></div>
+  </div>`;
+}
+function sfxTag(key){
+  const s=SFX[key]; if(!s) return "";
+  return `<span class="sfx" data-sfx="${s.file}">♪ ${esc(s.cap)} <span class="fn">(${s.file})</span></span>`;
+}
+function playSfx(key){
+  const s=SFX[key]; if(!s) return;
+  const au=new Audio(s.file);
+  au.play().catch(()=>{/* ファイルが無ければ静かに無視 */});
+}
+
+/* 黒猫GMのふきだし */
+function gm(text){
+  return `<div class="gm">
+    <div class="neko">${artTag("neko")}</div>
+    <div class="bubble"><div class="name">黒猫</div>${nl2br(text)}</div>
+  </div>`;
+}
+/* 自分だけ / 全員 の見分けバッジ */
+function privBadge(){ return `<div class="badge priv">🔒 あなただけが見ている</div>`; }
+function pubBadge(){ return `<div class="badge pub">👁 全員が見ている</div>`; }
+
+/* ============================================================
+   ルーム作成・参加
+   ============================================================ */
+/* タイトル画面（最初の入口）→「はじめる」で名前入力へ */
+let started=false;
+function titleScreen(){
+  app.innerHTML = `
+    <div class="bg">${stageBg("title")}</div><div class="scrim"></div>
+    <div class="hud"><span></span><button class="hbtn" onclick="openSheet()">📖 手引き</button></div>
+    <div class="title-over">
+      <div class="stamp">MURDER MYSTERY</div>
+      <h1 class="title-logo">宵影村</h1>
+      <div class="title-sub">― 四つの名前 ―　和風ホラー・4人・GMレス</div>
+      <div class="title-menu">
+        <button class="btn primary" onclick="started=true;lobbyScreen()">▶ はじめる</button>
+        <button class="btn ghost" onclick="openSheet()">あそびかた・世界観</button>
       </div>
-      <div class="sc-share">${share}%</div>
     </div>`;
-  }).join("");
-  $("scene-more-btn").style.display = arr.length>state.sceneShown ? "block":"none";
 }
-async function initOnboard(){
-  const p=state.profile||{};
-  $("ob-handle").value=p.handle||"";
-  $("ob-handle-count").textContent=(p.handle||"").length;
-  state.selectedScene = p.scene || null;
-  await loadScenes();
-  renderSceneList();
-  renderSelectedScene();
-}
-function pickScene(id){
-  const s=state.sceneCache.find(x=>x.id===id);
-  if(!s) return;
-  state.selectedScene = { id:s.id, gameName:s.gameName, locationLabel:s.locationLabel, locationFormat:s.locationFormat, icon:s.icon };
-  renderSceneList(); renderSelectedScene();
-}
-function renderSelectedScene(){
-  const box=$("ob-selected-scene");
-  if(!state.selectedScene){ box.style.display="none"; return; }
-  const s=state.selectedScene;
-  box.style.display="block";
-  box.innerHTML=`<div class="status pink" style="margin-top:12px">選択中: ${s.icon||"🎮"} ${esc(s.gameName)}（${esc(s.locationLabel)}）</div>`;
-}
-$("ob-scene-search").addEventListener("input",()=>{ state.sceneShown=5; renderSceneList(); });
-$("ob-handle").addEventListener("input",e=>$("ob-handle-count").textContent=e.target.value.length);
-
-async function finishOnboard(){
-  const handle=$("ob-handle").value.trim();
-  if(!handle) return toast("なまえを入れてください");
-  if(!state.selectedScene) return toast("界隈を選んでください");
-  const warn=/(DM歓迎|通話|恋愛|出会い|付き合|彼氏|彼女|セフレ)/i;
-  if(warn.test(handle)){ if(!confirm("恋愛・出会いを連想させる言葉が含まれています。作業目的以外は禁止です。続けますか？")) return; }
-
-  const isFirst = !state.profile;
-  state.profile = Object.assign({}, state.profile||{}, {
-    handle, scene: state.selectedScene,
-    avatarId: state.profile?.avatarId ?? Math.floor(Math.random()*AVATARS.length),
-    categories: state.profile?.categories||[], timeSlots: state.profile?.timeSlots||[],
-    focusStyle: state.profile?.focusStyle||"", goal: state.profile?.goal||"",
-  });
-  await persistProfile(isFirst);
-  // 界隈のuserCountを増やす（初回のみ）
-  if(isFirst && state.selectedScene.id){
-    try{ await setDoc(doc(db,"scenes",state.selectedScene.id),{userCount:increment(1)},{merge:true}); }catch(e){}
+function isTest(){ const n=(myName||"").trim().toLowerCase(); return n==="test"||n==="テスト"; }
+function lobbyView(){
+  if(!fbOK){
+    app.innerHTML = `
+      <div class="bg">${stageBg("title")}</div><div class="scrim"></div>
+      <div class="hud"><span></span><button class="hbtn" onclick="openSheet()">📖 手引き</button></div>
+      <div class="content"><div class="card" style="max-width:34em">
+        <b>セットアップ</b>
+        <p class="kv">1. Firebaseで Realtime Database を作成（無料でOK）</p>
+        <p class="kv">2. firebaseConfig を HTML上部に貼る（databaseURL 必須）</p>
+        <p class="kv">3. GitHub Pages などに置いて、みんなでURLを開く</p>
+        <p class="small">手引きから、あらすじ・ルール・用語は今すぐ読めるよ。</p>
+      </div></div>`;
+    return;
   }
-  showBottomNav(); toast("ようこそ！"); goto("home");
-}
+  if(!started){ titleScreen(); return; }
+  const inRoom = !!room;
+  const ps=players();
+  const chosen = myChar()? CHARS[myChar()] : null;
+  const distinct = new Set(ps.map(p=>p.char).filter(Boolean));
+  const canStart = inRoom && (isTest()? !!myChar() : (ps.length===4 && ps.every(p=>p.char) && distinct.size===4));
 
-// ---------- 界隈を作る ----------
-function initSceneCreate(){
-  $("sc-game").value=""; $("sc-loclabel").value=""; $("sc-creator").value="";
-  state.editing.scFormat="free"; state.editing.scIcon=SCENE_ICONS[0];
-  const fc=$("sc-format"); fc.innerHTML="";
-  Object.entries(LOC_FORMATS).forEach(([k,v])=>{
-    const el=document.createElement("button"); el.type="button";
-    el.className="chip"+(k==="free"?" selected":""); el.textContent=v.label;
-    el.onclick=()=>{ state.editing.scFormat=k; fc.querySelectorAll(".chip").forEach(c=>c.classList.remove("selected")); el.classList.add("selected"); };
-    fc.appendChild(el);
-  });
-  const ic=$("sc-icon"); ic.innerHTML="";
-  SCENE_ICONS.forEach((emoji,i)=>{
-    const el=document.createElement("button"); el.type="button";
-    el.className="chip"+(i===0?" selected":""); el.textContent=emoji; el.style.fontSize="18px";
-    el.onclick=()=>{ state.editing.scIcon=emoji; ic.querySelectorAll(".chip").forEach(c=>c.classList.remove("selected")); el.classList.add("selected"); };
-    ic.appendChild(el);
-  });
-}
-// ゲーム名は英字のみ
-$("sc-game").addEventListener("input",e=>{ e.target.value=e.target.value.replace(/[^a-zA-Z0-9 ]/g,""); });
-
-async function createScene(){
-  const gameName=$("sc-game").value.trim();
-  const locLabel=$("sc-loclabel").value.trim();
-  if(!gameName) return toast("ゲーム名を英字で入れてください");
-  if(!locLabel) return toast("作業場所の呼び名を入れてください");
-  const creator=$("sc-creator").value.trim()||"匿名さん";
-  try{
-    const ref=await addDoc(collection(db,"scenes"),{
-      gameName, locationLabel:locLabel, locationFormat:state.editing.scFormat,
-      icon:state.editing.scIcon, creatorName:creator, creatorUid:state.uid,
-      userCount:0, createdAt:serverTimestamp(),
-    });
-    // キャッシュに追加して選択状態に
-    const s={ id:ref.id, gameName, locationLabel:locLabel, locationFormat:state.editing.scFormat, icon:state.editing.scIcon, userCount:0, createdAt:{toMillis:()=>Date.now()} };
-    state.sceneCache.unshift(s);
-    state.selectedScene={ id:s.id, gameName, locationLabel:locLabel, locationFormat:state.editing.scFormat, icon:s.icon };
-    toast("界隈を作りました");
-    goto("onboard");
-  }catch(e){ console.error(e); toast("作成に失敗しました"); }
-}
-
-// ---------- プロフィール永続化 ----------
-async function persistProfile(isFirst){
-  const p=state.profile;
-  const data={
-    handle:p.handle, avatarId:p.avatarId,
-    scene:p.scene||null,
-    categories:p.categories||[], timeSlots:p.timeSlots||[],
-    focusStyle:p.focusStyle||"", goal:p.goal||"",
-    cardColor:p.cardColor||"water", cardPattern:p.cardPattern||"none", neighborOk:p.neighborOk||"どちらでも",
-    photoData:p.photoData||"", iconCrop:p.iconCrop||null, photoChangedAt:p.photoChangedAt||null,
-    authType:state.authType, isAnonymous:auth.currentUser?auth.currentUser.isAnonymous:true,
-    updatedAt:serverTimestamp(), lastActive:serverTimestamp(),
-    waiting:p.waiting||false,
-  };
-  if(isFirst) data.createdAt=serverTimestamp();
-  try{
-    await setDoc(doc(db,"users",state.uid),data,{merge:true});
-    if(isFirst){ await setDoc(doc(db,"stats","users"),{count:increment(1)},{merge:true}); loadUserCount(); }
-  }catch(e){ console.error("persist",e); }
-  saveLocal();
-}
-
-// ================= ホーム：マッチタブ =================
-function switchTab(name){
-  document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("active",t.dataset.tab===name));
-  $("tab-match").style.display=name==="match"?"block":"none";
-  $("tab-find").style.display=name==="find"?"block":"none";
-  if(name==="match") renderMatchTab();
-  if(name==="find") initSwipe();
-}
-
-// ================= マッチ／作業画面（完全待機＋自動マッチ） =================
-const CARD_COLORS={
-  water:{label:"みず",css:"linear-gradient(135deg,#5b9cb8,#468197)"},
-  pink:{label:"ピンク",css:"linear-gradient(135deg,#e0588f,#f4a8c5)"},
-  mint:{label:"ミント",css:"linear-gradient(135deg,#5eb187,#8fd3b0)"},
-  grape:{label:"ぶどう",css:"linear-gradient(135deg,#8b6fc4,#b9a3e0)"},
-  sunset:{label:"ゆうやけ",css:"linear-gradient(135deg,#e8a54a,#e0588f)"},
-  night:{label:"よぞら",css:"linear-gradient(135deg,#3a4a70,#5b6c99)"},
-};
-const CARD_PATTERNS={none:"なし",dots:"ドット",stripe:"ストライプ",grid:"グリッド",hearts:"ハート"};
-const NEIGHBOR_OPTS=["どちらでも","お隣OK","静かに離れて"];
-
-let audioCtx=null, soundLoop=null;
-function unlockAudio(){ try{ audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)(); if(audioCtx.state==="suspended")audioCtx.resume(); }catch(e){} }
-function playBeep(freqs){
-  if(!audioCtx) return;
-  const now=audioCtx.currentTime;
-  freqs.forEach((f,i)=>{
-    const o=audioCtx.createOscillator(),g=audioCtx.createGain();
-    o.type="sine"; o.frequency.value=f;
-    const t=now+i*0.14;
-    g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(0.35,t+0.02); g.gain.exponentialRampToValueAtTime(0.0001,t+0.35);
-    o.connect(g).connect(audioCtx.destination); o.start(t); o.stop(t+0.37);
-  });
-  try{ if(navigator.vibrate) navigator.vibrate([120,60,120]); }catch(e){}
-}
-function startMatchSound(){ stopMatchSound(); playBeep([660,880,1320]); soundLoop=setInterval(()=>playBeep([660,880,1320]),1700); }
-function stopMatchSound(){ if(soundLoop){ clearInterval(soundLoop); soundLoop=null; } }
-
-// ---------- 縦プロフィールカード ----------
-// opts: {mode:'home'|'feed'|'plain', blurred, liked, friended}
-function pcardHtml(p, opts){
-  opts=opts||{};
-  const col=(CARD_COLORS[p.cardColor||"water"]||CARD_COLORS.water).css;
-  const bg = p.photoData ? `<div class="vc-img" style="background-image:url('${p.photoData}')"></div>` : `<div class="vc-img" style="background:${col}"></div>`;
-  const scene = p.scene?`<div class="vc-scene">${p.scene.icon} ${esc(p.scene.gameName)}界隈</div>`:`<div class="vc-scene">界隈未設定</div>`;
-  const tags=(p.categories||[]).slice(0,4).map(c=>`<span class="vc-tag">${esc(c)}</span>`).join("");
-  const info=`
-    <div class="vc-info">
-      <div class="vc-name">${esc(p.handle)}</div>
-      <div class="vc-tags">${tags}</div>
-      ${p.goal?`<div class="vc-line">🔥 ${esc(p.goal)}</div>`:""}
-      ${p.timeSlots&&p.timeSlots.length?`<div class="vc-line">🕒 ${(p.timeSlots).join("・")}</div>`:""}
-      ${p.neighborOk&&p.neighborOk!=="どちらでも"?`<div class="vc-line">🪑 ${esc(p.neighborOk)}</div>`:""}
-      ${p.workUntil?`<div class="vc-line">⏰ ${esc(p.workUntil)}まで</div>`:""}
+  // 上部：部屋バー（作成/合言葉／合言葉表示＋参加者名）
+  let bar="";
+  if(!inRoom){
+    bar=`<div class="roombar">
+      <div class="rbrow"><span class="rblabel">なまえ</span>
+        <input class="txt sm" id="nick" maxlength="12" value="${esc(myName)}" placeholder="例：ゆめ" style="max-width:10em">
+        <span class="rbor small">※「テスト」で作ると一人でも進めるよ</span></div>
+      <div class="rbrow"><button class="btn primary sm" onclick="createRoom()">🏮 部屋を作る</button>
+        <span class="rbor">または</span>
+        <input class="txt sm" id="code" maxlength="4" placeholder="合言葉4文字" style="text-transform:uppercase;max-width:8.5em">
+        <button class="btn sm" onclick="joinRoom()">入る</button></div>
     </div>`;
-  let actions="";
-  if(opts.mode==="feed"){
-    actions=`<div class="vc-actions">
-      <div class="vc-abtn ${opts.liked?"on":""}" onclick="app.feedLike()">♡</div>
-      <div class="vc-abtn ${opts.friended?"on":""}" onclick="app.feedFriend()">➕<small></small></div>
-      <div class="vc-abtn" onclick="app.feedDetail()" style="font-size:16px">詳しく</div>
+  }else{
+    let chips=ps.map(p=>{const cn=p.char?CHARS[p.char].name:"選択中…";return `<span class="rchip ${p.char?'done':''}"><span class="rc"></span><span class="rn">${esc(p.name)}</span><span class="rk">→ ${esc(cn)}</span></span>`;}).join("");
+    bar=`<div class="roombar">
+      <div class="rbrow"><span class="rblabel">合言葉</span><span class="rbcode">${roomId}</span>
+        <span class="rbor">参加者 ${ps.length}/4</span>${isTest()?'<span class="pill">🧪 テストモード</span>':''}</div>
+      <div class="roster2">${chips||'<span class="small sub">まだいません</span>'}</div>
     </div>`;
   }
-  return `<div class="vcard ${opts.blurred?"blurred":""}">${bg}<div class="vc-grad"></div>
-    <div class="vc-top">${scene}${opts.topRight||""}</div>${info}${actions}</div>`;
+
+  // 中央：キャラ選択（部屋に入るまでは選べない）
+  let picks="";
+  CHAR_ORDER.forEach(c=>{
+    const C=CHARS[c]; const taken=charTaken(c)&&myChar()!==c;
+    const clickable = inRoom && !taken;
+    picks+=`<div class="charpick ${myChar()===c?'sel':''} ${(taken||!inRoom)?'taken':''}" ${clickable?`onclick="chooseChar('${c}')"`:""}>
+      <div class="fig">${artTag(C.art)}</div>
+      <div class="cn">${C.name}</div>
+      <div class="ct">${taken?'（使用中）':esc(C.tagline||'')}</div>
+    </div>`;
+  });
+
+  const line = !inRoom? "名前を入れて、部屋を作るか、合言葉で入ってね。"
+    : (chosen? `${chosen.name}。${esc(chosen.tagline||'')}` : (isTest()?"テストモード。役をひとつ選べば、一人でも始められるよ。":"演じたい一人を、選んで。"));
+
+  let html=`<div class="bg">${stageBg("title")}</div><div class="scrim"></div>`;
+  html+=`<div class="hud"><span></span><button class="hbtn" onclick="openSheet()">📖 手引き</button></div>`;
+  html+=bar;
+  html+=`<div class="charstage ${inRoom?'':'dim'}">${picks}</div>`;
+  html+=`<div class="vn"><div class="vn-portrait">${artTag("neko")}</div><div class="vn-box"><div class="vn-name">黒猫</div><div class="vn-text">${line}</div></div></div>`;
+  if(inRoom){
+    if(isLeader()) html+=`<div class="ready"><button class="nextbtn ${canStart?'':'off'}" ${canStart?'onclick="startGame()"':''}>はじめる ▶</button></div>`;
+    else html+=`<div class="ready"><span class="small">開始はホスト</span></div>`;
+  }
+  app.innerHTML=html;
+}
+function lobbyScreen(){ lobbyView(); }
+function roomLobby(){ lobbyView(); }
+function newCode(){const c="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";let s="";for(let i=0;i<4;i++)s+=c[Math.floor(Math.random()*c.length)];return s;}
+function saveNick(){const n=($("#nick")||{}).value?.trim();if(n){myName=n;localStorage.setItem("yoikage_name",n);}return myName;}
+
+async function createRoom(){
+  if(!saveNick()) return alert("ニックネームを入れてね");
+  let code=newCode();
+  roomId=code; bindRoom();
+  await roomRef.set({
+    createdAt: firebase.database.ServerValue.TIMESTAMP,
+    step: -1,               // -1=ロビー
+    players: {},
+    computedStep: -1,
+  });
+  await joinAsPlayer();
+}
+async function joinRoom(){
+  if(!saveNick()) return alert("ニックネームを入れてね");
+  const code=($("#code").value||"").trim().toUpperCase();
+  if(code.length!==4) return alert("4文字の合言葉を入れてね");
+  roomId=code; bindRoom();
+  const snap=await roomRef.get();
+  if(!snap.exists()) return alert("その部屋は見つからないよ");
+  await joinAsPlayer();
+}
+function bindRoom(){
+  roomRef=db.ref("rooms/"+roomId);
+  roomRef.on("value",snap=>{ room=snap.val(); render(); });
+}
+async function joinAsPlayer(){
+  const pRef=roomRef.child("players/"+me);
+  const snap=await pRef.get();
+  const cur=snap.val()||{};
+  await pRef.update({ name:myName, connected:true, joinedAt: cur.joinedAt||firebase.database.ServerValue.TIMESTAMP, char: cur.char||null });
+  pRef.child("connected").onDisconnect().set(false);
 }
 
-async function renderMatchTab(){
-  const box=$("tab-match");
-  box.innerHTML=`
-    <div class="card" style="text-align:center;padding:26px 20px">
-      <div style="font-size:44px;margin-bottom:6px">🤝✨</div>
-      <div style="font-size:18px;font-weight:800;color:var(--water-dark);line-height:1.4">ひとりの作業に、<br>そっと誰かを。</div>
-      <p style="font-size:13px;color:var(--text-soft);margin-top:8px;line-height:1.7">いま集中したい人と、リアルタイムでつながれます。<br>あいさつはスタンプ程度でOK。気楽にどうぞ。</p>
-      <div id="rt-count" style="font-size:13px;color:var(--pink);font-weight:700;margin-top:12px">　</div>
-      <button class="btn btn-pink" style="margin-top:14px;font-size:16px;padding:16px" onclick="app.openMatchChoice()">いま つながってみる</button>
-      <div id="home-choice"></div>
-    </div>
-    <p style="text-align:center;font-size:12px;color:var(--text-soft);line-height:1.7">知らない人と話すのは緊張するもの。<br>でも「一緒に作業する」だけなら、意外と気楽です。</p>`;
-  loadMatchStats();
-}
-function openMatchChoice(){
-  const el=$("home-choice"); if(!el) return;
-  el.innerHTML=`
-    <div style="display:flex;gap:10px;margin-top:12px">
-      <button class="btn btn-pink" style="flex:1" onclick="app.startMatching('wait')">🏠 部屋で待つ<span class="n" id="hm-wait" style="display:block;font-size:11px;opacity:.9">-</span></button>
-      <button class="btn" style="flex:1" onclick="app.startMatching('go')">🚪 部屋へ行く<span class="n" id="hm-go" style="display:block;font-size:11px;color:var(--pink)">-</span></button>
-    </div>
-    <p style="font-size:11px;color:var(--text-soft);margin-top:8px">「待つ」は今いる部屋で待機。「行く」は相手の部屋へ。</p>`;
-  fillChoiceCounts();
+/* ============================================================
+   共通ヘルパ
+   ============================================================ */
+function players(){ return room?.players ? Object.entries(room.players).map(([id,v])=>({id,...v})) : []; }
+function connectedPlayers(){ return players().filter(p=>p.connected); }
+function isLeader(){ const c=connectedPlayers().map(p=>p.id).sort(); return c.length && c[0]===me; }
+function myPlayer(){ return room?.players?.[me]; }
+function myChar(){ return myPlayer()?.char; }
+function charTaken(cid){ return players().some(p=>p.char===cid); }
+function allJoinedConnected(){ const ps=players(); return ps.length>0 && ps.every(p=>p.connected); }
+function readyCount(){ const r=room?.ready||{}; return connectedPlayers().filter(p=>r[p.id]).length; }
+function iAmReady(){ return !!(room?.ready||{})[me]; }
+async function setReady(v){ await roomRef.child("ready/"+me).set(v?true:null); }
+// 状態が変わる時だけ書き込む（描画ループでの無駄書き込み防止）
+function ensureReady(v){ if(!!v!==iAmReady()) setReady(v); }
+let computing=false;
+
+// リーダーが「全員準備OK」を検知して次へ
+async function maybeAdvance(){
+  if(!isLeader()) return;
+  if(!allJoinedConnected()) return;
+  const cp=connectedPlayers();
+  if(cp.length===0) return;
+  const need = cp.length;
+  if(readyCount()>=need){
+    const cur=room.step;
+    await roomRef.child("ready").remove();
+    await roomRef.update({ step: cur+1 });
+  }
 }
 
-async function loadMatchStats(){
+/* ===== VN風のステージ（背景どん＋下にセリフ窓） ===== */
+function stageBg(key){
+  const a=ART[key]||ART.scene||ART.title;
+  return `<img class="stage-img" src="${a.file}" onload="this.parentNode.querySelector('.stage-ph').style.display='none'" onerror="this.style.display='none'">
+    <div class="stage-ph"><div class="fn">${a.file}</div><div class="cap">${esc(a.cap)}</div></div>`;
+}
+function stage(bgKey, catText, compact){
+  const st = compact? ' style="aspect-ratio:16/7;max-height:30dvh"' : '';
+  return `<div class="stage"${st}>
+    ${stageBg(bgKey)}
+    <div class="vn">
+      <div class="vn-portrait">${artTag("neko")}</div>
+      <div class="vn-box"><div class="vn-name">黒猫</div><div class="vn-text">${nl2br(catText)}</div></div>
+    </div>
+  </div>`;
+}
+// フェーズごとの背景を決める
+function bgFor(ph){
+  if(ph.k==="prologue"||ph.k==="truth"||ph.k==="hoview"||ph.k==="briefing") return "prologue";
+  if(ph.k==="cards"){ const l=room.sel&&room.sel[me]; return (l&&LOCS[l])?LOCS[l].art:"scene"; }
+  if(ph.k==="confession") return "scene";
+  if(ph.k==="ending"){ const {ed}=computeEnding(); return ENDINGS[ed].art; }
+  if(ph.k==="select") return "map";
+  return "scene";
+}
+
+/* フェイズ帯：今なにをする＋声の状態 */
+function phaseInfo(ph){
+  const k=ph?ph.k:"";
+  if(k==="prologue") return {label:"🕯 プロローグ", sub:"まずは、この夜のことを", v:"mute", vl:"🔴 各自で読む"};
+  if(k==="briefing") return {label:"📜 村の事情", sub:"共通の背景を知る", v:"listen", vl:"🔵 読む時間"};
+  if(k==="intro")    return {label:"🎭 顔合わせ", sub:"自己紹介＆どこを調べる相談", v:"talk", vl:"🟢 話し合いOK"};
+  if(k==="hoview")   return {label:"🔒 個人確認", sub:"あなたのHOを読む", v:"mute", vl:"🔴 各自ミュート"};
+  if(k==="select")   return {label:"🗺 相談＆マップ", sub:"誰が、どこを調べる?", v:"talk", vl:"🟢 話し合いOK"};
+  if(k==="cards")    return {label:"🔎 探索の結果", sub:"自分だけの発見を確かめる", v:"mute", vl:"🔴 各自で確認"};
+  if(k==="discuss")  return {label:"🗣 議論フェイズ", sub:(ph.prompt||"全員で話し合う"), v:"talk", vl:"🟢 全員で話す"};
+  if(k==="guarantee")return {label:"🐈‍⬛ 黒猫の補足", sub:"足りない系統を補う", v:"talk", vl:"🟢 話し合いOK"};
+  if(k==="confession")return {label:"🗝 告白", sub:"決定的情報を出すか、隠すか", v:"talk", vl:"🟢 相談OK"};
+  if(k==="vote")     return {label:"🗳 最終投票", sub:"五つを選ぶ", v:"talk", vl:"🟢 相談OK"};
+  if(k==="truth")    return {label:"📖 真相", sub:"", v:"listen", vl:"🔵 聞く時間"};
+  if(k==="ending")   return {label:"🌙 結末", sub:"", v:"listen", vl:"🔵 聞く時間"};
+  return {label:"", sub:"", v:"talk", vl:""};
+}
+function readableText(ph){
+  if(!ph) return "";
+  if(ph.k==="prologue") return PROLOGUE;
+  if(ph.k==="briefing") return BRIEFING;
+  if(ph.k==="hoview"&&myChar()) return CHARS[myChar()].ho.memory+" "+CHARS[myChar()].ho.secret;
+  if(ph.k==="truth") return TRUTH;
+  if(ph.k==="ending") return ENDINGS[computeEnding().ed].text;
+  if(ph.k==="discuss") return ph.prompt||"";
+  return ph.cat||"";
+}
+/* 読み上げ（ウェブ標準のTTS。対応環境で日本語読み上げ／もう一度で停止） */
+function speak(text){
   try{
-    const wsnap=await getDocs(query(collection(db,"waiting"),where("status","==","searching")));
-    const now=Date.now(); let w=0;
-    wsnap.forEach(d=>{ const x=d.data(); if(x.uid===state.uid)return; if(x.updatedAt&&(now-x.updatedAt.toMillis())>2*60*1000)return; w++; });
-    const rc=$("rt-count"); if(rc) rc.textContent = w>0?`🟢 いま ${w}人 がつながれます`:"🟡 いまは待機中の人がいません（あなたが最初に待てます）";
-    const tm=$("tab-match-n"); if(tm) tm.textContent = w>0?` ${w}`:"";
-    // さがす枚数
-    const usnap=await getDocs(query(collection(db,"users"),limit(300)));
-    let pub=0; usnap.forEach(d=>{ const u=d.data(); if(!u.isAnonymous && u.photoData && u.searchable!==false) pub++; });
-    const tf=$("tab-find-n"); if(tf) tf.textContent = pub>0?` ${pub}枚`:"";
+    if(!('speechSynthesis' in window)||!text) return;
+    if(speechSynthesis.speaking){ speechSynthesis.cancel(); return; }
+    const u=new SpeechSynthesisUtterance(String(text).replace(/\n/g,'、'));
+    u.lang='ja-JP'; u.rate=0.96; u.pitch=1;
+    speechSynthesis.speak(u);
   }catch(e){}
 }
-async function fillChoiceCounts(){
-  try{
-    const wsnap=await getDocs(query(collection(db,"waiting"),where("status","==","searching")));
-    const now=Date.now(); let w=0,g=0;
-    wsnap.forEach(d=>{ const x=d.data(); if(x.updatedAt&&(now-x.updatedAt.toMillis())>2*60*1000)return; if(x.role==="wait")w++; else g++; });
-    const we=$("hm-wait"), ge=$("hm-go"); if(we)we.textContent=w+"人が待機中"; if(ge)ge.textContent=g+"人が探し中";
-  }catch(e){}
+function syncPaneled(){
+  const any=["#sheet","#board","#dm"].some(id=>{const e=$(id);return e&&e.classList.contains("open");});
+  document.body.classList.toggle("paneled", any);
 }
+function closeAllPanels(){ ["#sheet","#board","#dm"].forEach(id=>{const e=$(id);if(e)e.classList.remove("open");}); }
+function openSheetTab(t){ sheetTab=t; openSheet(); }
 
-function myProfileSnap(role, location, extra){
-  const p=state.profile;
-  return Object.assign({ handle:p.handle, avatarId:p.avatarId, photoData:p.photoData||"", iconCrop:p.iconCrop||null, scene:p.scene||null,
-    categories:p.categories||[], timeSlots:p.timeSlots||[], goal:p.goal||"", focusStyle:p.focusStyle||"",
-    cardColor:p.cardColor||"water", cardPattern:p.cardPattern||"none", neighborOk:p.neighborOk||"どちらでも",
-    role, location: role==="wait"?(location||""):"" }, extra||{});
+/* ===== クルーボード（拠点ごとに手がかり配置＋共有） ===== */
+function openBoard(){ closeAllPanels(); $("#board").classList.add("open"); syncPaneled(); renderBoard(); }
+function closeBoard(){ $("#board").classList.remove("open"); syncPaneled(); }
+async function publishCard(loc,cardId,to){
+  if(!to) return;
+  const items=(room.disc&&room.disc[me])?Object.values(room.disc[me]):[];
+  const it=items.find(x=>x.id===cardId);
+  if(!it) return;
+  await roomRef.child("shared/"+me+"_"+cardId).set({by:me,to,id:it.id,name:it.name,text:it.text,loc:it.loc||loc,combo:it.combo||0,kind:it.kind});
+  renderBoard();
 }
-function otherUid(m){ return m.users.find(u=>u!==state.uid); }
-
-// ---------- 待機開始 ----------
-function startMatching(role){
-  unlockAudio();
-  const sc=state.profile.scene; const fmt=LOC_FORMATS[sc?.locationFormat||"free"];
-  const untilRow=`<label style="margin-top:10px">何時まで作業する？（任意）</label><input type="text" id="opt-until" maxlength="10" placeholder="例: 22:00">`;
-  if(role==="wait"){
-    showModal(`🏠 部屋で待つ`,
-      `<p>いま自分がいる部屋の場所を教えてください。来てくれた人がここに入れます。</p>
-       <input type="text" id="wait-loc" placeholder="今いる部屋のID・ワールド名など" maxlength="24" value="${escA(state.profile.workLocation||"")}">
-       <p class="hint" style="margin-top:6px">${sc?(sc.icon+" "+esc(sc.gameName)+"界隈"):""}</p>${untilRow}`,
-      [{label:"この部屋で待つ",primary:true,onclick:()=>{
-        const val=($("wait-loc").value||"").trim();
-        if(!val){ toast("部屋を入力してください"); return; }
-        if(fmt.re && !fmt.re.test(val)){ toast("入力形式が違うみたい（"+fmt.label+"）"); return; }
-        const until=($("opt-until").value||"").trim();
-        state.profile.workLocation=val; saveLocal(); closeModal();
-        enterWaiting("wait", val, {workUntil:until});
-      }}]);
-  } else {
-    showModal("🚪 部屋へ行く",
-      `<p>誰かの部屋にお邪魔する側です。つながったら相手の部屋が表示されます。</p>${untilRow}`,
-      [{label:"仲間を探す",primary:true,onclick:()=>{ const until=($("opt-until").value||"").trim(); closeModal(); enterWaiting("go","",{workUntil:until}); }}]);
+async function unpublishCard(cardId){ await roomRef.child("shared/"+me+"_"+cardId).remove(); renderBoard(); }
+function readableCard(cardId){
+  if(room.discovered && room.discovered[cardId] && room.discovered[cardId][me]) return true;
+  const shared=room.shared?Object.values(room.shared):[];
+  return shared.some(s=>s.id===cardId && (s.to==="all"||s.to===me));
+}
+function cardDataById(cardId){
+  const mine=(room.disc&&room.disc[me])?Object.values(room.disc[me]):[];
+  const it=mine.find(x=>x.id===cardId); if(it) return it;
+  const shared=room.shared?Object.values(room.shared):[];
+  return shared.find(s=>s.id===cardId && (s.to==="all"||s.to===me))||null;
+}
+function boardCard(c, l){
+  const disc = (room.discovered&&room.discovered[c.id])?Object.keys(room.discovered[c.id]):[];
+  if(!disc.length){
+    return `<div class="bcard facedown">？　未発見の手がかり</div>`;
   }
-}
-
-async function enterWaiting(role, location, extra){
-  state.match={ active:true, role, location, matchId:null, matchData:null, established:false, startedAt:Date.now(), workUntil:(extra&&extra.workUntil)||"" };
-  openWaitOverlay(); renderWaitOverlay();
-  try{
-    await setDoc(doc(db,"waiting",state.uid), Object.assign({ uid:state.uid, status:"searching", matchId:null, updatedAt:serverTimestamp() }, myProfileSnap(role,location,extra)));
-  }catch(e){ console.error("waiting",e); toast("待機の登録に失敗"); leaveWaiting(); return; }
-  state.match.hb=setInterval(()=>{ try{ updateDoc(doc(db,"waiting",state.uid),{updatedAt:serverTimestamp()}); }catch(e){} },30000);
-  state.match.timer=setInterval(()=>{ const el=$("wo-timer"); if(el){ const s=Math.floor((Date.now()-state.match.startedAt)/1000); el.textContent=`待機時間 ${Math.floor(s/60)}分${String(s%60).padStart(2,"0")}秒`; } },1000);
-  state.match.poolUnsub=onSnapshot(query(collection(db,"waiting"),where("status","==","searching")),(snap)=>tryInitiate(snap),(e)=>console.error("pool",e));
-}
-
-async function tryInitiate(snap){
-  if(!state.match.active || state.match.matchId) return;
-  const now=Date.now(); const cands=[];
-  snap.forEach(d=>{
-    if(d.id===state.uid) return;
-    if(state.excluded.has(d.id)) return;
-    const w=d.data();
-    if(w.status!=="searching") return;
-    if(w.updatedAt && (now-w.updatedAt.toMillis())>2*60*1000) return;
-    cands.push({uid:d.id,...w});
-  });
-  if(!cands.length) return;
-  const myScene=state.profile.scene?.gameName; const myCats=new Set(state.profile.categories||[]);
-  cands.forEach(c=>{ c._s=(c.role!==state.match.role?5:0)+(c.scene?.gameName===myScene?3:0)+(c.categories||[]).filter(x=>myCats.has(x)).length; });
-  cands.sort((a,b)=>b._s-a._s);
-  const partner=cands[0];
-  if(state.uid < partner.uid){
-    const matchId=[state.uid,partner.uid].sort().join("__");
-    try{
-      const mref=doc(db,"matches",matchId);
-      const ex=await getDoc(mref);
-      if(ex.exists() && !["cancelled","ended"].includes(ex.data().status)) return;
-      await setDoc(mref,{
-        users:[state.uid,partner.uid].sort(),
-        likes:{[state.uid]:false,[partner.uid]:false},
-        status:"pending", source:"match",
-        profiles:{ [state.uid]:myProfileSnap(state.match.role,state.match.location,{workUntil:state.match.workUntil||""}),
-          [partner.uid]:{handle:partner.handle,avatarId:partner.avatarId,photoData:partner.photoData||"",iconCrop:partner.iconCrop||null,scene:partner.scene||null,categories:partner.categories||[],timeSlots:partner.timeSlots||[],goal:partner.goal||"",focusStyle:partner.focusStyle||"",cardColor:partner.cardColor||"water",cardPattern:partner.cardPattern||"none",neighborOk:partner.neighborOk||"どちらでも",role:partner.role,location:partner.location||"",workUntil:partner.workUntil||""} },
-        createdAt:serverTimestamp()
-      });
-    }catch(e){ console.warn("initiate",e); }
-  }
-}
-
-// ---------- 全マッチ監視（待機中も招待経由も） ----------
-function subscribeMyMatches(){
-  if(state.matchesGlobalUnsub) return;
-  state.matchesGlobalUnsub=onSnapshot(query(collection(db,"matches"),where("users","array-contains",state.uid)),(snap)=>{
-    let act=null;
-    snap.forEach(d=>{ const m={id:d.id,...d.data()}; if(["cancelled","ended"].includes(m.status))return; if(state.excluded.has(otherUid(m)))return;
-      if(!act) act=m; else if(m.status==="established"&&act.status!=="established") act=m; });
-    handleActiveMatch(act);
-  },(e)=>console.error("matches",e));
-}
-function handleActiveMatch(m){
-  if(!m){
-    if(state.work && state.work.matchId){ closeWorkScreen(); }
-    return;
-  }
-  if(m.status==="established"){
-    if(!state.work || state.work.matchId!==m.id){ // 初回オープン
-      stopMatchSound();
-      if(state.match.active) cleanupWaiting(false);
-      openWorkScreen(m);
-    } else { patchWorkScreen(m); }
-    return;
-  }
-  if(m.status==="pending"){
-    // どちらのクライアントでも、両者いいねなら成立させる（保険）
-    const bothLiked=m.users.every(u=>m.likes&&m.likes[u]);
-    if(bothLiked){
-      let wu=null;
-      try{ wu=m.users.find(u=>m.profiles[u] && m.profiles[u].role==="wait" && m.profiles[u].location); }catch(e){}
-      const locVal=wu?m.profiles[wu].location:"";
-      const locLabel=(wu&&m.profiles[wu].scene)?m.profiles[wu].scene.locationLabel:"作業場所";
-      updateDoc(doc(db,"matches",m.id),{status:"established",location:{value:locVal,label:locLabel,byUid:wu||null}}).catch(()=>{});
+  const who = disc.map(charName).join("、");
+  const iHave = disc.includes(me);
+  const readable = readableCard(c.id);
+  const link = c.combo?`<span class="pill">🔗</span>`:"";
+  if(readable){
+    const d=cardDataById(c.id)||c;
+    let inner=`<div class="wt"><span>${esc(d.name||c.name)}</span>${link}<span class="pill">発見: ${esc(who)}</span></div><div>${nl2br(d.text)}</div>`;
+    if(iHave){
+      const already=room.shared&&room.shared[me+"_"+c.id];
+      if(already){
+        const toL=already.to==="all"?"全員":charName(already.to);
+        inner+=`<div class="brow"><span class="pill">✅ 公開中 → ${esc(toL)}</span><button class="tbtn" onclick="unpublishCard('${c.id}')">取り消す</button></div>`;
+      }else{
+        inner+=`<div class="brow"><select class="pubsel" onchange="publishCard('${l}','${c.id}',this.value)"><option value="">🔓 公開する…</option><option value="all">全員に</option>`;
+        players().filter(p=>p.id!==me).forEach(p=>inner+=`<option value="${p.id}">${esc(charName(p.id))}だけに</option>`);
+        inner+=`</select></div>`;
+      }
+    }else{
+      inner+=`<div class="brow"><span class="pill">🔓 共有で見えている</span></div>`;
     }
-    if(state.match.active){ handlePendingMatch(m); }
+    return `<div class="bcard">${inner}</div>`;
   }
+  // 発見済みだが内容は未共有（自分は読めない）
+  return `<div class="bcard locked"><div class="wt"><span>？？？（発見済み）</span><span class="pill">発見: ${esc(who)}</span></div>
+    <div class="who">内容は未共有。${esc(who)}に聞いてみよう。</div></div>`;
 }
-function handlePendingMatch(m){
-  const firstTime=state.match.matchId!==m.id;
-  state.match.matchId=m.id; state.match.matchData=m;
-  if(firstTime){
-    if(state.match.poolUnsub){ state.match.poolUnsub(); state.match.poolUnsub=null; }
-    try{ setDoc(doc(db,"waiting",state.uid),{status:"matched",matchId:m.id},{merge:true}); }catch(e){}
-    startMatchSound();
-    // 3分で自動キャンセル
-    state.match.cancelTimer=setTimeout(()=>{ autoCancelPending(m.id); },180000);
-  }
-  const bothLiked=m.users.every(u=>m.likes&&m.likes[u]);
-  if(bothLiked && m.status==="pending"){
-    // 両者が成立処理（同じ値の冪等更新なので競合しても安全）→ 片方だけ入れないバグ回避
-    let wu=null;
-    try{ wu=m.users.find(u=>m.profiles[u] && m.profiles[u].role==="wait" && m.profiles[u].location); }catch(e){}
-    const locVal=wu?m.profiles[wu].location:"";
-    const locLabel=(wu&&m.profiles[wu].scene)?m.profiles[wu].scene.locationLabel:"作業場所";
-    updateDoc(doc(db,"matches",m.id),{status:"established",location:{value:locVal,label:locLabel,byUid:wu||null}}).catch(e=>console.warn("establish",e));
-  }
-  renderWaitOverlay();
-}
-async function autoCancelPending(matchId){
-  try{ const s=await getDoc(doc(db,"matches",matchId)); if(s.exists() && s.data().status==="pending"){ await updateDoc(doc(db,"matches",matchId),{status:"cancelled"}); } }catch(e){}
-  toast("3分たったのでマッチを解除しました");
-  resetToSearching();
-}
-
-async function likeCurrentMatch(){
-  stopMatchSound();
-  const m=state.match.matchData; if(!m) return;
-  try{ await updateDoc(doc(db,"matches",m.id),{["likes."+state.uid]:true}); }catch(e){ console.error(e); }
-}
-async function passCurrentMatch(){
-  stopMatchSound();
-  const m=state.match.matchData;
-  if(m){ state.excluded.add(otherUid(m)); try{ await updateDoc(doc(db,"matches",m.id),{status:"cancelled"}); }catch(e){} }
-  resetToSearching();
-}
-function resetToSearching(){
-  if(state.match.cancelTimer){ clearTimeout(state.match.cancelTimer); state.match.cancelTimer=null; }
-  state.match.matchId=null; state.match.matchData=null; state.match.established=false;
-  if(!state.match.active){ return; }
-  try{ setDoc(doc(db,"waiting",state.uid),{status:"searching",matchId:null,updatedAt:serverTimestamp()},{merge:true}); }catch(e){}
-  if(!state.match.poolUnsub){ state.match.poolUnsub=onSnapshot(query(collection(db,"waiting"),where("status","==","searching")),(snap)=>tryInitiate(snap)); }
-  renderWaitOverlay();
-}
-function cleanupWaiting(deleteDocToo){
-  if(state.match.hb) clearInterval(state.match.hb);
-  if(state.match.timer) clearInterval(state.match.timer);
-  if(state.match.cancelTimer) clearTimeout(state.match.cancelTimer);
-  if(state.match.poolUnsub) state.match.poolUnsub();
-  stopMatchSound();
-  if(deleteDocToo){ try{ deleteDoc(doc(db,"waiting",state.uid)); }catch(e){} }
-  state.match={active:false};
-  closeWaitOverlay();
-}
-async function leaveWaiting(){
-  stopMatchSound();
-  const m=state.match.matchData;
-  if(m && !state.match.established){ state.excluded.add(otherUid(m)); try{ await updateDoc(doc(db,"matches",m.id),{status:"cancelled"}); }catch(e){} }
-  cleanupWaiting(true);
-  renderMatchTab();
-}
-
-function openWaitOverlay(){ $("wait-overlay").classList.add("active"); }
-function closeWaitOverlay(){ $("wait-overlay").classList.remove("active"); }
-
-// ---------- PIP（待機/作業を小窓化） ----------
-function toPip(){
-  const isWork=$("work-screen").classList.contains("active");
-  $("pip-title").textContent=isWork?"作業中":"待機中";
-  const m=state.work&&state.work.data;
-  $("pip-sub").textContent=isWork&&m?((m.location&&m.location.value)?m.location.value:"作業中"):"相手を探しています";
-  $("work-screen").classList.remove("active");
-  $("wait-overlay").classList.remove("active");
-  $("pip").classList.add("active");
-  state._pipMode=isWork?"work":"wait";
-}
-function fromPip(){
-  $("pip").classList.remove("active");
-  if(state._pipMode==="work"){ $("work-screen").classList.add("active"); }
-  else { $("wait-overlay").classList.add("active"); }
-}
-// PIPドラッグ
-(function(){
-  const pip=$("pip"); if(!pip) return;
-  let dx=0,dy=0,sx=0,sy=0,drag=false;
-  const down=e=>{ if(e.target.classList.contains("pip-close")||e.target.tagName==="BUTTON")return; drag=true; const p=e.touches?e.touches[0]:e; sx=p.clientX; sy=p.clientY; const r=pip.getBoundingClientRect(); dx=r.left; dy=r.top; };
-  const move=e=>{ if(!drag)return; const p=e.touches?e.touches[0]:e; pip.style.left=(dx+p.clientX-sx)+"px"; pip.style.top=(dy+p.clientY-sy)+"px"; pip.style.right="auto"; pip.style.bottom="auto"; if(e.cancelable)e.preventDefault(); };
-  const up=()=>drag=false;
-  pip.addEventListener("mousedown",down); window.addEventListener("mousemove",move); window.addEventListener("mouseup",up);
-  pip.addEventListener("touchstart",down,{passive:true}); window.addEventListener("touchmove",move,{passive:false}); window.addEventListener("touchend",up);
-})();
-
-function renderWaitOverlay(){
-  const box=$("wait-overlay-content");
-  const M=state.match; const m=M.matchData;
-  if(!m || m.status==="established"){
-    const roleTxt = M.role==="wait" ? `🏠 「${esc(M.location)}」で待っています` : "🚪 入れる部屋をさがしています";
-    box.innerHTML=`
-      <div class="big-spinner"></div>
-      <h2>いま 仲間をさがしています</h2>
-      <div class="wo-sub">${roleTxt}<br>見つかるまで、のんびり作業して待っててね ☕<br>誰か来たら音でお知らせします</div>
-      <div id="wo-timer" class="wo-timer">待機時間 0分00秒</div>
-      <div style="display:flex;gap:10px;margin-top:24px">
-        <button class="btn btn-ghost" style="color:#fff" onclick="app.toPip()">🗕 小さく表示</button>
-        <button class="btn btn-ghost" style="color:#fff" onclick="app.leaveWaiting()">やめる</button>
-      </div>`;
-    return;
-  }
-  const pu=otherUid(m); const pp=m.profiles[pu]||{};
-  const myLiked=m.likes&&m.likes[state.uid]; const partnerLiked=m.likes&&m.likes[pu];
-  const pav=pp.photoData?`<img src="${pp.photoData}">`:(AVATARS[pp.avatarId]||"🐱");
-  box.innerHTML=`
-    <div class="wo-card match-pop">
-      <div style="font-size:13px;color:var(--pink);font-weight:700;margin-bottom:10px">🔔 仲間が見つかりました！</div>
-      <div class="av-big">${pav}</div>
-      <div style="font-weight:700;font-size:18px">${esc(pp.handle)}</div>
-      <div style="font-size:12px;color:var(--text-soft);margin-bottom:10px">${pp.scene?(pp.scene.icon+" "+esc(pp.scene.gameName)):""}・${pp.role==="wait"?"🏠 部屋で待ってる":"🚪 部屋へ向かう"}</div>
-      <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:4px;margin-bottom:8px">${(pp.categories||[]).map(c=>`<span class="sc-cat" style="background:var(--water-light);color:#fff;font-size:11px;padding:3px 9px;border-radius:9px">${esc(c)}</span>`).join("")}</div>
-      ${pp.goal?`<p style="font-size:13px;margin-bottom:6px"><strong>いま:</strong> ${esc(pp.goal)}</p>`:""}
-      ${pp.workUntil?`<p style="font-size:13px;margin-bottom:6px"><strong>作業:</strong> ${esc(pp.workUntil)}まで</p>`:""}
-      <div style="margin:10px 0">
-        <span class="like-badge ${myLiked?"on":"off"}">あなた ${myLiked?"♡":"…"}</span>
-        <span class="like-badge ${partnerLiked?"on":"off"}">相手 ${partnerLiked?"♡":"…"}</span>
-      </div>
-      ${myLiked ? `<p class="hint">相手の返事を待っています…（3分でリセット）</p>`
-        : `<div style="display:flex;gap:10px;margin-top:10px">
-             <button class="btn" onclick="app.passMatch()">パス</button>
-             <button class="btn btn-pink" onclick="app.likeMatch()">♡ いいね</button>
-           </div>`}
-    </div>`;
-}
-
-// ================= 作業画面 =================
-function openWorkScreen(m){
-  state.work={ matchId:m.id, data:m };
-  $("work-screen").classList.add("active");
-  $("pip").classList.remove("active");
-  closeWaitOverlay();
-  $("ws-body").innerHTML=`
-    <div style="display:flex;gap:10px;margin-bottom:10px" id="ws-pair"></div>
-    <div id="ws-todos"></div>
-    <div style="margin-top:14px">
-      <div style="font-size:13px;font-weight:700;color:var(--water-dark);margin-bottom:6px">コメント</div>
-      <div id="ws-comments"></div>
-      <div style="display:flex;gap:6px;margin-top:8px"><input type="text" id="ws-comment-input" placeholder="コメントを送る" maxlength="60"><button class="btn btn-small" onclick="app.sendComment()">送信</button></div>
-    </div>`;
-  $("ws-fab").innerHTML=`
-    <button title="小さく表示" onclick="app.toPip()">🗕</button>
-    <button title="場所を提案" onclick="app.proposeLoc()">📍</button>
-    <button title="写真さそう" onclick="app.suggestPhoto()">📷</button>
-    <button id="ws-friend-fab" title="フレンド申請" onclick="app.friendReqFromWork()" style="display:none">➕</button>`;
-  patchWorkScreen(m);
-  updateFriendFab();
-}
-function closeWorkScreen(){ $("work-screen").classList.remove("active"); state.work=null; goto("home"); }
-
-async function leaveWorkScreen(){
-  const m=state.work&&state.work.data;
-  if(m){ try{ await updateDoc(doc(db,"matches",m.id),{status:"ended"}); }catch(e){} }
-  try{ await deleteDoc(doc(db,"waiting",state.uid)); }catch(e){}
-  $("work-screen").classList.remove("active"); $("pip").classList.remove("active"); state.work=null; state.match={active:false};
-  goto("home");
-}
-
-let _lastPhotoSuggestTs=0, _lastLocPropId="";
-function getTodoData(m,uid){ return (m.todos&&m.todos[uid])||{items:[],hideTitles:false}; }
-function patchWorkScreen(m){
-  if(!state.work) return;
-  state.work.data=m;
-  const pu=otherUid(m); const pp=m.profiles[pu]||{}; const me=m.profiles[state.uid]||{};
-  const loc=m.location||{value:"",label:"作業場所"};
-  $("ws-loc-label").textContent=loc.label||"作業場所";
-  $("ws-loc-value").innerHTML=(loc.value?esc(loc.value):"（未設定・📍から提案）")+(loc.value?`<button class="copy-btn" onclick="app.copyLoc()">コピー</button>`:"");
-  $("ws-partner-line").textContent=`${pp.handle||"相手"} と作業中`+(pp.workUntil?`・${pp.workUntil}まで`:"");
-  // アイコン2人（アイコンをタップでタイトル隠しON/OFF＝自分のみ）
-  const myTd=getTodoData(m,state.uid);
-  const iconCard=(uid,prof,isMe)=>{
-    const td=getTodoData(m,uid);
-    const hideMark = td.hideTitles?"🙈":"";
-    const onclick = isMe?`onclick="app.toggleHideTitles()"`:"";
-    return `<div class="ws-person2" style="flex:1"><span ${onclick} style="cursor:${isMe?"pointer":"default"}">${iconEl(prof,60)}</span>
-      <div style="font-weight:700;font-size:13px;margin-top:6px">${esc(prof.handle||"")}${isMe?"（あなた）":""} ${hideMark}</div>
-      ${isMe?`<div style="font-size:10px;color:var(--text-soft)">アイコンでタイトル隠す</div>`:""}</div>`;
-  };
-  $("ws-pair").innerHTML=iconCard(state.uid,me,true)+iconCard(pu,pp,false);
-  // TODOリスト（自分・相手）
-  const renderList=(uid,isMe)=>{
-    const td=getTodoData(m,uid);
-    const prof=m.profiles[uid]||{};
-    const rows = td.items.length ? td.items.map((it,i)=>{
-      const done=it.target>0 && it.count>=it.target;
-      const title = td.hideTitles ? (isMe?esc(it.name):"（ひみつ）") : esc(it.name);
-      const prog = it.target>0?`${it.count}/${it.target}`:`${it.count}`;
-      const ctrl = isMe?`<button class="cbtn" style="width:32px;height:32px;font-size:18px" onclick="app.todoDec(${i})">−</button><button class="cbtn" style="width:32px;height:32px;font-size:18px" onclick="app.todoInc(${i})">＋</button><button class="btn btn-small btn-ghost" style="padding:2px 8px" onclick="app.todoDel(${i})">✕</button>`:"";
-      return `<div class="todo-item ${done?"done":""}" style="gap:10px">
-        <div class="tt" style="font-weight:600">${title}</div>
-        <div style="font-weight:800;color:${done?"var(--ok)":"var(--pink)"};font-size:15px">${prog}${done?" ✓":""}</div>
-        ${ctrl}
-      </div>`;
-    }).join("") : `<div style="font-size:12px;color:var(--text-soft);padding:4px">まだありません</div>`;
-    return `<div class="card" style="padding:14px;margin-bottom:10px">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-        <div style="font-size:13px;font-weight:700;color:var(--water-dark)">${isMe?"あなた":esc(prof.handle||"相手")}のリスト</div>
-        ${isMe?`<button class="btn btn-small btn-pink" onclick="app.todoAdd()">＋ 追加</button>`:""}
-      </div>${rows}</div>`;
-  };
-  $("ws-todos").innerHTML=renderList(state.uid,true)+renderList(pu,false);
-  // コメント
-  const cms=m.comments||[];
-  $("ws-comments").innerHTML = cms.length? cms.map(c=>`<div class="comment-bubble" style="${c.uid===state.uid?"background:var(--water)":""}">${c.uid===state.uid?"あなた":esc(pp.handle||"相手")}: ${esc(c.text)}</div>`).join("") : '<div style="font-size:12px;color:var(--text-soft)">まだコメントはありません</div>';
-  // 相手の完了音（どれか達成した瞬間）
-  const pTd=getTodoData(m,pu);
-  pTd.items.forEach((it,i)=>{
-    if(it.target>0 && it.count>=it.target){ const key="pdone_"+i+"_"+it.name; if(!state.work[key]){ state.work[key]=true; playBeep([880,1100,1320]); toast(`${esc(pp.handle||"相手")}が「${td_short(it.name)}」達成！`);} }
+function renderBoard(){
+  const bb=$("#boardBody"); if(!bb) return;
+  let out=`<p class="sub">全拠点の手がかりの“存在”と“誰が発見したか”は、みんなに見える。でも<b>内容は発見した人だけ</b>が読める。他の人に見せるには「公開」してね。🔗は照合の余地。</p>`;
+  LOC_ORDER.forEach(l=>{
+    const cards=[...(LOCS[l].first||[]),...(LOCS[l].second||[])];
+    out+=`<div class="bloc"><div class="blname">${LOCS[l].name}</div><div class="blov">${esc(LOCS[l].overview||"")}</div>`;
+    cards.forEach(c=>{ out+=boardCard(c,l); });
+    // 照合（2人同行）が発見されていれば表示
+    const X=COLLATION[l];
+    if(X && room.discovered && room.discovered[X.id]) out+=boardCard(X,l);
+    out+=`</div>`;
   });
-  // 場所変更提案
-  if(m.proposedLoc && m.proposedLoc.byUid && m.proposedLoc.byUid!==state.uid && m.proposedLoc.id!==_lastLocPropId){
-    _lastLocPropId=m.proposedLoc.id;
-    showModal("場所の変更提案",`<p>${esc(pp.handle||"相手")}さんが場所を「<strong>${esc(m.proposedLoc.value)}</strong>」に変えませんか？と提案しています。</p>`,
-      [{label:"変更する",primary:true,onclick:async()=>{ try{ await updateDoc(doc(db,"matches",m.id),{location:{value:m.proposedLoc.value,label:m.location?.label||"作業場所",byUid:state.uid},proposedLoc:null}); }catch(e){} closeModal(); }},
-       {label:"却下",onclick:async()=>{ try{ await updateDoc(doc(db,"matches",m.id),{proposedLoc:null}); }catch(e){} closeModal(); }}]);
+  bb.innerHTML=out;
+}
+
+/* ===== 密談（二人だけの秘密チャット。第三者には存在も見えない） ===== */
+let dmWith=null;
+function openDM(){ closeAllPanels(); dmWith=null; $("#dm").classList.add("open"); syncPaneled(); renderDM(); }
+function closeDM(){ $("#dm").classList.remove("open"); dmWith=null; syncPaneled(); }
+function pairKey(a,b){ return [a,b].sort().join("_"); }
+function renderDM(){
+  const body=$("#dmBody"), title=$("#dmTitle"); if(!body) return;
+  if(!dmWith){
+    title.textContent="密談する相手を選ぶ";
+    let out=`<p class="sub">選んだ相手と、二人だけの秘密のチャット。<b>他の人には見えないし、密談していること自体も分からない</b>よ。</p>`;
+    players().filter(p=>p.id!==me).forEach(p=>{ out+=`<button class="btn" style="width:100%" onclick="dmWith='${p.id}';renderDM()">🔒 ${esc(charName(p.id))}と密談する</button>`; });
+    body.innerHTML=out; return;
   }
-  if(m.photoSuggest && m.photoSuggest.byUid!==state.uid && m.photoSuggest.ts!==_lastPhotoSuggestTs){
-    _lastPhotoSuggestTs=m.photoSuggest.ts;
-    toast(`📷 ${esc(pp.handle||"相手")}が「一緒に写真撮りませんか？」`);
-  }
+  title.textContent="🔒 "+charName(dmWith)+" と密談中";
+  let out=`<button class="tbtn" onclick="dmWith=null;renderDM()">← 相手を変える</button><div class="dmlog"></div>
+    <div class="dmin"><input class="txt" id="dmText" placeholder="メッセージ…" onkeydown="if(event.key==='Enter')sendDM()"><button class="btn primary" onclick="sendDM()">送信</button></div>`;
+  body.innerHTML=out; dmTick();
 }
-function td_short(s){ return s.length>8?s.slice(0,8)+"…":s; }
-async function saveTodos(items,hideTitles){
-  const m=state.work.data;
-  try{ await updateDoc(doc(db,"matches",m.id),{["todos."+state.uid]:{items,hideTitles:!!hideTitles}}); }catch(e){ console.error(e); }
+function dmTick(){
+  if(!dmWith) return;
+  const log=$("#dmBody .dmlog"); if(!log) return;
+  const pk=pairKey(me,dmWith);
+  const msgs=(room&&room.dm&&room.dm[pk])?Object.values(room.dm[pk]).sort((a,b)=>(a.t||0)-(b.t||0)):[];
+  log.innerHTML = msgs.length? msgs.map(m=>`<div class="dmmsg ${m.by===me?'mine':''}"><span class="dmname">${esc(charName(m.by))}</span>${esc(m.text)}</div>`).join("")
+    : `<p class="sub">まだメッセージはないよ。</p>`;
+  log.scrollTop=log.scrollHeight;
 }
-function copyLoc(){
-  const v=(state.work&&state.work.data&&state.work.data.location&&state.work.data.location.value)||"";
-  if(!v) return;
-  try{ navigator.clipboard.writeText(v); toast("コピーしました"); }catch(e){ toast("コピーできませんでした"); }
-}
-function todoAdd(){
-  showModal("やることを追加",`<p>名前と、いくつで完了かを決めます（1/○○の○○）。</p>
-    <input type="text" id="td-name" placeholder="例: 英単語" maxlength="20" style="margin-bottom:8px">
-    <input type="text" id="td-target" inputmode="numeric" placeholder="30（母数）" maxlength="4">`,
-    [{label:"追加",primary:true,onclick:async()=>{
-      const name=($("td-name").value||"").trim(); const n=parseInt(($("td-target").value||"").replace(/[^0-9]/g,""),10);
-      if(!name){ toast("名前を入れてください"); return; }
-      const td=getTodoData(state.work.data,state.uid);
-      const items=[...td.items,{name,count:0,target:(n&&n>0)?n:0}];
-      await saveTodos(items,td.hideTitles); closeModal();
-    }}]);
-}
-async function todoInc(i){
-  const td=getTodoData(state.work.data,state.uid);
-  const items=td.items.map((it,idx)=>{ if(idx!==i)return it; const c=it.target>0?Math.min(it.target,it.count+1):it.count+1; return {...it,count:c}; });
-  await saveTodos(items,td.hideTitles);
-  const it=items[i]; if(it.target>0 && it.count>=it.target){ playBeep([880,1100,1320]); toast("達成！おつかれさま🎉"); }
-}
-async function todoDec(i){
-  const td=getTodoData(state.work.data,state.uid);
-  const items=td.items.map((it,idx)=>idx===i?{...it,count:Math.max(0,it.count-1)}:it);
-  await saveTodos(items,td.hideTitles);
-}
-async function todoDel(i){
-  const td=getTodoData(state.work.data,state.uid);
-  const items=td.items.filter((_,idx)=>idx!==i);
-  await saveTodos(items,td.hideTitles);
-}
-async function toggleHideTitles(){
-  const td=getTodoData(state.work.data,state.uid);
-  await saveTodos(td.items,!td.hideTitles);
-}
-async function sendComment(){
-  const inp=$("ws-comment-input"); const t=(inp.value||"").trim(); if(!t) return;
-  const m=state.work.data; const comments=[...(m.comments||[]),{uid:state.uid,text:t,ts:Date.now()}].slice(-30);
+async function sendDM(){
+  const inp=$("#dmText"); if(!inp) return;
+  const t=inp.value.trim(); if(!t||!dmWith) return;
+  await roomRef.child("dm/"+pairKey(me,dmWith)).push({by:me,text:t.slice(0,500),t:Date.now()});
   inp.value="";
-  try{ await updateDoc(doc(db,"matches",m.id),{comments}); }catch(e){}
-}
-function proposeLoc(){
-  const m=state.work.data;
-  showModal("場所の変更を提案",`<p>新しい作業場所を入力すると、相手に「変えませんか？」と提案します。</p><input type="text" id="prop-loc" placeholder="作業場所（ルーム名・ID など）" maxlength="24">`,
-    [{label:"提案する",primary:true,onclick:async()=>{
-      const v=($("prop-loc").value||"").trim(); if(!v){ toast("入力してください"); return; }
-      try{ await updateDoc(doc(db,"matches",m.id),{proposedLoc:{value:v,byUid:state.uid,id:"p"+Date.now()}}); }catch(e){}
-      closeModal(); toast("提案しました");
-    }}]);
-}
-async function suggestPhoto(){
-  const m=state.work.data;
-  try{ await updateDoc(doc(db,"matches",m.id),{photoSuggest:{byUid:state.uid,ts:Date.now()}}); }catch(e){}
-  toast("「一緒に写真撮りませんか？」と伝えました");
-}
-async function updateFriendFab(){
-  const m=state.work&&state.work.data; if(!m) return;
-  const pu=otherUid(m);
-  const fset=await getFriendUids();
-  const btn=$("ws-friend-fab");
-  if(btn) btn.style.display = fset.has(pu)?"none":"flex";
-}
-async function friendReqFromWork(){
-  const m=state.work.data; const pu=otherUid(m);
-  await sendFriendRequest(pu);
 }
 
-// ================= さがす（縦フィード） =================
-async function initSwipe(){
-  const box=$("tab-find");
-  // 未ログイン → ぼかしティーザー
-  if(!state.isLoggedIn){
-    box.innerHTML='<div class="loading"><span class="spinner"></span>読み込み中…</div>';
-    await loadFeedCandidates(true);
-    return;
+/* ============================================================
+   画面描画
+   ============================================================ */
+function render(){
+  // 一時停止（プレイ中に誰か落ちた）
+  const inPlay = room && room.step>=0;
+  if(inPlay && !allJoinedConnected()){
+    $("#pause").classList.add("on");
+    const off=players().filter(p=>!p.connected).map(p=>esc(p.name)).join("、");
+    $("#pauseWho").textContent = off? `${off} の復帰を待っています` : "";
+  }else{
+    $("#pause").classList.remove("on");
   }
-  box.innerHTML='<div class="loading"><span class="spinner"></span>読み込み中…</div>';
-  await loadFeedCandidates(false);
-}
-async function loadFeedCandidates(teaser){
-  try{
-    let liked=new Set(), friendUids=new Set();
-    if(!teaser){
-      const likesSnap=await getDocs(query(collection(db,"likes"),where("likerUid","==",state.uid)));
-      liked=new Set(likesSnap.docs.map(d=>d.data().likedUid));
-      friendUids=await getFriendUids();
+
+  if(!room){ lobbyView(); return; }
+  if(room.step<0){ lobbyView(); return; }
+
+  const step=room.step;
+  if(step>=stepsCount()){ app.innerHTML=`<div class="bg">${stageBg("scene")}</div><div class="scrim"></div><div class="vn"><div class="vn-portrait">${artTag("neko")}</div><div class="vn-box"><div class="vn-name">黒猫</div><div class="vn-text">……おしまい。また会おうね。</div></div></div>`; return; }
+  const ph=FLOW[step];
+
+  // リーダーが必要な計算をしてから描画
+  ensureComputed(step, ph);
+
+  const you = myChar()? CHARS[myChar()].name : "?";
+  const pi=phaseInfo(ph);
+  window.__read = readableText(ph);
+  let html = `<div class="bg">${stageBg(bgFor(ph))}</div><div class="scrim"></div>`;
+  html += `<div class="topbar">
+    <div class="pb"><span class="pbl">${pi.label}</span><span class="pbs">${esc(pi.sub)}</span></div>
+    <span class="voice ${pi.v}">${pi.vl}</span>
+    <span class="spacer"></span>
+    <button class="readbtn" title="読み上げ" onclick="speak(window.__read)">🔊</button>
+    <button class="tbtn" onclick="openSheetTab('me')">👤自分</button>
+    <button class="tbtn" onclick="openBoard()">🗺ボード</button>
+    <button class="tbtn" onclick="openDM()">🔒密談</button>
+    <button class="tbtn" onclick="openSheetTab('roster')">👥面々</button>
+    <button class="tbtn" onclick="openSheet()">📖</button>
+  </div>`;
+  html += `<div class="content">${renderPhase(step, ph)}</div>`;
+  html += `<div class="vn"><div class="vn-portrait">${artTag("neko")}</div><div class="vn-box"><div class="vn-name">黒猫</div><div class="vn-text">${nl2br(ph.cat)}</div></div></div>`;
+  if(needsReady(ph)){
+    const total=connectedPlayers().length||1;
+    let dots=""; for(let i=0;i<total;i++) dots+=`<span class="dot ${i<readyCount()?'on':''}"></span>`;
+    let btn="";
+    if(!isSubmitPhase(ph)){
+      btn = iAmReady()? `<button class="nextbtn off" onclick="setReady(false)">まつ</button>`
+                      : `<button class="nextbtn" onclick="setReady(true)">つぎへ ▶</button>`;
     }
-    const exclude=new Set([...liked,...friendUids,state.uid]);
-    const usersSnap=await getDocs(query(collection(db,"users"),limit(100)));
-    const cands=[];
-    usersSnap.forEach(d=>{ const u=d.data(); if(exclude.has(d.id))return; if(u.isAnonymous)return; if(!u.handle)return; if(!u.photoData)return; if(u.searchable===false)return; cands.push({uid:d.id,...u}); });
-    // 近い順＋最近アクティブ順
-    const myCats=new Set(state.profile?.categories||[]), myTS=new Set(state.profile?.timeSlots||[]), myScene=state.profile?.scene?.gameName;
-    const now=Date.now();
-    cands.forEach(c=>{
-      const sim=(c.scene?.gameName===myScene?3:0)+2*(c.categories||[]).filter(x=>myCats.has(x)).length+(c.timeSlots||[]).filter(x=>myTS.has(x)).length;
-      const la=c.lastActive?c.lastActive.toMillis():0;
-      const recency = la ? Math.max(0, 5 - Math.floor((now-la)/(60*60*1000))) : 0; // 直近ほど加点(最大5)
-      c._s = sim*2 + recency;
-    });
-    cands.sort((a,b)=>b._s-a._s);
-    state.feed={list:cands, idx:0, teaser, liked, friends:friendUids};
-    renderFeed();
-  }catch(e){ console.error(e); $("tab-find").innerHTML='<div class="empty">読み込みに失敗しました</div>'; }
-}
-function renderFeed(){
-  const box=$("tab-find"); const F=state.feed;
-  if(F.teaser){
-    // 未ログイン：1枚だけぼかして見せる＋閉じる
-    const c=F.list[0];
-    box.innerHTML=`
-      <div class="feed">
-        <div class="feed-card active">${c?pcardHtml(c,{mode:"plain",blurred:true}):`<div class="vcard" style="background:linear-gradient(135deg,var(--water),var(--water-dark))"></div>`}</div>
-        <div class="feed-lock"><div class="fl-card">
-          <div style="font-size:40px">🔒</div>
-          <h3 style="margin:6px 0;color:var(--water-dark)">ログインで解放</h3>
-          <p style="font-size:13px;color:var(--text-soft)">仲間さがしはログインした人だけ。<br>どんな人がいるか、うっすら見えています。</p>
-          <button class="btn btn-google" onclick="app.loginGoogle()" style="margin-top:10px">Ⓖ Googleで解放</button>
-          <button class="btn btn-x" onclick="app.loginX()" style="margin-top:6px">𝕏 Xで解放</button>
-          <button class="btn btn-ghost" onclick="app.switchTab('match')" style="margin-top:6px">閉じる</button>
-        </div></div>
-      </div>`;
-    return;
+    html += `<div class="ready"><div class="readydots">${dots}</div>${btn}</div>`;
   }
-  if(!F.list.length){ box.innerHTML=`<div class="card"><div class="empty"><div style="font-size:40px">🔎</div>まだ画像つきのプロフィールがいません<br><span style="font-size:12px">プロフィールに画像を設定した人がここに出ます</span></div></div>
-    <label style="display:flex;align-items:center;gap:8px;justify-content:center;margin-top:10px;font-size:13px"><input type="checkbox" id="feed-private" ${state.profile.searchable===false?"checked":""} onchange="app.togglePrivate()"> 自分をさがすに出さない（非公開）</label>`; return; }
-  const c=F.list[F.idx];
-  const liked=F.liked.has(c.uid);
-  box.innerHTML=`
-    <div class="feed">
-      <div class="feed-card active" id="feed-current">${pcardHtml(c,{mode:"feed",liked})}</div>
-    </div>
-    <div class="feed-hintbar">${F.idx+1} / ${F.list.length}　・　↑↓スクロール / ホイール　<label style="margin-left:8px"><input type="checkbox" id="feed-private" ${state.profile.searchable===false?"checked":""} onchange="app.togglePrivate()"> 自分を非公開</label></div>`;
-  attachFeedNav();
-}
-function slideTo(dir){
-  const el=$("feed-current");
-  if(el){ el.style.transition="transform .18s ease, opacity .18s ease"; el.style.transform=`translateY(${dir>0?-24:24}px)`; el.style.opacity="0"; }
-  setTimeout(()=>renderFeed(),150);
-}
-function attachFeedNav(){
-  const area=$("tab-find").querySelector(".feed");
-  if(!area) return;
-  let sy=0, lock=false;
-  const go=(dir)=>{ const F=state.feed; const ni=F.idx+dir; if(ni<0||ni>=F.list.length){ return; } F.idx=ni; slideTo(dir); };
-  area.onwheel=(e)=>{ if(lock)return; lock=true; setTimeout(()=>lock=false,320); go(e.deltaY>0?1:-1); e.preventDefault(); };
-  area.ontouchstart=(e)=>{ sy=e.touches[0].clientY; };
-  area.ontouchend=(e)=>{ const dy=e.changedTouches[0].clientY-sy; if(Math.abs(dy)>50) go(dy<0?1:-1); };
-}
-async function togglePrivate(){
-  const on=$("feed-private").checked;
-  state.profile.searchable = on ? false : true;
-  try{ await updateDoc(doc(db,"users",state.uid),{searchable:state.profile.searchable}); }catch(e){}
-  saveLocal();
-  toast(on?"さがすに出さない設定にしました":"さがすに公開しました");
-}
-async function feedLike(){
-  const F=state.feed; const c=F.list[F.idx];
-  try{
-    await setDoc(doc(db,"likes",state.uid+"_"+c.uid),{likerUid:state.uid,likedUid:c.uid,createdAt:serverTimestamp()});
-    F.liked.add(c.uid);
-    const back=await getDoc(doc(db,"likes",c.uid+"_"+state.uid));
-    if(back.exists()){ await createFriendship(state.uid,c.uid); showMatch(c.uid); }
-    else toast("いいねを送りました");
-    renderFeed();
-  }catch(e){ console.error(e); }
-}
-async function feedFriend(){
-  const F=state.feed; const c=F.list[F.idx];
-  await sendFriendRequest(c.uid);
-}
-function feedDetail(){
-  const F=state.feed; const c=F.list[F.idx];
-  showModal(esc(c.handle),`
-    <div style="font-size:13px;line-height:1.9">
-      <div><strong>界隈:</strong> ${c.scene?(c.scene.icon+" "+esc(c.scene.gameName)):"未設定"}</div>
-      <div><strong>カテゴリー:</strong> ${(c.categories||[]).join("・")||"未設定"}</div>
-      <div><strong>時間帯:</strong> ${(c.timeSlots||[]).join("・")||"未設定"}</div>
-      ${c.focusStyle?`<div><strong>スタイル:</strong> ${esc(c.focusStyle)}</div>`:""}
-      ${c.neighborOk&&c.neighborOk!=="どちらでも"?`<div><strong>お隣:</strong> ${esc(c.neighborOk)}</div>`:""}
-      ${c.goal?`<div><strong>いま:</strong> ${esc(c.goal)}</div>`:""}
-      <div><strong>最終アクティブ:</strong> ${relTime(c.lastActive)}</div>
-    </div>`,
-    [{label:"♡ いいね",primary:true,onclick:()=>{closeModal();feedLike();}},{label:"➕ フレンド申請",onclick:()=>{closeModal();feedFriend();}}]);
-}
-async function createFriendship(a,b){const[u1,u2]=[a,b].sort();try{await setDoc(doc(db,"friends",u1+"_"+u2),{uids:[u1,u2],createdAt:serverTimestamp()});}catch(e){}}
-async function showMatch(uid){
-  try{const s=await getDoc(doc(db,"users",uid));if(!s.exists())return;const u=s.data();
-    showModal("🎉 フレンドになりました！",`<div style="text-align:center;padding:10px 0">${iconEl(u,80)}<div style="font-weight:700;font-size:18px;margin-top:10px">${esc(u.handle)}</div><div style="font-size:12px;color:var(--text-soft);margin-top:6px">フレンドから作業に誘えます。</div></div>`);
-  }catch(e){}
+  app.innerHTML=html;
+
+  // 開いているオーバーレイもリアルタイム更新
+  const bd=$("#board"); if(bd && bd.classList.contains("open")) renderBoard();
+  const sh=$("#sheet"); if(sh && sh.classList.contains("open")) renderSheet();
+  const dm=$("#dm"); if(dm && dm.classList.contains("open")) dmTick();
+
+  // 進行チェック
+  maybeAdvance();
 }
 
-// ================= フレンド（申請・招待・承認拒否） =================
-async function getFriendUids(){
+/* リーダーがフェーズ入口で1回だけ計算する処理 */
+async function ensureComputed(step, ph){
+  if(!isLeader()) return;
+  if((room.computedStep||-1) >= step) return;
+  if(computing) return;
+  computing=true;
+  try{
+    if(ph.k==="cards"){ await computeCards(ph.r); }
+    else if(ph.k==="guarantee"){ await computeGuarantee(); }
+    await roomRef.child("computedStep").set(step);
+  }finally{ computing=false; }
+}
+
+function needsReady(ph){
+  return ["prologue","briefing","hoview","intro","cards","discuss","guarantee","select","confession","vote","truth"].includes(ph.k);
+}
+function isSubmitPhase(ph){ return ["select","confession","vote"].includes(ph.k); }
+
+/* ---------- 各フェーズ描画 ---------- */
+function renderPhase(step, ph){
+  switch(ph.k){
+    case "prologue": return phPrologue();
+    case "briefing": return phBriefing();
+    case "hoview":   return phHoView();
+    case "intro":    return phIntro();
+    case "select":   return phSelect(ph);
+    case "cards":    return phCards(ph);
+    case "discuss":  return phDiscuss(step, ph);
+    case "guarantee":return phGuarantee();
+    case "confession":return phConfession();
+    case "vote":     return phVote();
+    case "truth":    return phTruth();
+    case "ending":   return phEnding();
+  }
+  return "";
+}
+
+function phPrologue(){
+  if(!myChar()){
+    return `<div class="card"><b>役がまだ決まっていないよ</b><p class="sub">ロビーで役を選んでね。</p></div>`;
+  }
+  return `${pubBadge()}${sfxTag("rain")}
+    <div class="card"><b>プロローグ</b><p style="margin-top:8px">${nl2br(PROLOGUE)}</p></div>`;
+}
+function phBriefing(){
+  return `${pubBadge()}<div class="card" style="max-width:42em"><p>${nl2br(BRIEFING)}</p></div>`;
+}
+function renderHOFull(c){
+  const h=CHARS[c].ho, rv=h.reveal;
+  return `<div class="card"><b>あなたの記憶</b><p>${nl2br(h.memory)}</p></div>
+    <div class="card mine"><b>秘密</b><p>${nl2br(h.secret)}</p></div>
+    ${h.alibi?`<div class="card"><b>⚖ 疑いを晴らせない理由</b><p>${nl2br(h.alibi)}</p></div>`:""}
+    ${rv?`<div class="card mine"><b>🗝 公開すると仲間に伝わる情報（口頭で）</b>
+      <p><b>${esc(rv.title)}</b><br>${nl2br(rv.text)}</p><p class="small">${esc(rv.note)}</p></div>`:""}
+    <div class="card"><b>本当に怖いこと</b><p>${nl2br(h.fear)}</p></div>
+    <div class="card"><b>個人目的</b><ul>${h.goal.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>
+    <div class="card"><b>知りたいこと</b><ul>${h.want.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>
+    <div class="card"><b>演技の軸</b><p>${nl2br(h.axis)}</p></div>`;
+}
+function phHoView(){
+  const c=myChar(); if(!c) return `<div class="card sub">役がまだ決まっていないよ。</div>`;
+  return `${privBadge()}<div style="max-width:42em;width:100%">
+    <div class="card"><b>${CHARS[c].name}</b><p class="sub">${esc(CHARS[c].ho.prof)}</p></div>
+    ${renderHOFull(c)}
+    <p class="small center">右上の「👤自分」から、いつでも読み返せるよ。</p></div>`;
+}
+function phIntro(){
+  return `<div class="card" style="max-width:40em"><b>顔合わせ</b>
+    <p>雨の夜、あなたたち四人は、巌の死について話すために集まった。<br>まずは、名乗り合うところから。あなたは、誰?</p>
+    <p class="small sub">――ここから先、何を話し、何を伏せるかは、あなたたち次第。</p></div>`;
+}
+
+// マップ上の拠点の位置（%）と拠点アイコン。map.pngを差し替えたらここの数値で位置合わせできる
+const MAPPOS = {
+  sekihi:{top:22,left:50,icon:"ic_sekihi.png",g:"碑"},
+  sui:   {top:34,left:24,icon:"ic_sui.png",   g:"車"},
+  kou:   {top:60,left:20,icon:"ic_kou.png",   g:"校"},
+  sai:   {top:64,left:48,icon:"ic_sai.png",   g:"社"},
+  son:   {top:26,left:78,icon:"ic_son.png",   g:"長"},
+  san:   {top:62,left:80,icon:"ic_san.png",   g:"山"},
+};
+function iconImg(file,glyph){
+  return `<img src="${file}" onload="this.nextElementSibling.style.display='none'" onerror="this.style.display='none'"><span class="ficon">${glyph}</span>`;
+}
+function locSlots(l){
+  const s=[...(LOCS[l].first||[]),...(LOCS[l].second||[])];
+  if(COLLATION[l] && room.discovered && room.discovered[COLLATION[l].id]) s.push(COLLATION[l]);
+  return s;
+}
+function phSelect(ph){
+  const sel=(room.sel&&room.sel[me])||null;
+  const locked=iAmReady();
+  let html=`<div class="mapwrap">`;
+  LOC_ORDER.forEach(l=>{
+    const p=MAPPOS[l];
+    const slots=locSlots(l);
+    let pips="";
+    slots.forEach(c=>{
+      const open = room.discovered && room.discovered[c.id];
+      pips+=`<span class="npip ${open?'open':''}"></span>`;
+    });
+    html+=`<button class="mapnode ${sel===l?'sel':''}" style="top:${p.top}%;left:${p.left}%" onclick="pickLoc('${l}')">
+      ${sel===l?'<span class="pin">📍</span>':''}
+      <span class="nicon">${iconImg(p.icon,p.g)}</span>
+      <span class="nlabel">${LOCS[l].name}</span>
+      <span class="npips">${pips}</span>
+    </button>`;
+  });
+  html+=`</div>`;
+  if(sel && LOCS[sel]){
+    // 選んだ拠点の“カードの空き状況”（何が発見済みで、誰が開けたか）
+    let list="";
+    locSlots(sel).forEach(c=>{
+      const disc = room.discovered && room.discovered[c.id] ? Object.keys(room.discovered[c.id]) : [];
+      if(disc.length){
+        const who=disc.map(charName).join("、");
+        const nm = readableCard(c.id) ? ((cardDataById(c.id)||c).name||c.name) : "？？？";
+        list+=`<div class="slotrow"><span class="sn">🔓 ${esc(nm)}</span><span class="sd">発見: ${esc(who)}</span></div>`;
+      }else{
+        list+=`<div class="slotrow"><span class="sn">🂠 未発見</span><span class="sd">―</span></div>`;
+      }
+    });
+    html+=`<div class="locinfo"><b>${LOCS[sel].name}</b>　${esc(LOCS[sel].overview||"")}
+      <div class="slotlist">${list}</div>
+      <div style="margin-top:.5em">`;
+    if(locked){
+      html+=`<span class="pill">✅ ${LOCS[sel].name} に決定</span> <button class="tbtn" onclick="unconfirmLoc()">選び直す</button>`;
+    }else{
+      html+=`<button class="nextbtn" onclick="confirmLoc()">ここに決める ▶</button>`;
+    }
+    html+=`</div></div>`;
+  }else{
+    html+=`<div class="locinfo sub">拠点をタップすると、そこのカードの空き状況（誰が何を発見したか）が見える。行き先は「ここに決める」で確定するよ。</div>`;
+  }
+  return html;
+}
+async function pickLoc(l){
+  // タップは“プレビュー”のみ。確定は confirmLoc。
+  if(iAmReady()) await setReady(false);   // 決定後に選び直したら未確定へ戻す
+  await roomRef.child("sel/"+me).set(l);
+}
+async function confirmLoc(){
+  if(room.sel && room.sel[me]) await setReady(true);
+}
+async function unconfirmLoc(){ await setReady(false); }
+
+/* 各自の私的発見を1件追加 */
+async function pushDisc(pid,item){ await roomRef.child("disc/"+pid).push(item); }
+
+/* カード計算：発見は“行った本人だけ”に配る。照合(X06)は同行者へ1回。C01→C02の順序ロック。 */
+async function computeCards(r){
+  const sel=room.sel||{};
+  const perLoc={};
+  Object.entries(sel).forEach(([pid,l])=>{ (perLoc[l]=perLoc[l]||[]).push(pid); });
+
+  for(const l of Object.keys(perLoc)){
+    const loc=LOCS[l];
+    const tier = (r===1? loc.first : loc.second) || [];
+    for(const pid of perLoc[l]){
+      const held=heldIds(pid);
+      for(const c of tier){
+        if(room.gaveCard && room.gaveCard[pid+"_"+c.id]) continue; // 既に取得済み
+        if(c.req && !held.has(c.req)) continue;                    // C01が無ければC02は取れない
+        await pushDisc(pid,{round:r,kind:"探索",id:c.id,name:c.name,kei:c.kei,combo:c.combo||0,text:c.text,loc:l});
+        await roomRef.child("gaveCard/"+pid+"_"+c.id).set(true);
+        await roomRef.child("discovered/"+c.id+"/"+pid).set(true);
+        held.add(c.id);
+      }
+    }
+    // 照合：2人以上で同行→その場所専用の照合を1回だけ、その本人たちへ
+    if(perLoc[l].length>=2 && COLLATION[l] && !(room.coDone&&room.coDone[l])){
+      const X=COLLATION[l];
+      for(const pid of perLoc[l]) await pushDisc(pid,{round:r,kind:"照合",id:X.id,name:X.name,kei:X.kei,combo:X.combo||0,text:X.text,loc:l});
+      for(const pid of perLoc[l]) await roomRef.child("discovered/"+X.id+"/"+pid).set(true);
+      await roomRef.child("coDone/"+l).set(true);
+    }
+  }
+  playSfx("reveal");
+}
+// そのプレイヤーが今持っているカードIDの集合
+function heldIds(pid){
   const set=new Set();
-  try{const s=await getDocs(query(collection(db,"friends"),where("uids","array-contains",state.uid)));s.forEach(d=>{const[a,b]=d.data().uids;set.add(a===state.uid?b:a);});}catch(e){}
+  const d=(room.disc&&room.disc[pid])?Object.values(room.disc[pid]):[];
+  d.forEach(x=>{ if(x.id) set.add(x.id); });
   return set;
 }
-function reqId(from,to){ return from+"__"+to; }
-async function sendFriendRequest(toUid){
-  const fset=await getFriendUids();
-  if(fset.has(toUid)){ toast("すでにフレンドです"); return; }
-  try{
-    // 相手からの申請が既にある→承認扱い
-    const incoming=await getDoc(doc(db,"friendRequests",reqId(toUid,state.uid)));
-    if(incoming.exists()){ await approveRequest(toUid); return; }
-    await setDoc(doc(db,"friendRequests",reqId(state.uid,toUid)),{
-      from:state.uid, to:toUid, fromProfile:myProfileSnap("go",""), status:"pending", createdAt:serverTimestamp()
-    });
-    toast("フレンド申請を送りました");
-    updateFriendFab();
-  }catch(e){ console.error(e); toast("申請に失敗しました"); }
-}
-async function approveRequest(fromUid){
-  try{
-    await createFriendship(state.uid, fromUid);
-    try{ await deleteDoc(doc(db,"friendRequests",reqId(fromUid,state.uid))); }catch(e){}
-    toast("フレンドになりました");
-    loadFriendsScreen(); refreshFriendBadge();
-  }catch(e){ console.error(e); toast("承認に失敗しました"); }
-}
-async function rejectRequest(fromUid){
-  try{ await deleteDoc(doc(db,"friendRequests",reqId(fromUid,state.uid))); toast("却下しました"); loadFriendsScreen(); refreshFriendBadge(); }catch(e){}
-}
-async function getIncomingRequests(){
-  const arr=[];
-  try{ const s=await getDocs(query(collection(db,"friendRequests"),where("to","==",state.uid),where("status","==","pending"))); s.forEach(d=>arr.push(d.data())); }catch(e){ console.warn(e); }
-  return arr;
-}
-async function refreshFriendBadge(){
-  try{
-    const reqs=await getIncomingRequests();
-    const invs=state._pendingInvites||0;
-    const n=reqs.length+invs;
-    const lbl=$("friend-nav-label");
-    if(lbl) lbl.innerHTML = "フレンド"+(n>0?`<span class="badge-count">${n}</span>`:"");
-  }catch(e){}
+
+function phCards(ph){
+  const all=(room.disc&&room.disc[me])?Object.values(room.disc[me]):[];
+  const now=all.filter(x=>x.round===ph.r);
+  let html = privBadge();
+  if(!now.length) return html+`<div class="slips"><div class="washi">…ここでは、何も見つからなかった。</div></div>`;
+  html+=`<div class="slips">`;
+  now.forEach(c=>{
+    const link = c.combo?`<span class="link">🔗 照合の余地</span>`:"";
+    const isX = c.kind==="照合";
+    html+=`<div class="washi ${isX?'secret':''}"><div class="wt"><span>${esc(c.name||c.id||"手がかり")}</span>${link}</div><div>${nl2br(c.text)}</div></div>`;
+  });
+  html+=`</div>`;
+  return html;
 }
 
-async function loadFriendsScreen(){
-  const reqBox=$("friend-requests-area"), listBox=$("friends-list-area");
-  reqBox.innerHTML=""; listBox.innerHTML='<div class="loading"><span class="spinner"></span>読み込み中…</div>';
-  // 申請一覧
-  const reqs=await getIncomingRequests();
-  if(reqs.length){
-    reqBox.innerHTML=`<div class="card"><h3 style="font-size:14px;color:var(--pink);margin-bottom:10px">📬 フレンド申請（${reqs.length}）</h3>
-      ${reqs.map(r=>{
-        const fp=r.fromProfile||{};
-        const av=fp.photoData?`<img src="${fp.photoData}">`:(AVATARS[fp.avatarId]||"🐱");
-        return `<div class="req-item"><div class="av">${av}</div>
-          <div class="body"><div style="font-weight:700;font-size:14px">${esc(fp.handle||"？")}</div>
-          <div style="font-size:11px;color:var(--text-soft)">${fp.scene?esc(fp.scene.gameName):""}</div></div>
-          <div class="req-btns">
-            <button class="btn btn-pink" onclick="app.approveReq('${r.from}')">承認</button>
-            <button class="btn btn-ghost" onclick="app.rejectReq('${r.from}')">拒否</button>
-          </div></div>`;
-      }).join("")}</div>`;
+function phDiscuss(step, ph){
+  const startKey="discussStart_"+step;
+  if(isLeader() && !(room[startKey])){
+    roomRef.child(startKey).set(firebase.database.ServerValue.TIMESTAMP);
   }
-  // フレンド一覧
-  try{
-    const uids=[...await getFriendUids()];
-    if(uids.length===0){ listBox.innerHTML=`<div class="card"><div class="empty"><div style="font-size:40px;margin-bottom:10px">💛</div>まだフレンドがいません<br><span style="font-size:12px">「探し」で相互いいね、または作業画面から申請できます</span></div></div>`; state.friends=[]; refreshFriendBadge(); return; }
-    const arr=[];
-    for(const uid of uids){ const s=await getDoc(doc(db,"users",uid)); if(s.exists())arr.push({uid,...s.data()}); }
-    state.friends=arr; watchPresence(uids); renderFriendsList();
-  }catch(e){ console.error(e); listBox.innerHTML='<div class="empty">読み込みに失敗しました</div>'; }
-  refreshFriendBadge();
-}
-function renderFriendsList(){
-  const box=$("friends-list-area");
-  if(!box||!state.friends||!state.friends.length) return;
-  box.innerHTML=`<div class="card"><h3 style="font-size:14px;color:var(--water-dark);margin-bottom:10px">💛 フレンド</h3>${state.friends.map(f=>{
-    const pr=state.presenceMap[f.uid]||{online:false};
-    let dot="online-dot offline-dot",txt=relTime(f.lastActive)+"にアクティブ";
-    if(pr.online){ dot="online-dot"; txt="オンライン"; }
-    return `<div class="friend-item"><div class="av">${avatarHtml(f)}</div>
-      <div class="body"><div class="name">${esc(f.handle)}</div><div class="status-line"><span class="${dot}"></span>${txt}${f.scene?" ・ "+esc(f.scene.gameName):""}</div></div>
-      <button class="btn btn-small btn-pink" onclick="app.inviteToWork('${f.uid}')">誘う</button></div>`;
-  }).join("")}</div>`;
-}
-function renderFriendsIfActive(){ renderFriendsList(); }
-
-// ---------- 作業のお誘い（招待） ----------
-async function inviteToWork(friendUid){
-  try{
-    const s=await getDoc(doc(db,"users",friendUid)); const fp=s.exists()?s.data():{};
-    const matchId="inv_"+state.uid+"_"+friendUid+"_"+Date.now();
-    await setDoc(doc(db,"workInvites",matchId),{
-      from:state.uid, to:friendUid, fromProfile:myProfileSnap("wait",""), status:"pending", matchId, createdAt:serverTimestamp()
-    });
-    toast(`${esc(fp.handle||"相手")}を作業に誘いました`);
-  }catch(e){ console.error(e); toast("お誘いに失敗しました"); }
-}
-function subscribeWorkInvites(){
-  if(state.invitesUnsub) return;
-  state._shownInvites=state._shownInvites||new Set();
-  state.invitesUnsub=onSnapshot(query(collection(db,"workInvites"),where("to","==",state.uid),where("status","==","pending")),(snap)=>{
-    let list=[]; snap.forEach(d=>list.push({id:d.id,...d.data()}));
-    state._pendingInvites=list.length; refreshFriendBadge();
-    list.forEach(inv=>{
-      if(state._shownInvites.has(inv.id)) return;
-      state._shownInvites.add(inv.id);
-      const fp=inv.fromProfile||{};
-      unlockAudio(); startMatchSound();
-      showModal("作業のお誘い",`<p><strong>${esc(fp.handle||"フレンド")}</strong>さんが「一緒に作業しませんか？」と誘っています。</p>`,
-        [{label:"参加する",primary:true,onclick:()=>{ stopMatchSound(); closeModal(); acceptInvite(inv); }},
-         {label:"ことわる",onclick:async()=>{ stopMatchSound(); try{ await updateDoc(doc(db,"workInvites",inv.id),{status:"declined"}); }catch(e){} closeModal(); }}]);
-    });
-  },(e)=>console.error("invites",e));
-}
-async function acceptInvite(inv){
-  unlockAudio();
-  const fp=inv.fromProfile||{};
-  try{
-    await setDoc(doc(db,"matches",inv.matchId),{
-      users:[inv.from,inv.to].sort(),
-      likes:{[inv.from]:true,[inv.to]:true},
-      status:"established", source:"invite",
-      profiles:{ [inv.from]:fp, [state.uid]:myProfileSnap("go","") },
-      location:{ value:fp.location||"", label:(fp.scene?fp.scene.locationLabel:"作業場所"), byUid:inv.from },
-      createdAt:serverTimestamp()
-    });
-    await updateDoc(doc(db,"workInvites",inv.id),{status:"accepted"});
-    // 自分のグローバル監視が established を拾って作業画面を開く
-  }catch(e){ console.error(e); toast("参加に失敗しました"); }
+  const start=room[startKey];
+  return `<div class="timer" id="tmr" data-start="${start||0}" data-sec="${ph.sec}">--:--</div>
+    ${ph.prompt?`<p class="center sub">${esc(ph.prompt)}</p>`:""}${sfxTag("timeup")}`;
 }
 
-// ================= プロフィール =================
-function renderProfileView(){
-  if(!state.profile) return;
-  const p=state.profile;
-  let badge="";
-  if(state.authType==="google")badge='<span class="g-badge">G</span>';
-  else if(state.authType==="x")badge='<span class="x-badge">𝕏</span>';
-  $("my-profile-view").innerHTML=`
-    ${pcardHtml(p)}
-    <div style="font-size:13px;line-height:1.9;margin-top:12px">
-      <div><strong>アカウント:</strong> ${state.isLoggedIn?(state.authType==="google"?"Googleログイン":"Xログイン"):"ゲスト"} ${badge}</div>
-      <div><strong>界隈:</strong> ${p.scene?(p.scene.icon+" "+esc(p.scene.gameName)+"（"+esc(p.scene.locationLabel)+"）"):"未設定"}</div>
-      <div><strong>時間帯:</strong> ${(p.timeSlots||[]).join("・")||"未設定"}</div>
-      ${p.focusStyle?`<div><strong>スタイル:</strong> ${esc(p.focusStyle)}</div>`:""}
-      ${p.neighborOk&&p.neighborOk!=="どちらでも"?`<div><strong>お隣:</strong> ${esc(p.neighborOk)}</div>`:""}
-      <div><strong>最終アクティブ:</strong> ${relTime(p.lastActive)}</div>
-    </div>`;
-  const ab=$("account-body");
-  if(state.isLoggedIn){
-    ab.innerHTML=`<div style="padding:10px;background:var(--bg);border-radius:12px;text-align:center;color:var(--ok);font-weight:600;font-size:13px;margin-bottom:10px">✓ ${state.authType==="google"?"Google":"X"}ログイン済み（データは復元されます）</div>
-      <button class="btn btn-small btn-ghost" onclick="app.showTerms()">利用について</button>
-      <button class="btn btn-small btn-ghost" onclick="app.signOut()" style="color:var(--danger)">サインアウト</button>`;
+/* 交換 */
+function phExchange(ph){
+  const mine=(room.hands&&room.hands[me])?Object.values(room.hands[me]):[];
+  const offers=room.offers||{};
+  // 自分あてのオファー
+  const toMe=Object.entries(offers).filter(([id,o])=>o.to===me && !o.done);
+  let html="";
+  if(toMe.length){
+    html+=`<div class="card mine"><b>📩 あなたへの交換の申し出</b>`;
+    toMe.forEach(([id,o])=>{
+      const fromName=charName(o.from);
+      html+=`<hr class="sep"><p>${esc(fromName)} から「${esc(o.card.id)}」＋条件：${esc(o.cond||"（口頭で）")}</p>
+        <div style="display:flex;gap:.5em">
+          <button class="btn primary" onclick="acceptOffer('${id}')">受ける</button>
+          <button class="btn" onclick="rejectOffer('${id}')">断る</button>
+        </div>`;
+    });
+    html+=`</div>`;
+  }
+  // 送る
+  const canSend = mine.length && !(room.exchangedThisRound&&room.exchangedThisRound[me]);
+  if(canSend){
+    html+=`<div class="card"><b>手札を1枚おくる（任意・1巡1回）</b>`;
+    html+=`<label class="lbl">おくるカード</label><select id="exCard" class="txt">`;
+    mine.forEach(s=>html+=`<option value="${s.id}">${s.id}：${esc(s.text.slice(0,18))}…</option>`);
+    html+=`</select><label class="lbl">相手</label><select id="exTo" class="txt">`;
+    players().filter(p=>p.id!==me).forEach(p=>html+=`<option value="${p.id}">${esc(charName(p.id))}</option>`);
+    html+=`</select><label class="lbl">条件（任意・詳しくはDiscordで）</label><input class="txt" id="exCond" placeholder="例：あなたの山道の話を聞かせて">
+      <button class="btn primary" onclick="sendOffer()">この内容で申し出る</button></div>`;
   }else{
-    ab.innerHTML=`<p class="hint" style="margin-bottom:10px">いまはゲスト（この端末に保存）。<br>ログインすると探し・フレンド・画像・データ復元が使えます。</p>
-      <button class="btn btn-google" onclick="app.loginGoogle()" style="margin-bottom:8px">Ⓖ Googleでログイン</button>
-      <button class="btn btn-x" onclick="app.loginX()">𝕏 Xでログイン</button>
-      <button class="btn btn-small btn-ghost" onclick="app.showTerms()" style="margin-top:8px">利用について</button>`;
+    html+=`<div class="card sub">${mine.length?"この巡はもう交換したよ。":"手札がないので今回は交換なし。"}</div>`;
+  }
+  return html;
+}
+function charName(pid){ const p=players().find(x=>x.id===pid); return p? (p.char?CHARS[p.char].name:p.name):"?"; }
+async function sendOffer(){
+  const cardId=$("#exCard").value, to=$("#exTo").value, cond=$("#exCond").value.trim();
+  const s=(room.hands[me]||{})[cardId]; if(!s) return;
+  const oid="o"+Date.now().toString(36);
+  await roomRef.child("offers/"+oid).set({from:me,to,card:s,cond,done:false});
+  await roomRef.child("exchangedThisRound/"+me).set(true);
+}
+async function acceptOffer(id){
+  const o=(room.offers||{})[id]; if(!o) return;
+  // 所有権移動：from の手札から削除、to の手札に追加
+  await roomRef.child("hands/"+o.from+"/"+o.card.id).remove();
+  await roomRef.child("hands/"+o.to+"/"+o.card.id).set(o.card);
+  await roomRef.child("offers/"+id+"/done").set(true);
+}
+async function rejectOffer(id){ await roomRef.child("offers/"+id+"/done").set(true); }
+
+/* イベント（リーダーがランダム選択） */
+async function computeEvent(){
+  if(room.event) return;
+  const keys=["A","B","C"];
+  const pick=keys[Math.floor(Math.random()*keys.length)];
+  await roomRef.child("event").set(pick);
+}
+function phEvent(){
+  return "";
+}
+
+/* 救済（第二探索終了時：足りない系統を全員へ補う） */
+async function computeGuarantee(){
+  if(room.guaranteeDone) return;
+  const have=keiCoveredSet();
+  const missing=["past","name","renji"].filter(k=>!have.has(k));
+  const list=missing.map(k=>({k,label:KEI[k],hint:RESCUE[k].hint}));
+  await roomRef.child("guarantee").set(list);
+  await roomRef.child("guaranteeDone").set(true);
+}
+// グループ全体でどの系統が“実際に”出ているか（救済ヒントは含めない＝見落としは埋めない）
+function keiCoveredSet(){
+  const set=new Set();
+  const disc=room.disc||{};
+  Object.values(disc).forEach(list=>Object.values(list||{}).forEach(c=>{ if(c.kei) set.add(c.kei); }));
+  return set;
+}
+function phGuarantee(){
+  const g=room.guarantee||[];
+  if(!g.length) return `${pubBadge()}<div class="card"><b>……よく歩いたね</b><p class="sub">大きな見落としは、なさそう。あとは、言葉にできるかどうか。</p></div>`;
+  let html=`${pubBadge()}<div class="card"><b>――ひとつだけ、言っておく。</b><p class="sub" style="margin:.3em 0">まだ、見落としているものがあるみたい。答えは言わないよ。どこを、誰に聞くか。</p>`;
+  g.forEach(x=>html+=`<hr class="sep"><span class="tag">${esc(x.label)}</span><p>${nl2br(x.hint)}</p>`);
+  html+=`</div>`;
+  return html;
+}
+
+/* 記憶投票 */
+function phMemVote(){
+  const my=(room.mv&&room.mv[me])||null;
+  let g=`<div class="plaques">`;
+  CHAR_ORDER.forEach(c=>{
+    g+=`<button class="plaque ${my===c?'sel':''}" onclick="voteMem('${c}')">${CHARS[c].name}</button>`;
+  });
+  g+=`</div>`;
+  return g;
+}
+async function voteMem(c){ await roomRef.child("mv/"+me).set(c); await setReady(true); }
+async function computeMemReveal(){
+  if(room.memPick) return;
+  const tally={};
+  Object.values(room.mv||{}).forEach(c=>tally[c]=(tally[c]||0)+1);
+  let max=-1,cands=[];
+  Object.entries(tally).forEach(([c,n])=>{ if(n>max){max=n;cands=[c];} else if(n===max){cands.push(c);} });
+  const pick=cands[Math.floor(Math.random()*cands.length)]; // 同数はランダム
+  await roomRef.child("memPick").set(pick||CHAR_ORDER[0]);
+}
+function phMemReveal(){
+  return "";
+}
+
+/* 最終推理 */
+/* ①⑥⑦ 告白：各自が“決定的情報”を公開/隠す（自分で決める） */
+function phConfession(){
+  const c=myChar(); const rv=c?CHARS[c].ho.reveal:null;
+  const my = room.confess && room.confess[me];
+  let html=`${privBadge()}<div class="card mine" style="max-width:42em"><b>🗝 あなただけが握る、決定的な情報</b>`;
+  if(rv) html+=`<p><b>${esc(rv.title)}</b><br>${nl2br(rv.text)}</p><p class="small">${esc(rv.note||"")}</p>`;
+  html+=`<hr class="sep"><p class="small">これを公開すると、真相に一歩近づく。でも自分から出すと、疑いを呼ぶかもしれない。出すか、隠すかは、あなたの判断。</p>`;
+  if(my){
+    html+=`<p><span class="pill">${my==="open"?"✅ 公開した":"🤫 隠したままにした"}</span> <button class="tbtn" onclick="setConfess(null)">選び直す</button></p>`;
+  }else{
+    html+=`<div class="brow"><button class="nextbtn" onclick="setConfess('open')">公開する</button><button class="btn" onclick="setConfess('hide')">まだ隠す</button></div>`;
+  }
+  html+=`</div>`;
+  // 公開された決定的情報（全員に見える）
+  const pubs=Object.entries(room.confess||{}).filter(([pid,v])=>v==="open");
+  if(pubs.length){
+    html+=`<div class="card" style="max-width:42em"><b>公開された決定的情報</b>`;
+    pubs.forEach(([pid,v])=>{
+      const pl=players().find(p=>p.id===pid); const kk=pl&&pl.char?CHARS[pl.char].ho.reveal:null;
+      if(kk) html+=`<hr class="sep"><p><b>${esc(charName(pid))}：${esc(kk.title)}</b><br>${nl2br(kk.text)}</p>`;
+    });
+    html+=`</div>`;
+  }
+  ensureReady(!!my);
+  return html;
+}
+async function setConfess(v){ await roomRef.child("confess/"+me).set(v?v:null); }
+function confessCount(){ return Object.values(room.confess||{}).filter(v=>v==="open").length; }
+
+/* ⑤-① 事件の再構成：共有の並びを全員で上下、各自が確定 */
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+function phDeduct1(){
+  if(isLeader() && !room.tl){ roomRef.child("tl").set(shuffle(TIMELINE.map(e=>e.id))); }
+  const order = room.tl || TIMELINE.map(e=>e.id);
+  const done = room.tlok && room.tlok[me];
+  let html=`<div class="card" style="max-width:44em"><b>① 事件の再構成</b><p class="sub">起きた順に、みんなで並べ替えよう（▲▼）。全員が「確定」で次へ。</p>`;
+  order.forEach((id,i)=>{
+    const e=TIMELINE.find(x=>x.id===id)||{text:id};
+    html+=`<div class="tlitem"><span class="tlno">${i+1}</span><span class="tltext">${esc(e.text)}</span>
+      <span class="tlbtns"><button class="tbtn" ${i===0?'disabled':''} onclick="tlMove(${i},-1)">▲</button><button class="tbtn" ${i===order.length-1?'disabled':''} onclick="tlMove(${i},1)">▼</button></span></div>`;
+  });
+  html+=`</div>`;
+  if(done) html+=`<p class="center"><span class="pill">✅ この並びで確定</span> <button class="tbtn" onclick="setTlOk(false)">やり直す</button></p>`;
+  else html+=`<button class="nextbtn" onclick="setTlOk(true)">この並びで確定 ▶</button>`;
+  ensureReady(!!done);
+  return html;
+}
+async function tlMove(i,d){
+  const o=(room.tl||TIMELINE.map(e=>e.id)).slice(); const j=i+d;
+  if(j<0||j>=o.length) return; [o[i],o[j]]=[o[j],o[i]];
+  await roomRef.child("tl").set(o);
+  await roomRef.child("tlok").remove(); // 並びが変わったら全員の確定を解除
+}
+async function setTlOk(v){ await roomRef.child("tlok/"+me).set(v?true:null); }
+function timelineCorrect(){ const o=room.tl||[]; return o.length===TL_CORRECT.length && o.every((id,i)=>id===TL_CORRECT[i]); }
+
+/* ⑤-② 四人の行動 */
+function phDeduct2(){
+  const my=(room.da&&room.da[me])||{};
+  let html=`<div class="card" style="max-width:44em"><b>② 四人の行動</b><p class="sub">誰が、何をした?（相談→各自回答、多数決）</p></div>`;
+  DEDUCT_ACTIONS.forEach((d,i)=>{
+    html+=`<div class="q"><div style="margin-bottom:.3em"><b>${esc(d.q)}</b></div>`;
+    d.opt.forEach((o,j)=>html+=`<button class="plaque ${my[i]===j?'sel':''}" style="text-align:left;margin:.2em 0" onclick="ansAct(${i},${j})">${esc(o)}</button>`);
+    html+=`</div>`;
+  });
+  const done = my && Object.keys(my).length===DEDUCT_ACTIONS.length;
+  ensureReady(done);
+  return html;
+}
+async function ansAct(i,j){ await roomRef.child("da/"+me+"/"+i).set(j); }
+function actionScore(){
+  let s=0;
+  DEDUCT_ACTIONS.forEach((d,i)=>{
+    const t={}; Object.values(room.da||{}).forEach(a=>{ if(a&&a[i]!=null) t[a[i]]=(t[a[i]]||0)+1; });
+    let mx=-1,pk=null; Object.entries(t).forEach(([k,n])=>{if(n>mx){mx=n;pk=+k;}});
+    if(pk===d.a) s++;
+  });
+  return s;
+}
+
+/* 最終投票（3種） */
+function phVote(){
+  const g=(k)=>room[k]&&room[k][me];
+  const vm=g("vMurder"),vk=g("vCulprit"),v17=g("vChiyo"),vn=g("vName"),vr=g("vResp");
+  let html=`<div class="card"><b>① 巌は、殺されたのか？</b><div class="plaques" style="margin-top:.4em;grid-template-columns:repeat(2,1fr)">`;
+  [["殺された（殺人）","murder"],["事故だ","accident"]].forEach(([lab,v])=>html+=`<button class="plaque ${vm===v?'sel':''}" onclick="setVote('vMurder','${v}')">${lab}</button>`);
+  html+=`</div></div>`;
+  html+=`<div class="card"><b>② 犯人は誰か？</b><div class="plaques" style="margin-top:.4em">`;
+  CHAR_ORDER.forEach(c=>html+=`<button class="plaque ${vk===c?'sel':''}" onclick="setVote('vCulprit','${c}')">${CHARS[c].name}</button>`);
+  html+=`<button class="plaque ${vk==='none'?'sel':''}" onclick="setVote('vCulprit','none')">分からない</button>`;
+  html+=`</div></div>`;
+  html+=`<div class="card"><b>③ 十七年前、“あの子”は犯人だったか？</b><div class="plaques" style="margin-top:.4em;grid-template-columns:repeat(2,1fr)">`;
+  [["犯人だった","guilty"],["無実だった","innocent"]].forEach(([lab,v])=>html+=`<button class="plaque ${v17===v?'sel':''}" onclick="setVote('vChiyo','${v}')">${lab}</button>`);
+  html+=`</div></div>`;
+  html+=`<div class="card"><b>④ 消された名前を、戻すか？</b><div class="plaques" style="margin-top:.4em;grid-template-columns:repeat(2,1fr)">`;
+  [["戻す","return"],["封じる","seal"]].forEach(([lab,v])=>html+=`<button class="plaque ${vn===v?'sel':''}" onclick="setVote('vName','${v}')">${lab}</button>`);
+  html+=`</div></div>`;
+  html+=`<div class="card"><b>⑤ 責任を、どうする？</b><div class="plaques" style="margin-top:.4em;grid-template-columns:repeat(2,1fr)">`;
+  [["犯人一人に集める","concentrate"],["村側の責任も記録する","record"]].forEach(([lab,v])=>html+=`<button class="plaque ${vr===v?'sel':''}" onclick="setVote('vResp','${v}')">${lab}</button>`);
+  html+=`</div></div>`;
+  ensureReady(vm&&vk&&v17&&vn&&vr);
+  return html;
+}
+async function setVote(k,v){ await roomRef.child(k+"/"+me).set(v); if(k==="vMurder")playSfx("vote"); }
+
+/* エンディング判定（v4・5投票） */
+function majority(map){
+  const t={}; Object.values(map||{}).forEach(v=>t[v]=(t[v]||0)+1);
+  let mx=-1,c=[]; Object.entries(t).forEach(([k,n])=>{if(n>mx){mx=n;c=[k];}else if(n===mx)c.push(k);});
+  return c[0];
+}
+// 真相到達＝殺人と見抜き・犯人=透・千代無実、まで揃ったか
+function isShinso(){ return majority(room.vMurder)==="murder" && majority(room.vCulprit)==="toru" && majority(room.vChiyo)==="innocent"; }
+function computeEnding(){
+  const murder=majority(room.vMurder), culprit=majority(room.vCulprit), chiyo=majority(room.vChiyo), name=majority(room.vName), resp=majority(room.vResp);
+  let ed;
+  if(murder!=="murder" || culprit!=="toru") ed="4";            // 事故 or 犯人を確定できない
+  else if(name==="seal") ed="3";                                // 透と当てたが、名を封じる＝また一人
+  else if(chiyo==="innocent" && resp==="record") ed="1";        // 最良
+  else if(chiyo==="innocent" && resp==="concentrate") ed="2";   // 千代は戻ったが、透一人へ
+  else ed="5";                                                  // 名は戻すが、千代の無実/村の責任を残さない
+  return {ed,murder,culprit,chiyo,name,resp};
+}
+function phTruth(){
+  return `${pubBadge()}<div class="card">
+    <p style="margin-top:2px">${nl2br(TRUTH)}</p></div>
+    <p class="small center">――結末は、次の画面で。</p>`;
+}
+function phEnding(){
+  const {ed,murder,culprit,chiyo,name,resp}=computeEnding();
+  const E=ENDINGS[ed];
+  if(ed==="3"||ed==="5") playSfx("fall");
+  const mL=murder==="murder"?"殺人":"事故";
+  const kL=culprit==="none"?"不明":(CHARS[culprit]?CHARS[culprit].name:"?");
+  const cL=chiyo==="innocent"?"無実":(chiyo==="guilty"?"犯人":"?");
+  const nL=name==="return"?"戻す":"封じる";
+  const rL=resp==="record"?"村側も記録":"一人に集中";
+  let html=`${pubBadge()}<div class="card">
+    <b>結末 ── ${esc(E.name)}</b>
+    <p style="margin-top:8px">${nl2br(E.text)}</p></div>`;
+  html+=`<div class="card"><div class="kv">${isShinso()?"真相に到達":"真相は、闇の中"}</div>
+    <div class="kv">①巌:<b>${mL}</b> ／ ②犯人:<b>${kL}</b> ／ ③あの子:<b>${cL}</b> ／ ④名前:<b>${nL}</b> ／ ⑤責任:<b>${rL}</b></div></div>`;
+  html+=`<p class="center sub" style="margin:18px 0">――『宵影村・四つの名前』 了</p>`;
+  if(isLeader()) html+=`<button class="btn ghost" onclick="resetGame()">また、あの夜へ（部屋をリセット）</button>`;
+  return html;
+}
+async function resetGame(){
+  await roomRef.update({
+    step:-1, computedStep:-1, sel:null, ready:null, disc:null, gaveCard:null, coDone:null,
+    guarantee:null, guaranteeDone:null, vMurder:null, vCulprit:null, vChiyo:null, vName:null, vResp:null,
+    shared:null, discovered:null, dm:null, confess:null, tl:null, tlok:null, da:null,
+  });
+}
+
+/* ============================================================
+   ロビー（役決め＋開始）
+   ============================================================ */
+async function chooseChar(c){
+  if(charTaken(c) && myChar()!==c) return;
+  await roomRef.child("players/"+me+"/char").set(c);
+}
+async function startGame(){
+  const ps=players();
+  const distinct=new Set(ps.map(p=>p.char).filter(Boolean));
+  if(isTest()){
+    if(!myChar()) return alert("役をひとつ選んでね（テストモード）");
+  }else if(!(ps.length===4 && ps.every(p=>p.char) && distinct.size===4)){
+    return alert("4人がそれぞれ別の役を選ぶと始められるよ（名前を「テスト」にすると一人でも開始できます）");
+  }
+  await roomRef.update({ step:0, computedStep:-1 });
+}
+
+/* ============================================================
+   手引きシート（常時参照）
+   ============================================================ */
+let sheetTab="me";
+function openSheet(){ closeAllPanels(); $("#sheet").classList.add("open"); syncPaneled(); renderSheet(); }
+function closeSheet(){ $("#sheet").classList.remove("open"); syncPaneled(); }
+function renderSheet(){
+  const tabs=[["me","自分"],["hand","発見"],["roster","面々"],["places","場所"],["story","あらすじ"],["rules","ルール"],["gloss","用語"]];
+  $("#tabs").innerHTML=tabs.map(([k,l])=>`<div class="tab ${sheetTab===k?'on':''}" onclick="setTab('${k}')">${l}</div>`).join("");
+  const b=$("#sheetBody");
+  if(sheetTab==="me"){
+    const c=myChar();
+    if(!c){ b.innerHTML=`<p class="sub">まだ役が決まっていないよ。</p>`; return; }
+    const h=CHARS[c].ho;
+    const rv=h.reveal;
+    const say=(t)=>`<button class="readbtn" style="float:right" onclick="speak(${JSON.stringify(t).replace(/"/g,'&quot;')})">🔊</button>`;
+    b.innerHTML=`<h3>${CHARS[c].name}</h3>
+      <p class="sub">${esc(h.prof)}</p>
+      <div class="card">${say(h.memory)}<b>あなたの記憶</b><p>${nl2br(h.memory)}</p></div>
+      <div class="card mine">${say(h.secret)}<b>秘密</b><p>${nl2br(h.secret)}</p></div>
+      ${h.alibi?`<div class="card">${say(h.alibi)}<b>⚖ 疑いを晴らせない理由</b><p>${nl2br(h.alibi)}</p></div>`:""}
+      ${rv?`<div class="card mine"><b>🗝 公開すると仲間に伝わる情報（口頭で）</b>
+        <p><b>${esc(rv.title)}</b><br>${nl2br(rv.text)}</p>
+        <p class="small">${esc(rv.note)}</p></div>`:""}
+      <div class="card"><b>本当に怖いこと</b><p>${nl2br(h.fear)}</p></div>
+      <div class="card"><b>個人目的</b><ul>${h.goal.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>
+      <div class="card"><b>知りたいこと</b><ul>${h.want.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>
+      <div class="card"><b>演技の軸</b><p>${nl2br(h.axis)}</p></div>`;
+  }else if(sheetTab==="hand"){
+    const disc=(room&&room.disc&&room.disc[me])?Object.values(room.disc[me]):[];
+    let out=`<h3>あなたの発見</h3><p class="sub">ここに出ることは、あなたにしか見えていない。話すかどうかは、あなた次第。🔗は「照らし合わせると意味が変わるかも」の合図。</p>`;
+    if(disc.length){
+      [1,2].forEach(r=>{
+        const items=disc.filter(x=>x.round===r);
+        if(!items.length) return;
+        out+=`<div class="kv" style="margin-top:10px">― ${r===1?"第一":"第二"}探索 ―</div>`;
+        items.forEach(x=>{
+          const link=x.combo?` <span class="pill">🔗 照合の余地</span>`:"";
+          out+=`<div class="card"><b>${esc(x.name||x.id||"手がかり")}</b>${link}<p>${nl2br(x.text)}</p></div>`;
+        });
+      });
+    }else out+=`<p class="sub">まだ何も見つけていない。探索で見つかるよ。</p>`;
+    b.innerHTML=out;
+  }else if(sheetTab==="roster"){
+    const ps=players();
+    let out=`<h3>面々</h3><p class="sub">いま誰がどの役か、ぱっと確認。名前をタップすると、その人物の“公開してよい情報”が出るよ。</p>`;
+    if(ps.length){
+      out+=ps.map(p=>{
+        const cn=p.char?CHARS[p.char].name:"（役未定）";
+        return `<div class="rchip ${p.connected?'done':''}" style="margin:.2em"><span class="rc"></span><span class="rn">${esc(p.name)}</span><span class="rk">→ ${esc(cn)}</span></div>`;
+      }).join("");
+    }
+    out+=`<hr class="sep"><div class="kv">登場人物（外見・公開してよい情報）</div>`;
+    out+=CHAR_ORDER.map(c=>`<div class="card"><b>${CHARS[c].name}</b><p class="sub">${esc(CHARS[c].tagline||"")}</p><p>${esc(CHARS[c].ho.prof)}</p></div>`).join("");
+    b.innerHTML=out;
+  }else if(sheetTab==="places"){
+    b.innerHTML=`<h3>場所の概要</h3><p class="sub">ざっくりした様子だけ。“答え”は書いていないよ。</p>`+
+      LOC_ORDER.map(l=>`<div class="card"><b>${LOCS[l].name}</b><p>${esc(LOCS[l].overview||"")}</p></div>`).join("");
+  }else if(sheetTab==="story"){
+    b.innerHTML=`<h3>あらすじ</h3><button class="readbtn" style="float:right" onclick="speak(${JSON.stringify(SYNOPSIS).replace(/"/g,'&quot;')})">🔊</button><p>${nl2br(SYNOPSIS)}</p>`;
+  }else if(sheetTab==="rules"){
+    b.innerHTML=`<h3>ルール／遊び方</h3><p>${nl2br(RULES)}</p>`;
+  }else if(sheetTab==="gloss"){
+    b.innerHTML=`<h3>用語</h3>`+GLOSSARY.map(([t,d])=>`<div class="card"><b>${esc(t)}</b><p class="sub">${nl2br(d)}</p></div>`).join("");
   }
 }
+function setTab(k){ sheetTab=k; renderSheet(); }
 
-// ---------- プロフィール編集 ----------
-function updateCardPreview(){
-  const p=Object.assign({},state.profile,{
-    handle:$("pe-handle")?.value||state.profile.handle,
-    avatarId:state.editing.avatarId, categories:state.editing.categories,
-    goal:$("pe-goal")?.value||"", cardColor:state.editing.cardColor, cardPattern:state.editing.cardPattern,
-    neighborOk:state.editing.neighborOk, photoData:state.photoDataURL||state.profile.photoData
-  });
-  const el=$("pe-card-preview"); if(el) el.innerHTML=pcardHtml(p);
-}
-function initProfileEdit(){
-  const p=state.profile;
-  state.editing=Object.assign({},state.editing,{
-    categories:[...(p.categories||[])], timeSlots:[...(p.timeSlots||[])],
-    focusStyle:p.focusStyle||"", photoData:p.photoData||null, photoChangedAt:p.photoChangedAt||null, _photoChanged:false,
-    cardColor:p.cardColor||"water", cardPattern:p.cardPattern||"none", neighborOk:p.neighborOk||"どちらでも",
-    iconCrop:p.iconCrop?{...p.iconCrop}:(p.photoData?{cx:0.5,cy:0.35,size:0.55}:null),
-  });
-  state.photoDataURL=p.photoData||null;
-  $("pe-handle").value=p.handle||"";
-  $("pe-goal").value=p.goal||"";
-  const av=$("pe-avatars"); av.innerHTML="";
-  AVATARS.forEach((e,i)=>{const el=document.createElement("button");el.type="button";el.className="avatar-opt"+(i===p.avatarId?" selected":"");el.textContent=e;el.onclick=()=>{state.editing.avatarId=i;av.querySelectorAll(".avatar-opt").forEach((x,j)=>x.classList.toggle("selected",j===i));updateCardPreview();};av.appendChild(el);});
-  state.editing.avatarId=p.avatarId;
-  // カード色
-  const cc=$("pe-cardcolor"); cc.innerHTML="";
-  Object.entries(CARD_COLORS).forEach(([k,v])=>{const el=document.createElement("button");el.type="button";el.className="chip"+(k===state.editing.cardColor?" selected":"");el.textContent=v.label;el.onclick=()=>{state.editing.cardColor=k;cc.querySelectorAll(".chip").forEach(c=>c.classList.remove("selected"));el.classList.add("selected");updateCardPreview();};cc.appendChild(el);});
-  // カード柄
-  const cp=$("pe-cardpattern"); cp.innerHTML="";
-  Object.entries(CARD_PATTERNS).forEach(([k,v])=>{const el=document.createElement("button");el.type="button";el.className="chip"+(k===state.editing.cardPattern?" selected":"");el.textContent=v;el.onclick=()=>{state.editing.cardPattern=k;cp.querySelectorAll(".chip").forEach(c=>c.classList.remove("selected"));el.classList.add("selected");updateCardPreview();};cp.appendChild(el);});
-  renderChips("pe-categories",CATEGORIES,state.editing.categories,"multi");
-  renderChips("pe-timeslots",TIMESLOTS,state.editing.timeSlots,"multi",true);
-  renderChips("pe-focus",FOCUS_STYLES,state.editing.focusStyle?[state.editing.focusStyle]:[],"single");
-  // お隣
-  const nb=$("pe-neighbor"); nb.innerHTML="";
-  NEIGHBOR_OPTS.forEach(opt=>{const el=document.createElement("button");el.type="button";el.className="chip"+(opt===state.editing.neighborOk?" selected":"");el.textContent=opt;el.onclick=()=>{state.editing.neighborOk=opt;nb.querySelectorAll(".chip").forEach(c=>c.classList.remove("selected"));el.classList.add("selected");};nb.appendChild(el);});
-  $("pe-scene-display").innerHTML = p.scene?`${p.scene.icon} ${esc(p.scene.gameName)}（${esc(p.scene.locationLabel)}）`:"未設定";
-  $("pe-photo-field").style.display=state.isLoggedIn?"block":"none";
-  updatePhotoPreview();
-  updateCardPreview();
-  const hIn=$("pe-handle"), gIn=$("pe-goal");
-  hIn.oninput=updateCardPreview; gIn.oninput=updateCardPreview;
-}
-function renderChips(id,options,selected,mode,pink){
-  const c=$(id);c.innerHTML="";
-  options.forEach(opt=>{const el=document.createElement("button");el.type="button";el.className="chip"+(selected.includes(opt)?" selected":"")+(pink?" pink":"");el.textContent=opt;
-    el.onclick=()=>{if(mode==="multi"){const i=selected.indexOf(opt);if(i>=0)selected.splice(i,1);else selected.push(opt);}else{selected.length=0;selected.push(opt);if(id==="pe-focus")state.editing.focusStyle=opt;}c.querySelectorAll(".chip").forEach((e,i)=>e.classList.toggle("selected",selected.includes(options[i])));};
-    c.appendChild(el);});
-}
-$("pe-photo-input").addEventListener("change",async e=>{
-  const file=e.target.files[0];if(!file)return;
-  if(state.editing.photoChangedAt){const last=state.editing.photoChangedAt.toMillis?state.editing.photoChangedAt.toMillis():new Date(state.editing.photoChangedAt).getTime();const el=Date.now()-last;if(el<PHOTO_COOLDOWN_MS){toast("画像変更まであと"+Math.ceil((PHOTO_COOLDOWN_MS-el)/86400000)+"日");return;}}
-  try{
-    const d=await resize916(file,0.62);
-    state.photoDataURL=d; state.editing.photoData=d; state.editing._photoChanged=true;
-    state.editing.iconCrop=state.editing.iconCrop||{cx:0.5,cy:0.35,size:0.55};
-    updatePhotoPreview(); updateCardPreview(); toast("画像を読み込みました");
-  }catch(err){ console.error(err); toast("読み込み失敗"); }
-});
-// 9:16（360x640）にリサイズ（中央クロップ）
-function resize916(file,q){return new Promise((res,rej)=>{const r=new FileReader();r.onload=e=>{const img=new Image();img.onload=()=>{const W=360,H=640;const cv=document.createElement("canvas");cv.width=W;cv.height=H;const ctx=cv.getContext("2d");const ar=img.width/img.height, tar=W/H;let sw,sh,sx,sy;if(ar>tar){sh=img.height;sw=sh*tar;sx=(img.width-sw)/2;sy=0;}else{sw=img.width;sh=sw/tar;sx=0;sy=(img.height-sh)/2;}ctx.drawImage(img,sx,sy,sw,sh,0,0,W,H);res(cv.toDataURL("image/jpeg",q));};img.onerror=rej;img.src=e.target.result;};r.onerror=rej;r.readAsDataURL(file);});}
+/* ============================================================
+   タイマー更新ループ
+   ============================================================ */
+let lastTimeup={};
+setInterval(()=>{
+  const el=$("#tmr"); if(!el) return;
+  const start=+el.dataset.start, sec=+el.dataset.sec;
+  if(!start){ el.textContent="--:--"; return; }
+  const left=Math.round(sec-(Date.now()-start)/1000);
+  const over=left<0;
+  const a=Math.abs(left), mm=String(Math.floor(a/60)).padStart(2,"0"), ss=String(a%60).padStart(2,"0");
+  el.textContent=(over?"+":"")+mm+":"+ss;
+  el.classList.toggle("over",over);
+  if(over && !lastTimeup[start]){ lastTimeup[start]=true; playSfx("timeup"); }
+},500);
 
-function updatePhotoPreview(){
-  const wrap=$("pe-crop-wrap"), rm=$("pe-photo-remove");
-  if(!wrap) return;
-  if(state.photoDataURL){
-    wrap.style.display="block"; rm.style.display="inline-block";
-    $("pe-cimg").style.backgroundImage=`url('${state.photoDataURL}')`;
-    if(!state.editing.iconCrop) state.editing.iconCrop={cx:0.5,cy:0.35,size:0.55};
-    $("pe-icon-size").value=Math.round(state.editing.iconCrop.size*100);
-    layoutCropCircle(); updateIconPreview(); attachCropDrag();
-  } else {
-    wrap.style.display="none"; rm.style.display="none";
-  }
-}
-function layoutCropCircle(){
-  const cropper=$("pe-cropper"); const circle=$("pe-ccircle");
-  if(!cropper||!circle) return;
-  const W=cropper.clientWidth||180, H=cropper.clientHeight||320;
-  const c=state.editing.iconCrop;
-  const d=c.size*W;                 // 円直径 = 画像幅×size
-  circle.style.width=d+"px"; circle.style.height=d+"px";
-  circle.style.left=(c.cx*W - d/2)+"px";
-  circle.style.top=(c.cy*H - d/2)+"px";
-}
-function updateIconPreview(){
-  const el=$("pe-icon-preview"); if(!el) return;
-  el.innerHTML=iconEl({photoData:state.photoDataURL,iconCrop:state.editing.iconCrop},72);
-}
-let _cropBound=false;
-function attachCropDrag(){
-  if(_cropBound) return; _cropBound=true;
-  const cropper=$("pe-cropper"), circle=$("pe-ccircle");
-  let drag=false;
-  const pt=e=>e.touches?e.touches[0]:e;
-  const down=e=>{drag=true;if(e.cancelable)e.preventDefault();};
-  const move=e=>{ if(!drag)return; const r=cropper.getBoundingClientRect(); const p=pt(e);
-    let cx=(p.clientX-r.left)/r.width, cy=(p.clientY-r.top)/r.height;
-    cx=Math.max(0,Math.min(1,cx)); cy=Math.max(0,Math.min(1,cy));
-    state.editing.iconCrop.cx=cx; state.editing.iconCrop.cy=cy;
-    layoutCropCircle(); updateIconPreview(); if(e.cancelable)e.preventDefault();
-  };
-  const up=()=>drag=false;
-  circle.addEventListener("mousedown",down); cropper.addEventListener("mousedown",e=>{down(e);move(e);});
-  window.addEventListener("mousemove",move); window.addEventListener("mouseup",up);
-  circle.addEventListener("touchstart",down,{passive:false}); cropper.addEventListener("touchstart",e=>{down(e);move(e);},{passive:false});
-  window.addEventListener("touchmove",move,{passive:false}); window.addEventListener("touchend",up);
-  const sizeEl=$("pe-icon-size");
-  if(sizeEl) sizeEl.oninput=()=>{ state.editing.iconCrop.size=parseInt(sizeEl.value,10)/100; layoutCropCircle(); updateIconPreview(); };
-}
-function removePhoto(){if(!confirm("画像を削除しますか？"))return;state.photoDataURL=null;state.editing.photoData=null;state.editing.iconCrop=null;state.editing._photoChanged=true;updatePhotoPreview();updateCardPreview();}
-
-async function saveProfileEdit(){
-  const handle=$("pe-handle").value.trim();
-  if(!handle)return toast("なまえを入れてください");
-  state.profile.handle=handle;
-  state.profile.avatarId=state.editing.avatarId;
-  state.profile.categories=state.editing.categories;
-  state.profile.timeSlots=state.editing.timeSlots;
-  state.profile.focusStyle=state.editing.focusStyle;
-  state.profile.goal=$("pe-goal").value.trim();
-  state.profile.cardColor=state.editing.cardColor;
-  state.profile.cardPattern=state.editing.cardPattern;
-  state.profile.neighborOk=state.editing.neighborOk;
-  if(state.editing._photoChanged){ state.profile.photoData=state.editing.photoData||""; state.profile.iconCrop=state.editing.iconCrop||null; state.profile.photoChangedAt=Timestamp.now(); }
-  else if(state.editing.iconCrop){ state.profile.iconCrop=state.editing.iconCrop; }
-  await persistProfile(false);
-  toast("保存しました"); goto("profile");
-}
-
-function changeScene(){ goto("onboard"); }
-
-// ---------- モーダル ----------
-function showModal(title,body,actions){
-  $("modal-title").textContent=title;$("modal-body").innerHTML=body;
-  const ac=$("modal-actions");ac.innerHTML="";
-  (actions||[]).forEach(a=>{const b=document.createElement("button");b.className="btn "+(a.primary?"btn-primary":"");b.textContent=a.label;b.style.marginBottom="6px";b.onclick=a.onclick;ac.appendChild(b);});
-  const cl=document.createElement("button");cl.className="btn btn-ghost";cl.textContent="閉じる";cl.onclick=closeModal;ac.appendChild(cl);
-  $("modal-bg").classList.add("active");
-}
-function closeModal(){$("modal-bg").classList.remove("active");}
-function showTerms(){
-  showModal("このサイトについて",`
-    <p>「作業仲間さがし」は、一緒に作業する仲間を見つけるための<strong>個人が運営する非公式サイト</strong>です。掲載される界隈やゲーム名は<strong>利用者が自由に登録したもの</strong>で、各ゲーム・サービスの運営会社とは無関係です。公式との提携・後援関係はありません。</p>
-    <p style="margin-top:8px"><strong>禁止事項:</strong> 恋愛・出会い・交際・性的な連絡を目的とした利用、なりすまし、営業・宣伝、他利用者への迷惑行為、権利侵害。違反時はアカウント停止することがあります。</p>
-    <p style="margin-top:8px"><strong>免責:</strong> 本サービスの利用や利用者間・第三者とのトラブルについて、運営者は責任を負いません。</p>
-    <p style="margin-top:8px"><strong>年齢:</strong> 13歳以上が対象です。未成年は保護者の同意を得てください。</p>
-    <p style="margin-top:8px">権利者からの削除要請などは、運営者までご連絡ください。速やかに対応します。</p>
-  `);
-}
-
-window.app={
-  startGuest,loginGoogle,loginX,goto,switchTab,
-  setSceneSort,moreScenes,pickScene,finishOnboard,createScene,
-  startMatching,leaveWaiting,openMatchChoice,
-  likeMatch:likeCurrentMatch, passMatch:passCurrentMatch,
-  leaveWorkScreen,todoAdd,todoInc,todoDec,todoDel,toggleHideTitles,sendComment,proposeLoc,suggestPhoto,friendReqFromWork,copyLoc,toPip,fromPip,
-  loadFriendsScreen,approveReq:approveRequest,rejectReq:rejectRequest,inviteToWork,
-  initSwipe,feedLike,feedFriend,feedDetail,togglePrivate,
-  saveProfileEdit,removePhoto,changeScene,signOut:doSignOut,
-  showModal,closeModal,showTerms,renderMatchTab,
-};
+/* ============================================================
+   起動
+   ============================================================ */
+window.addEventListener("beforeunload",()=>{ if(roomRef) roomRef.child("players/"+me+"/connected").set(false); });
+render();
+lobbyView();
 </script>
 </body>
 </html>
