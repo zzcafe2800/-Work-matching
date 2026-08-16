@@ -164,6 +164,49 @@ nav.bottom-nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);pad
 .like-badge{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:10px;font-size:12px;font-weight:700;margin:4px}
 .like-badge.on{background:var(--pink);color:#fff}
 .like-badge.off{background:var(--bg);color:var(--text-soft)}
+/* プロフィールカード（カスタム可） */
+.pcard{border-radius:22px;padding:22px;text-align:center;position:relative;overflow:hidden;color:#fff}
+.pcard .pc-shadow-text{text-shadow:0 1px 4px rgba(0,0,0,.45)}
+.pcard .pc-av{width:88px;height:88px;border-radius:50%;background:rgba(255,255,255,.25);margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:46px;overflow:hidden;box-shadow:0 4px 14px rgba(0,0,0,.2)}
+.pcard .pc-av img{width:100%;height:100%;object-fit:cover}
+.pcard .pc-name{font-size:20px;font-weight:800}
+.pcard .pc-tags{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin-top:8px}
+.pcard .pc-tag{font-size:11px;padding:3px 9px;border-radius:9px;background:rgba(255,255,255,.28);font-weight:600}
+.pcard .pc-row{font-size:12px;margin-top:4px;opacity:.95}
+.pat-dots{background-image:radial-gradient(rgba(255,255,255,.25) 1.5px,transparent 1.5px);background-size:14px 14px}
+.pat-stripe{background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.12) 0,rgba(255,255,255,.12) 8px,transparent 8px,transparent 16px)}
+.pat-grid{background-image:linear-gradient(rgba(255,255,255,.18) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.18) 1px,transparent 1px);background-size:18px 18px}
+.pat-hearts{background-image:radial-gradient(circle at 50% 60%,rgba(255,255,255,.2) 3px,transparent 4px);background-size:20px 20px}
+/* 作業画面 */
+.work-screen{position:fixed;inset:0;z-index:160;display:none;flex-direction:column;background:var(--bg)}
+.work-screen.active{display:flex}
+.ws-header{padding:14px 16px;padding-top:calc(14px + env(safe-area-inset-top));color:#fff;background:linear-gradient(135deg,var(--water),var(--water-dark));box-shadow:0 3px 12px var(--shadow-d)}
+.ws-header .ws-loc{font-size:20px;font-weight:800;letter-spacing:.03em;word-break:break-all;text-shadow:0 1px 3px rgba(0,0,0,.3)}
+.ws-header .ws-sub{font-size:12px;opacity:.9}
+.ws-body{flex:1;overflow-y:auto;padding:14px 16px 90px;max-width:560px;margin:0 auto;width:100%}
+.ws-pair{display:flex;gap:10px;align-items:center;margin-bottom:12px}
+.ws-person{flex:1;text-align:center;background:var(--card);border-radius:16px;padding:10px;box-shadow:3px 3px 8px var(--shadow-d),-3px -3px 8px var(--shadow-l)}
+.ws-person .av{width:44px;height:44px;border-radius:50%;background:var(--bg);margin:0 auto 4px;display:flex;align-items:center;justify-content:center;font-size:22px;overflow:hidden}
+.ws-person .av img{width:100%;height:100%;object-fit:cover}
+.ws-person .nm{font-size:13px;font-weight:700}
+.ws-counter{font-size:22px;font-weight:800;color:var(--pink)}
+.ws-counter.done{color:var(--ok)}
+.todo-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:12px;background:var(--bg);margin-bottom:6px;box-shadow:inset 2px 2px 5px var(--shadow-d),inset -2px -2px 5px var(--shadow-l)}
+.todo-item.done .tt{text-decoration:line-through;color:var(--text-soft)}
+.todo-item .tt{flex:1;font-size:13px}
+.todo-check{width:22px;height:22px;border-radius:7px;background:var(--card);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;box-shadow:2px 2px 5px var(--shadow-d)}
+.todo-check.on{background:var(--ok);color:#fff}
+.ws-fab{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom));right:20px;display:flex;flex-direction:column;gap:10px;z-index:5}
+.ws-fab button{width:52px;height:52px;border-radius:50%;background:var(--card);box-shadow:4px 4px 12px var(--shadow-d);font-size:22px;display:flex;align-items:center;justify-content:center}
+.comment-bubble{background:var(--pink-soft);color:#fff;border-radius:14px;padding:8px 12px;font-size:12px;margin-bottom:6px;box-shadow:2px 2px 6px var(--shadow-d)}
+/* フレンド申請 */
+.req-item{display:flex;gap:10px;align-items:center;padding:10px;border-radius:14px;background:var(--bg);margin-bottom:8px}
+.req-item .av{width:44px;height:44px;border-radius:50%;background:var(--card);display:flex;align-items:center;justify-content:center;font-size:22px;overflow:hidden;flex-shrink:0}
+.req-item .av img{width:100%;height:100%;object-fit:cover}
+.req-item .body{flex:1;min-width:0}
+.req-btns{display:flex;gap:6px}
+.req-btns button{padding:6px 12px;border-radius:10px;font-size:12px;font-weight:700}
+.badge-count{display:inline-block;min-width:16px;height:16px;line-height:16px;background:var(--danger);color:#fff;border-radius:8px;font-size:10px;font-weight:700;padding:0 4px;margin-left:3px}
 </style>
 </head>
 <body>
@@ -266,11 +309,9 @@ nav.bottom-nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);pad
   <div class="tabs">
     <button class="tab active" data-tab="match" onclick="app.switchTab('match')">🤝 マッチ</button>
     <button class="tab" data-tab="find" onclick="app.switchTab('find')">🔍 探し</button>
-    <button class="tab" data-tab="friends" onclick="app.switchTab('friends')">💛 フレンド</button>
   </div>
   <div id="tab-match"></div>
   <div id="tab-find" style="display:none"></div>
-  <div id="tab-friends" style="display:none"></div>
 </section>
 
 <!-- ========== プロフィール ========== -->
@@ -289,7 +330,17 @@ nav.bottom-nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);pad
 <!-- ========== プロフィール編集（詳細） ========== -->
 <section id="screen-profile-edit" class="screen">
   <div class="card">
-    <h2 style="color:var(--water-dark);font-size:16px;margin-bottom:16px">プロフィール編集</h2>
+    <h2 style="color:var(--water-dark);font-size:16px;margin-bottom:10px">プロフィール編集</h2>
+    <label>プレビュー</label>
+    <div id="pe-card-preview" style="margin-bottom:16px"></div>
+    <div class="field">
+      <label>カードの色</label>
+      <div class="chips" id="pe-cardcolor"></div>
+    </div>
+    <div class="field">
+      <label>カードの柄</label>
+      <div class="chips" id="pe-cardpattern"></div>
+    </div>
     <div class="field">
       <label>なまえ <span style="color:var(--pink)">*</span></label>
       <input type="text" id="pe-handle" maxlength="15">
@@ -328,6 +379,10 @@ nav.bottom-nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);pad
       <div class="chips" id="pe-focus"></div>
     </div>
     <div class="field">
+      <label>お隣（同じ空間）で作業OK？</label>
+      <div class="chips" id="pe-neighbor"></div>
+    </div>
+    <div class="field">
       <label>いま頑張っていること</label>
       <input type="text" id="pe-goal" maxlength="60" placeholder="秋の資格試験、新刊の作画 など">
     </div>
@@ -336,10 +391,17 @@ nav.bottom-nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);pad
   <button class="btn btn-ghost" onclick="app.goto('profile')">もどる</button>
 </section>
 
+<!-- ========== フレンド ========== -->
+<section id="screen-friends" class="screen">
+  <div id="friend-requests-area"></div>
+  <div id="friends-list-area"></div>
+</section>
+
 </main>
 
 <nav class="bottom-nav" id="bottom-nav" style="display:none">
   <button class="nav-btn active" data-nav="home" onclick="app.goto('home')"><span class="ico">🏠</span>ホーム</button>
+  <button class="nav-btn" data-nav="friends" onclick="app.goto('friends')"><span class="ico">💛</span><span id="friend-nav-label">フレンド</span></button>
   <button class="nav-btn" data-nav="profile" onclick="app.goto('profile')"><span class="ico">👤</span>プロフィール</button>
 </nav>
 
@@ -351,6 +413,20 @@ nav.bottom-nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);pad
   </div>
 </div>
 <div class="wait-overlay" id="wait-overlay"><div id="wait-overlay-content"></div></div>
+<div class="work-screen" id="work-screen">
+  <div class="ws-header">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start">
+      <div style="flex:1;min-width:0">
+        <div style="font-size:11px;opacity:.85" id="ws-loc-label">作業場所</div>
+        <div class="ws-loc" id="ws-loc-value">-</div>
+      </div>
+      <button class="btn btn-small" style="background:rgba(255,255,255,.25);color:#fff;box-shadow:none" onclick="app.leaveWorkScreen()">退出</button>
+    </div>
+    <div class="ws-sub" id="ws-partner-line"></div>
+  </div>
+  <div class="ws-body" id="ws-body"></div>
+  <div class="ws-fab" id="ws-fab"></div>
+</div>
 <div class="toast" id="toast"></div>
 
 <script type="module">
@@ -411,7 +487,8 @@ const state = {
   swipeQueue:[], swipeIndex:0,
   friends:[], presenceMap:{_unsubs:{}},
   waitUnsub:null, photoDataURL:null, totalUsers:0,
-  match:{active:false},
+  match:{active:false}, work:null, excluded:new Set(),
+  matchesGlobalUnsub:null, invitesUnsub:null,
 };
 
 const $ = (id)=>document.getElementById(id);
@@ -448,6 +525,7 @@ function goto(screen){
   if(screen==="onboard") initOnboard();
   if(screen==="scene-create") initSceneCreate();
   if(screen==="home"){ switchTab("match"); }
+  if(screen==="friends") loadFriendsScreen();
   if(screen==="profile") renderProfileView();
   if(screen==="profile-edit") initProfileEdit();
 }
@@ -522,7 +600,7 @@ async function doSignOut(){
   try{ await signOut(auth); location.reload(); }catch(e){ console.error(e); }
 }
 
-function showBottomNav(){ $("bottom-nav").style.display="flex"; }
+function showBottomNav(){ $("bottom-nav").style.display="flex"; subscribeMyMatches(); subscribeWorkInvites(); refreshFriendBadge(); }
 
 // アクティブ時刻の更新
 async function touchActive(){
@@ -698,6 +776,7 @@ async function persistProfile(isFirst){
     scene:p.scene||null,
     categories:p.categories||[], timeSlots:p.timeSlots||[],
     focusStyle:p.focusStyle||"", goal:p.goal||"",
+    cardColor:p.cardColor||"water", cardPattern:p.cardPattern||"none", neighborOk:p.neighborOk||"どちらでも",
     photoData:p.photoData||"", photoChangedAt:p.photoChangedAt||null,
     authType:state.authType, isAnonymous:auth.currentUser?auth.currentUser.isAnonymous:true,
     updatedAt:serverTimestamp(), lastActive:serverTimestamp(),
@@ -713,28 +792,37 @@ async function persistProfile(isFirst){
 
 // ================= ホーム：マッチタブ =================
 function switchTab(name){
-  if((name==="find"||name==="friends") && !state.isLoggedIn){
+  if(name==="find" && !state.isLoggedIn){
     showModal("ログインが必要です",
-      `<p>スワイプで探したり、フレンド機能を使うには、なりすまし防止のため<strong>ログイン</strong>が必要です。</p>`,
+      `<p>スワイプで探すには、なりすまし防止のため<strong>ログイン</strong>が必要です。</p>`,
       [{label:"ログインする",primary:true,onclick:()=>{closeModal();goto("profile");}}]);
     return;
   }
   document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("active",t.dataset.tab===name));
   $("tab-match").style.display=name==="match"?"block":"none";
   $("tab-find").style.display=name==="find"?"block":"none";
-  $("tab-friends").style.display=name==="friends"?"block":"none";
   if(name==="match") renderMatchTab();
   if(name==="find") initSwipe();
-  if(name==="friends") loadFriends();
 }
 
-// ================= マッチ（完全待機＋自動マッチ） =================
-let audioCtx=null;
+// ================= マッチ／作業画面（完全待機＋自動マッチ） =================
+const CARD_COLORS={
+  water:{label:"みず",css:"linear-gradient(135deg,#5b9cb8,#468197)"},
+  pink:{label:"ピンク",css:"linear-gradient(135deg,#e0588f,#f4a8c5)"},
+  mint:{label:"ミント",css:"linear-gradient(135deg,#5eb187,#8fd3b0)"},
+  grape:{label:"ぶどう",css:"linear-gradient(135deg,#8b6fc4,#b9a3e0)"},
+  sunset:{label:"ゆうやけ",css:"linear-gradient(135deg,#e8a54a,#e0588f)"},
+  night:{label:"よぞら",css:"linear-gradient(135deg,#3a4a70,#5b6c99)"},
+};
+const CARD_PATTERNS={none:"なし",dots:"ドット",stripe:"ストライプ",grid:"グリッド",hearts:"ハート"};
+const NEIGHBOR_OPTS=["どちらでも","お隣OK","静かに離れて"];
+
+let audioCtx=null, soundLoop=null;
 function unlockAudio(){ try{ audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)(); if(audioCtx.state==="suspended")audioCtx.resume(); }catch(e){} }
-function playMatchSound(){
+function playBeep(freqs){
   if(!audioCtx) return;
   const now=audioCtx.currentTime;
-  [660,880,1320].forEach((f,i)=>{
+  freqs.forEach((f,i)=>{
     const o=audioCtx.createOscillator(),g=audioCtx.createGain();
     o.type="sine"; o.frequency.value=f;
     const t=now+i*0.14;
@@ -743,113 +831,101 @@ function playMatchSound(){
   });
   try{ if(navigator.vibrate) navigator.vibrate([120,60,120]); }catch(e){}
 }
+function startMatchSound(){ stopMatchSound(); playBeep([660,880,1320]); soundLoop=setInterval(()=>playBeep([660,880,1320]),1700); }
+function stopMatchSound(){ if(soundLoop){ clearInterval(soundLoop); soundLoop=null; } }
+
+// ---------- プロフィールカード描画 ----------
+function pcardHtml(p, extra){
+  const col=CARD_COLORS[p.cardColor||"water"]||CARD_COLORS.water;
+  const pat=p.cardPattern&&p.cardPattern!=="none"?("pat-"+p.cardPattern):"";
+  const av=p.photoData?`<img src="${p.photoData}">`:(AVATARS[p.avatarId]||"🐱");
+  return `<div class="pcard ${pat}" style="background:${col.css}">
+    <div class="pc-av">${av}</div>
+    <div class="pc-name pc-shadow-text">${esc(p.handle)}</div>
+    ${p.scene?`<div class="pc-row pc-shadow-text">${p.scene.icon} ${esc(p.scene.gameName)}</div>`:""}
+    <div class="pc-tags">${(p.categories||[]).slice(0,5).map(c=>`<span class="pc-tag">${esc(c)}</span>`).join("")}</div>
+    ${p.goal?`<div class="pc-row pc-shadow-text" style="margin-top:8px">🔥 ${esc(p.goal)}</div>`:""}
+    ${p.neighborOk&&p.neighborOk!=="どちらでも"?`<div class="pc-row pc-shadow-text">🪑 ${esc(p.neighborOk)}</div>`:""}
+    ${extra||""}
+  </div>`;
+}
 
 async function renderMatchTab(){
   const box=$("tab-match");
   const p=state.profile;
-  // プロフィール編集欄（ホーム上部）
-  const av=p.photoData?`<img src="${p.photoData}" style="width:56px;height:56px;border-radius:50%;object-fit:cover">`:`<div style="width:56px;height:56px;border-radius:50%;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:30px;box-shadow:inset 2px 2px 6px var(--shadow-d)">${AVATARS[p.avatarId]||"🐱"}</div>`;
   box.innerHTML=`
-    <div class="card" style="display:flex;align-items:center;gap:12px">
-      ${av}
-      <div style="flex:1;min-width:0">
-        <div style="font-weight:700;font-size:15px">${esc(p.handle)}</div>
-        <div style="font-size:11px;color:var(--text-soft)">${p.scene?(p.scene.icon+" "+esc(p.scene.gameName)):"界隈未設定"}・${(p.categories||[]).slice(0,3).join("・")||"カテゴリ未設定"}</div>
-      </div>
-      <button class="btn btn-small btn-ghost" onclick="app.goto('profile-edit')">編集</button>
+    <div style="position:relative">
+      ${pcardHtml(p)}
+      <button class="btn btn-small" style="position:absolute;top:12px;right:12px;background:rgba(255,255,255,.9);color:var(--water-dark)" onclick="app.goto('profile-edit')">編集</button>
     </div>
     <div class="card" style="text-align:center">
-      <div style="font-size:14px;color:var(--text-soft);margin-bottom:4px">いま相手を探している人</div>
-      <div style="font-size:30px;font-weight:800;color:var(--pink)" id="searching-count">…<span style="font-size:15px">人</span></div>
-      <p class="hint" style="margin:14px 0 8px">どうやって作業する？</p>
+      <p class="hint" style="margin-bottom:10px">どうやって作業する？</p>
       <div style="display:flex;gap:10px">
         <button class="btn btn-pink" onclick="app.startMatching('wait')">🏠 お部屋で待つ</button>
         <button class="btn" onclick="app.startMatching('go')">🚪 お部屋へ向かう</button>
       </div>
       <p class="hint" style="margin-top:10px">「待つ」は自分の作業場所を登録して待ちます。<br>「向かう」は相手の場所へ行きます。</p>
     </div>
-    <div class="card" id="match-stats"><div class="loading"><span class="spinner"></span>集計中…</div></div>`;
+    <div id="match-stats" style="text-align:center;color:var(--text-soft);font-size:13px;padding:4px 8px 10px">集計中…</div>`;
   loadMatchStats();
 }
 
 async function loadMatchStats(){
   try{
     const wsnap=await getDocs(query(collection(db,"waiting"),where("status","==","searching")));
-    const now=Date.now(); let cnt=0;
-    wsnap.forEach(d=>{ const w=d.data(); if(d.id===state.uid)return; if(w.updatedAt&&(now-w.updatedAt.toMillis())>2*60*1000)return; cnt++; });
-    const el=$("searching-count"); if(el) el.innerHTML=cnt+'<span style="font-size:15px">人</span>';
-
-    const snap=await getDocs(query(collection(db,"users"),limit(300)));
-    const sceneCount={},catCount={};
-    snap.forEach(d=>{ const u=d.data(); const g=u.scene?.gameName||"その他"; sceneCount[g]=(sceneCount[g]||0)+1; (u.categories||[]).forEach(c=>catCount[c]=(catCount[c]||0)+1); });
-    const sArr=Object.entries(sceneCount).sort((a,b)=>b[1]-a[1]).slice(0,5);
-    const cArr=Object.entries(catCount).sort((a,b)=>b[1]-a[1]).slice(0,5);
-    const mS=Math.max(1,...sArr.map(x=>x[1])),mC=Math.max(1,...cArr.map(x=>x[1]));
-    const st=$("match-stats");
-    if(st) st.innerHTML=`
-      <h3 style="font-size:14px;color:var(--water-dark);margin-bottom:10px">🎮 界隈ごとの人数</h3>
-      ${sArr.map(([g,n])=>`<div class="stat-row"><div class="stat-label">${esc(g)}</div><div class="stat-bar-bg"><div class="stat-bar" style="width:${n/mS*100}%"></div></div><div class="stat-num">${n}人</div></div>`).join("")||'<div class="hint">データなし</div>'}
-      <h3 style="font-size:14px;color:var(--water-dark);margin:14px 0 10px">📚 カテゴリーごとの人数</h3>
-      ${cArr.map(([c,n])=>`<div class="stat-row"><div class="stat-label">${esc(c)}</div><div class="stat-bar-bg"><div class="stat-bar" style="width:${n/mC*100}%"></div></div><div class="stat-num">${n}人</div></div>`).join("")||'<div class="hint">データなし</div>'}`;
+    const now=Date.now(); const wcat={}; let wtotal=0;
+    wsnap.forEach(d=>{ const w=d.data(); if(w.updatedAt&&(now-w.updatedAt.toMillis())>2*60*1000)return; wtotal++; (w.categories||[]).forEach(c=>wcat[c]=(wcat[c]||0)+1); });
+    const el=$("match-stats"); if(!el) return;
+    const parts=Object.entries(wcat).sort((a,b)=>b[1]-a[1]).map(([c,n])=>`${esc(c)} ${n}人`);
+    el.innerHTML = wtotal>0
+      ? `いま <strong style="color:var(--pink)">${wtotal}人</strong> が待機中　`+(parts.length?"（"+parts.join("・")+"）":"")
+      : "いま待機中の人はいません";
   }catch(e){ console.error(e); }
 }
 
-// 作業場所プロフィールのスナップショット
-function myProfileSnap(role, location){
+function myProfileSnap(role, location, extra){
   const p=state.profile;
-  return { handle:p.handle, avatarId:p.avatarId, photoData:p.photoData||"", scene:p.scene||null,
+  return Object.assign({ handle:p.handle, avatarId:p.avatarId, photoData:p.photoData||"", scene:p.scene||null,
     categories:p.categories||[], timeSlots:p.timeSlots||[], goal:p.goal||"", focusStyle:p.focusStyle||"",
-    role, location: role==="wait"?(location||""):"" };
+    cardColor:p.cardColor||"water", cardPattern:p.cardPattern||"none", neighborOk:p.neighborOk||"どちらでも",
+    role, location: role==="wait"?(location||""):"" }, extra||{});
 }
+function otherUid(m){ return m.users.find(u=>u!==state.uid); }
 
-// 待機開始
+// ---------- 待機開始 ----------
 function startMatching(role){
-  unlockAudio(); // ユーザー操作のうちにオーディオ解禁
+  unlockAudio();
+  const sc=state.profile.scene; const fmt=LOC_FORMATS[sc?.locationFormat||"free"];
+  const untilRow=`<label style="margin-top:10px">何時まで作業する？（任意）</label><input type="text" id="opt-until" maxlength="10" placeholder="例: 22:00">`;
   if(role==="wait"){
-    const sc=state.profile.scene; const fmt=LOC_FORMATS[sc?.locationFormat||"free"];
-    showModal(`${sc?.icon||"🎮"} ${esc(sc?.gameName||"")} で待つ`,
-      `<p>${esc(sc?.locationLabel||"作業場所")}を入力してください。マッチした相手にこの場所が伝わります。</p>
-       <input type="text" id="wait-loc" placeholder="${fmt.ph}" maxlength="24" value="${escA(state.profile.workLocation||"")}">
-       <p class="hint" style="margin-top:6px">${fmt.label}</p>`,
+    showModal(`${sc?.icon||"🎮"} 部屋で待つ`,
+      `<p>作業場所（ルーム名・IDなど）を入力してください。マッチした相手に伝わります。</p>
+       <input type="text" id="wait-loc" placeholder="作業場所（ルーム名・ID など）" maxlength="24" value="${escA(state.profile.workLocation||"")}">
+       <p class="hint" style="margin-top:6px">${sc?("この界隈の形式: "+fmt.label):""}</p>${untilRow}`,
       [{label:"この場所で待つ",primary:true,onclick:()=>{
         const val=($("wait-loc").value||"").trim();
         if(!val){ toast("場所を入力してください"); return; }
         if(fmt.re && !fmt.re.test(val)){ toast("入力形式が違います（"+fmt.label+"）"); return; }
-        state.profile.workLocation=val; saveLocal();
-        closeModal(); enterWaiting("wait", val);
+        const until=($("opt-until").value||"").trim();
+        state.profile.workLocation=val; saveLocal(); closeModal();
+        enterWaiting("wait", val, {workUntil:until});
       }}]);
   } else {
-    enterWaiting("go", "");
+    showModal("🚪 部屋へ向かう",
+      `<p>相手の部屋へ向かう側です。マッチしたら相手の作業場所が表示されます。</p>${untilRow}`,
+      [{label:"探しはじめる",primary:true,onclick:()=>{ const until=($("opt-until").value||"").trim(); closeModal(); enterWaiting("go","",{workUntil:until}); }}]);
   }
 }
 
-async function enterWaiting(role, location){
-  state.match={ active:true, role, location, matchId:null, matchData:null, established:false, startedAt:Date.now() };
+async function enterWaiting(role, location, extra){
+  state.match={ active:true, role, location, matchId:null, matchData:null, established:false, startedAt:Date.now(), workUntil:(extra&&extra.workUntil)||"" };
   openWaitOverlay(); renderWaitOverlay();
-  // 待機ドキュメント作成
   try{
-    await setDoc(doc(db,"waiting",state.uid), Object.assign({ uid:state.uid, status:"searching", matchId:null, updatedAt:serverTimestamp() }, myProfileSnap(role,location)));
-  }catch(e){ console.error("waiting create",e); toast("待機の登録に失敗しました"); leaveWaiting(); return; }
-
-  // ハートビート（stale扱い防止）
-  state.match.hb=setInterval(()=>{ try{ updateDoc(doc(db,"waiting",state.uid),{updatedAt:serverTimestamp()}); }catch(e){} }, 30000);
-  // タイマー表示更新
+    await setDoc(doc(db,"waiting",state.uid), Object.assign({ uid:state.uid, status:"searching", matchId:null, updatedAt:serverTimestamp() }, myProfileSnap(role,location,extra)));
+  }catch(e){ console.error("waiting",e); toast("待機の登録に失敗"); leaveWaiting(); return; }
+  state.match.hb=setInterval(()=>{ try{ updateDoc(doc(db,"waiting",state.uid),{updatedAt:serverTimestamp()}); }catch(e){} },30000);
   state.match.timer=setInterval(()=>{ const el=$("wo-timer"); if(el){ const s=Math.floor((Date.now()-state.match.startedAt)/1000); el.textContent=`待機時間 ${Math.floor(s/60)}分${String(s%60).padStart(2,"0")}秒`; } },1000);
-
-  // 自分が関わるマッチを監視
-  state.match.matchesUnsub=onSnapshot(
-    query(collection(db,"matches"), where("users","array-contains",state.uid)),
-    (snap)=>{
-      let m=null;
-      snap.forEach(d=>{ const x={id:d.id,...d.data()}; if(x.status==="cancelled")return; if(!m)m=x; });
-      if(m) handleMatchDoc(m);
-    }, (err)=>console.error("matches listen",err)
-  );
-  // 待機プールを監視して自動マッチ
-  state.match.poolUnsub=onSnapshot(
-    query(collection(db,"waiting"), where("status","==","searching")),
-    (snap)=>{ tryInitiate(snap); }, (err)=>console.error("pool listen",err)
-  );
+  state.match.poolUnsub=onSnapshot(query(collection(db,"waiting"),where("status","==","searching")),(snap)=>tryInitiate(snap),(e)=>console.error("pool",e));
 }
 
 async function tryInitiate(snap){
@@ -857,6 +933,7 @@ async function tryInitiate(snap){
   const now=Date.now(); const cands=[];
   snap.forEach(d=>{
     if(d.id===state.uid) return;
+    if(state.excluded.has(d.id)) return;
     const w=d.data();
     if(w.status!=="searching") return;
     if(w.updatedAt && (now-w.updatedAt.toMillis())>2*60*1000) return;
@@ -867,89 +944,119 @@ async function tryInitiate(snap){
   cands.forEach(c=>{ c._s=(c.role!==state.match.role?5:0)+(c.scene?.gameName===myScene?3:0)+(c.categories||[]).filter(x=>myCats.has(x)).length; });
   cands.sort((a,b)=>b._s-a._s);
   const partner=cands[0];
-  // 小さいuidだけが作成（重複防止）
   if(state.uid < partner.uid){
     const matchId=[state.uid,partner.uid].sort().join("__");
     try{
       const mref=doc(db,"matches",matchId);
       const ex=await getDoc(mref);
-      if(ex.exists()) return;
+      if(ex.exists() && !["cancelled","ended"].includes(ex.data().status)) return;
       await setDoc(mref,{
         users:[state.uid,partner.uid].sort(),
         likes:{[state.uid]:false,[partner.uid]:false},
-        status:"pending",
-        profiles:{
-          [state.uid]:myProfileSnap(state.match.role,state.match.location),
-          [partner.uid]:{handle:partner.handle,avatarId:partner.avatarId,photoData:partner.photoData||"",scene:partner.scene||null,categories:partner.categories||[],timeSlots:partner.timeSlots||[],goal:partner.goal||"",focusStyle:partner.focusStyle||"",role:partner.role,location:partner.location||""}
-        },
+        status:"pending", source:"match",
+        profiles:{ [state.uid]:myProfileSnap(state.match.role,state.match.location,{workUntil:state.match.workUntil||""}),
+          [partner.uid]:{handle:partner.handle,avatarId:partner.avatarId,photoData:partner.photoData||"",scene:partner.scene||null,categories:partner.categories||[],timeSlots:partner.timeSlots||[],goal:partner.goal||"",focusStyle:partner.focusStyle||"",cardColor:partner.cardColor||"water",cardPattern:partner.cardPattern||"none",neighborOk:partner.neighborOk||"どちらでも",role:partner.role,location:partner.location||"",workUntil:partner.workUntil||""} },
         createdAt:serverTimestamp()
       });
     }catch(e){ console.warn("initiate",e); }
   }
-  // 大きいuid側はmatchesリスナーで拾う
 }
 
-function handleMatchDoc(m){
-  const firstTime = state.match.matchId!==m.id;
+// ---------- 全マッチ監視（待機中も招待経由も） ----------
+function subscribeMyMatches(){
+  if(state.matchesGlobalUnsub) return;
+  state.matchesGlobalUnsub=onSnapshot(query(collection(db,"matches"),where("users","array-contains",state.uid)),(snap)=>{
+    let act=null;
+    snap.forEach(d=>{ const m={id:d.id,...d.data()}; if(["cancelled","ended"].includes(m.status))return; if(state.excluded.has(otherUid(m)))return;
+      if(!act) act=m; else if(m.status==="established"&&act.status!=="established") act=m; });
+    handleActiveMatch(act);
+  },(e)=>console.error("matches",e));
+}
+function handleActiveMatch(m){
+  if(!m){
+    if(state.work && state.work.matchId){ closeWorkScreen(); }
+    return;
+  }
+  if(m.status==="established"){
+    if(!state.work || state.work.matchId!==m.id){ // 初回オープン
+      stopMatchSound();
+      if(state.match.active) cleanupWaiting(false);
+      openWorkScreen(m);
+    } else { patchWorkScreen(m); }
+    return;
+  }
+  if(m.status==="pending" && state.match.active){ handlePendingMatch(m); }
+}
+function handlePendingMatch(m){
+  const firstTime=state.match.matchId!==m.id;
   state.match.matchId=m.id; state.match.matchData=m;
   if(firstTime){
-    // プール監視を止める
     if(state.match.poolUnsub){ state.match.poolUnsub(); state.match.poolUnsub=null; }
     try{ setDoc(doc(db,"waiting",state.uid),{status:"matched",matchId:m.id},{merge:true}); }catch(e){}
-    playMatchSound();
+    startMatchSound();
+    // 3分で自動キャンセル
+    state.match.cancelTimer=setTimeout(()=>{ autoCancelPending(m.id); },180000);
   }
-  // 両者いいね → 成立（小さいuid側が確定）
-  const bothLiked = m.users.every(u=>m.likes && m.likes[u]);
+  const bothLiked=m.users.every(u=>m.likes&&m.likes[u]);
   if(bothLiked && m.status==="pending" && state.uid===m.users[0]){
-    try{ updateDoc(doc(db,"matches",m.id),{status:"established"}); }catch(e){}
+    const wu=m.users.find(u=>m.profiles[u].role==="wait" && m.profiles[u].location);
+    const locVal=wu?m.profiles[wu].location:"";
+    const locLabel=wu&&m.profiles[wu].scene?m.profiles[wu].scene.locationLabel:"作業場所";
+    try{ updateDoc(doc(db,"matches",m.id),{status:"established",location:{value:locVal,label:locLabel,byUid:wu||null}}); }catch(e){}
   }
-  if(m.status==="established"){ state.match.established=true; }
   renderWaitOverlay();
+}
+async function autoCancelPending(matchId){
+  try{ const s=await getDoc(doc(db,"matches",matchId)); if(s.exists() && s.data().status==="pending"){ await updateDoc(doc(db,"matches",matchId),{status:"cancelled"}); } }catch(e){}
+  toast("3分たったのでマッチを解除しました");
+  resetToSearching();
 }
 
 async function likeCurrentMatch(){
+  stopMatchSound();
   const m=state.match.matchData; if(!m) return;
   try{ await updateDoc(doc(db,"matches",m.id),{["likes."+state.uid]:true}); }catch(e){ console.error(e); }
-  // UIはリスナーで更新
 }
-
 async function passCurrentMatch(){
+  stopMatchSound();
   const m=state.match.matchData;
-  if(m){ try{ await updateDoc(doc(db,"matches",m.id),{status:"cancelled"}); }catch(e){} }
+  if(m){ state.excluded.add(otherUid(m)); try{ await updateDoc(doc(db,"matches",m.id),{status:"cancelled"}); }catch(e){} }
+  resetToSearching();
+}
+function resetToSearching(){
+  if(state.match.cancelTimer){ clearTimeout(state.match.cancelTimer); state.match.cancelTimer=null; }
   state.match.matchId=null; state.match.matchData=null; state.match.established=false;
-  try{ await setDoc(doc(db,"waiting",state.uid),{status:"searching",matchId:null,updatedAt:serverTimestamp()},{merge:true}); }catch(e){}
-  // プール監視を再開
-  if(!state.match.poolUnsub){
-    state.match.poolUnsub=onSnapshot(query(collection(db,"waiting"),where("status","==","searching")),(snap)=>tryInitiate(snap));
-  }
+  if(!state.match.active){ return; }
+  try{ setDoc(doc(db,"waiting",state.uid),{status:"searching",matchId:null,updatedAt:serverTimestamp()},{merge:true}); }catch(e){}
+  if(!state.match.poolUnsub){ state.match.poolUnsub=onSnapshot(query(collection(db,"waiting"),where("status","==","searching")),(snap)=>tryInitiate(snap)); }
   renderWaitOverlay();
 }
-
-async function leaveWaiting(){
+function cleanupWaiting(deleteDocToo){
   if(state.match.hb) clearInterval(state.match.hb);
   if(state.match.timer) clearInterval(state.match.timer);
+  if(state.match.cancelTimer) clearTimeout(state.match.cancelTimer);
   if(state.match.poolUnsub) state.match.poolUnsub();
-  if(state.match.matchesUnsub) state.match.matchesUnsub();
-  const m=state.match.matchData;
-  // 成立前に抜けるならマッチをキャンセル
-  if(m && !state.match.established){ try{ await updateDoc(doc(db,"matches",m.id),{status:"cancelled"}); }catch(e){} }
-  try{ await deleteDoc(doc(db,"waiting",state.uid)); }catch(e){}
+  stopMatchSound();
+  if(deleteDocToo){ try{ deleteDoc(doc(db,"waiting",state.uid)); }catch(e){} }
   state.match={active:false};
   closeWaitOverlay();
+}
+async function leaveWaiting(){
+  stopMatchSound();
+  const m=state.match.matchData;
+  if(m && !state.match.established){ state.excluded.add(otherUid(m)); try{ await updateDoc(doc(db,"matches",m.id),{status:"cancelled"}); }catch(e){} }
+  cleanupWaiting(true);
   renderMatchTab();
 }
 
-// ---------- 待機オーバーレイ描画 ----------
 function openWaitOverlay(){ $("wait-overlay").classList.add("active"); }
 function closeWaitOverlay(){ $("wait-overlay").classList.remove("active"); }
 
 function renderWaitOverlay(){
   const box=$("wait-overlay-content");
   const M=state.match; const m=M.matchData;
-
-  // 状態1：探索中
-  if(!m){
-    const roleTxt = M.role==="wait" ? `🏠 ${esc(state.profile.scene?.locationLabel||"場所")}: ${esc(M.location)} で待っています` : "🚪 入れる部屋を探しています";
+  if(!m || m.status==="established"){
+    const roleTxt = M.role==="wait" ? `🏠 作業場所: ${esc(M.location)} で待っています` : "🚪 入れる部屋を探しています";
     box.innerHTML=`
       <div class="big-spinner"></div>
       <h2>現在 相手を探しています</h2>
@@ -958,36 +1065,9 @@ function renderWaitOverlay(){
       <button class="btn btn-ghost" style="color:#fff;margin-top:24px;max-width:220px" onclick="app.leaveWaiting()">待機をやめる</button>`;
     return;
   }
-
-  const partnerUid=m.users.find(u=>u!==state.uid);
-  const pp=m.profiles[partnerUid]||{};
-  const myLiked=m.likes && m.likes[state.uid];
-  const partnerLiked=m.likes && m.likes[partnerUid];
+  const pu=otherUid(m); const pp=m.profiles[pu]||{};
+  const myLiked=m.likes&&m.likes[state.uid]; const partnerLiked=m.likes&&m.likes[pu];
   const pav=pp.photoData?`<img src="${pp.photoData}">`:(AVATARS[pp.avatarId]||"🐱");
-
-  // 状態3：成立
-  if(m.status==="established"){
-    const mine=m.profiles[state.uid]||{};
-    const locBox=(prof,label)=>{
-      if(prof.role==="wait" && prof.location) return `<div class="wo-loc-box"><div class="lb-label">${label}（${prof.scene?esc(prof.scene.locationLabel):"場所"}）</div><div class="lb-val">${esc(prof.location)}</div></div>`;
-      return `<div class="wo-loc-box"><div class="lb-label">${label}</div><div class="lb-val" style="font-size:15px;color:var(--text-soft)">🚪 部屋へ向かう側</div></div>`;
-    };
-    box.innerHTML=`
-      <div class="wo-card match-pop">
-        <div style="font-size:40px;margin-bottom:6px">🎉</div>
-        <h2 style="color:var(--pink);font-size:20px;margin-bottom:4px">マッチ成立！</h2>
-        <p style="font-size:13px;color:var(--text-soft);margin-bottom:14px">${esc(pp.handle)} さんと作業しましょう</p>
-        <div class="av-big">${pav}</div>
-        <div style="font-weight:700;font-size:16px;margin-bottom:12px">${esc(pp.handle)}${pp.scene?`<div style="font-size:11px;color:var(--text-soft);font-weight:400">${pp.scene.icon} ${esc(pp.scene.gameName)}</div>`:""}</div>
-        ${locBox(pp,"相手の待機場所")}
-        ${locBox(mine,"あなたの待機場所")}
-        <p class="hint" style="margin-top:10px">${pp.role==="wait"?"相手の部屋へ向かいましょう":(mine.role==="wait"?"あなたの部屋で待ちましょう":"どちらかが部屋を立てて場所を共有しましょう")}</p>
-        <button class="btn btn-primary" style="margin-top:14px" onclick="app.leaveWaiting()">作業をはじめる（閉じる）</button>
-      </div>`;
-    return;
-  }
-
-  // 状態2：マッチ発見→お互いいいね待ち
   box.innerHTML=`
     <div class="wo-card match-pop">
       <div style="font-size:13px;color:var(--pink);font-weight:700;margin-bottom:10px">🔔 仲間が見つかりました！</div>
@@ -996,19 +1076,187 @@ function renderWaitOverlay(){
       <div style="font-size:12px;color:var(--text-soft);margin-bottom:10px">${pp.scene?(pp.scene.icon+" "+esc(pp.scene.gameName)):""}・${pp.role==="wait"?"🏠 部屋で待ってる":"🚪 部屋へ向かう"}</div>
       <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:4px;margin-bottom:8px">${(pp.categories||[]).map(c=>`<span class="sc-cat" style="background:var(--water-light);color:#fff;font-size:11px;padding:3px 9px;border-radius:9px">${esc(c)}</span>`).join("")}</div>
       ${pp.goal?`<p style="font-size:13px;margin-bottom:6px"><strong>いま:</strong> ${esc(pp.goal)}</p>`:""}
-      ${pp.focusStyle?`<p style="font-size:13px;margin-bottom:10px"><strong>スタイル:</strong> ${esc(pp.focusStyle)}</p>`:""}
+      ${pp.workUntil?`<p style="font-size:13px;margin-bottom:6px"><strong>作業:</strong> ${esc(pp.workUntil)}まで</p>`:""}
       <div style="margin:10px 0">
         <span class="like-badge ${myLiked?"on":"off"}">あなた ${myLiked?"♡":"…"}</span>
         <span class="like-badge ${partnerLiked?"on":"off"}">相手 ${partnerLiked?"♡":"…"}</span>
       </div>
-      ${myLiked
-        ? `<p class="hint">相手の返事を待っています…</p>`
+      ${myLiked ? `<p class="hint">相手の返事を待っています…（3分でリセット）</p>`
         : `<div style="display:flex;gap:10px;margin-top:10px">
              <button class="btn" onclick="app.passMatch()">パス</button>
              <button class="btn btn-pink" onclick="app.likeMatch()">♡ いいね</button>
            </div>`}
-      <button class="btn btn-ghost" style="margin-top:8px" onclick="app.leaveWaiting()">やめる</button>
     </div>`;
+}
+
+// ================= 作業画面 =================
+function openWorkScreen(m){
+  state.work={ matchId:m.id, data:m, myTodoInput:"", commentInput:"" };
+  $("work-screen").classList.add("active");
+  closeWaitOverlay();
+  const body=$("ws-body");
+  body.innerHTML=`
+    <div class="ws-pair" id="ws-pair"></div>
+    <div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <h3 style="font-size:14px;color:var(--water-dark)">あなたのTODO</h3>
+      <button class="btn btn-small btn-ghost" id="ws-hide-btn" onclick="app.toggleTodoHide()"></button>
+    </div>
+      <div style="display:flex;gap:6px;margin-bottom:8px"><input type="text" id="ws-todo-input" placeholder="やることを追加" maxlength="40"><button class="btn btn-small btn-pink" onclick="app.addTodo()">＋</button></div>
+      <div id="ws-todos-mine"></div>
+    </div>
+    <div class="card"><h3 style="font-size:14px;color:var(--water-dark);margin-bottom:8px">相手のTODO</h3><div id="ws-todos-partner"></div></div>
+    <div class="card"><h3 style="font-size:14px;color:var(--water-dark);margin-bottom:8px">コメント</h3>
+      <div id="ws-comments"></div>
+      <div style="display:flex;gap:6px;margin-top:8px"><input type="text" id="ws-comment-input" placeholder="コメントを送る" maxlength="60"><button class="btn btn-small" onclick="app.sendComment()">送信</button></div>
+    </div>`;
+  const fab=$("ws-fab");
+  fab.innerHTML=`
+    <button title="場所変更を提案" onclick="app.proposeLoc()">📍</button>
+    <button title="一緒に写真さそう" onclick="app.suggestPhoto()">📷</button>
+    <button id="ws-friend-fab" title="フレンド申請" onclick="app.friendReqFromWork()" style="display:none">➕</button>`;
+  patchWorkScreen(m);
+  updateFriendFab();
+}
+function closeWorkScreen(){ $("work-screen").classList.remove("active"); state.work=null; goto("home"); }
+
+async function leaveWorkScreen(){
+  const m=state.work&&state.work.data;
+  if(m){ try{ await updateDoc(doc(db,"matches",m.id),{status:"ended"}); }catch(e){} }
+  try{ await deleteDoc(doc(db,"waiting",state.uid)); }catch(e){}
+  $("work-screen").classList.remove("active"); state.work=null; state.match={active:false};
+  goto("home");
+}
+
+let _lastPhotoSuggestTs=0, _lastLocPropId="";
+function patchWorkScreen(m){
+  if(!state.work) return;
+  state.work.data=m;
+  const pu=otherUid(m); const pp=m.profiles[pu]||{}; const me=m.profiles[state.uid]||{};
+  // 場所
+  const loc=m.location||{value:"",label:"作業場所"};
+  $("ws-loc-label").textContent=loc.label||"作業場所";
+  $("ws-loc-value").textContent=loc.value||"（未設定・提案できます）";
+  $("ws-partner-line").textContent=`${pp.handle||"相手"} と作業中`+(pp.workUntil?`・${pp.workUntil}まで`:"");
+  // カウンター（ペア）
+  const cs=m.counters||{};
+  const cell=(uid,prof,isMe)=>{
+    const c=cs[uid]||{target:0,count:0};
+    const done=c.target>0 && c.count>=c.target;
+    const av=prof.photoData?`<img src="${prof.photoData}">`:(AVATARS[prof.avatarId]||"🐱");
+    let ctr = c.target>0 ? `<div class="ws-counter ${done?"done":""}">${c.count}/${c.target}${done?" ✓":""}</div>` : `<div style="font-size:11px;color:var(--text-soft)">目標なし</div>`;
+    let btns="";
+    if(isMe){
+      btns = c.target>0
+        ? `<button class="btn btn-small btn-pink" onclick="app.incCounter()" ${done?"disabled":""}>＋1</button> <button class="btn btn-small btn-ghost" onclick="app.setCounter()">目標変更</button>`
+        : `<button class="btn btn-small btn-pink" onclick="app.setCounter()">目標を決める</button>`;
+    }
+    return `<div class="ws-person"><div class="av">${av}</div><div class="nm">${esc(prof.handle||"")}${isMe?"（あなた）":""}</div>${ctr}<div style="margin-top:6px">${btns}</div></div>`;
+  };
+  $("ws-pair").innerHTML=cell(state.uid,me,true)+cell(pu,pp,false);
+  // TODO 自分
+  const myTodo=(m.todos&&m.todos[state.uid])||{items:[],hidden:false};
+  $("ws-hide-btn").textContent = myTodo.hidden?"🙈 相手に非表示中":"👁 相手に公開中";
+  $("ws-todos-mine").innerHTML = myTodo.items.length? myTodo.items.map((it,i)=>`
+    <div class="todo-item ${it.done?"done":""}">
+      <div class="todo-check ${it.done?"on":""}" onclick="app.toggleTodo(${i})">${it.done?"✓":""}</div>
+      <div class="tt">${esc(it.t)}</div>
+      <button class="btn btn-small btn-ghost" onclick="app.delTodo(${i})" style="padding:2px 8px">✕</button>
+    </div>`).join("") : '<div class="hint">まだありません</div>';
+  // TODO 相手
+  const pTodo=(m.todos&&m.todos[pu])||{items:[],hidden:false};
+  $("ws-todos-partner").innerHTML = pTodo.hidden ? '<div class="hint">🙈 相手が非表示にしています</div>'
+    : (pTodo.items.length? pTodo.items.map(it=>`<div class="todo-item ${it.done?"done":""}"><div class="todo-check ${it.done?"on":""}">${it.done?"✓":""}</div><div class="tt">${esc(it.t)}</div></div>`).join("") : '<div class="hint">まだありません</div>');
+  // コメント
+  const cms=m.comments||[];
+  $("ws-comments").innerHTML = cms.length? cms.map(c=>`<div class="comment-bubble" style="${c.uid===state.uid?"background:var(--water)":""}">${c.uid===state.uid?"あなた":esc(pp.handle||"相手")}: ${esc(c.text)}</div>`).join("") : '<div class="hint">まだコメントはありません</div>';
+  // 完了サウンド（相手が完了した瞬間）
+  m.users.forEach(u=>{
+    const c=cs[u]; if(c && c.target>0 && c.count>=c.target){
+      const key="done_"+u; if(!state.work[key]){ state.work[key]=true; if(u!==state.uid){ playBeep([880,1100,1320]); toast(`${esc(pp.handle||"相手")}が目標達成！コメントできます`);} }
+    }
+  });
+  // 場所変更提案の通知
+  if(m.proposedLoc && m.proposedLoc.byUid && m.proposedLoc.byUid!==state.uid && m.proposedLoc.id!==_lastLocPropId){
+    _lastLocPropId=m.proposedLoc.id;
+    showModal("場所の変更提案",`<p>${esc(pp.handle||"相手")}さんが作業場所を<br><strong>${esc(m.proposedLoc.value)}</strong><br>に変えませんか？と提案しています。</p>`,
+      [{label:"変更する",primary:true,onclick:async()=>{ try{ await updateDoc(doc(db,"matches",m.id),{location:{value:m.proposedLoc.value,label:m.location?.label||"作業場所",byUid:state.uid},proposedLoc:null}); }catch(e){} closeModal(); }},
+       {label:"却下",onclick:async()=>{ try{ await updateDoc(doc(db,"matches",m.id),{proposedLoc:null}); }catch(e){} closeModal(); }}]);
+  }
+  // 写真さそいの通知
+  if(m.photoSuggest && m.photoSuggest.byUid!==state.uid && m.photoSuggest.ts!==_lastPhotoSuggestTs){
+    _lastPhotoSuggestTs=m.photoSuggest.ts;
+    toast(`📷 ${esc(pp.handle||"相手")}が「一緒に写真撮りませんか？」`);
+  }
+}
+
+async function addTodo(){
+  const inp=$("ws-todo-input"); const t=(inp.value||"").trim(); if(!t) return;
+  const m=state.work.data; const cur=(m.todos&&m.todos[state.uid])||{items:[],hidden:false};
+  const items=[...cur.items,{t,done:false}];
+  inp.value="";
+  try{ await updateDoc(doc(db,"matches",m.id),{["todos."+state.uid]:{items,hidden:cur.hidden||false}}); }catch(e){ console.error(e); }
+}
+async function toggleTodo(i){
+  const m=state.work.data; const cur=(m.todos&&m.todos[state.uid])||{items:[],hidden:false};
+  const items=cur.items.map((it,idx)=>idx===i?{...it,done:!it.done}:it);
+  try{ await updateDoc(doc(db,"matches",m.id),{["todos."+state.uid]:{items,hidden:cur.hidden||false}}); }catch(e){}
+}
+async function delTodo(i){
+  const m=state.work.data; const cur=(m.todos&&m.todos[state.uid])||{items:[],hidden:false};
+  const items=cur.items.filter((_,idx)=>idx!==i);
+  try{ await updateDoc(doc(db,"matches",m.id),{["todos."+state.uid]:{items,hidden:cur.hidden||false}}); }catch(e){}
+}
+async function toggleTodoHide(){
+  const m=state.work.data; const cur=(m.todos&&m.todos[state.uid])||{items:[],hidden:false};
+  try{ await updateDoc(doc(db,"matches",m.id),{["todos."+state.uid]:{items:cur.items,hidden:!cur.hidden}}); }catch(e){}
+}
+function setCounter(){
+  showModal("目標を決める",`<p>いくつ終わらせる？（例: 20）</p><input type="text" id="cnt-target" inputmode="numeric" placeholder="20" maxlength="4">`,
+    [{label:"決定",primary:true,onclick:async()=>{
+      const n=parseInt(($("cnt-target").value||"").replace(/[^0-9]/g,""),10);
+      if(!n||n<1){ toast("数字を入れてください"); return; }
+      const m=state.work.data; const cur=(m.counters&&m.counters[state.uid])||{count:0};
+      try{ await updateDoc(doc(db,"matches",m.id),{["counters."+state.uid]:{target:n,count:cur.count||0}}); }catch(e){}
+      state.work["done_"+state.uid]=false; closeModal();
+    }}]);
+}
+async function incCounter(){
+  const m=state.work.data; const cur=(m.counters&&m.counters[state.uid])||{target:0,count:0};
+  if(!cur.target) return;
+  const count=Math.min(cur.target,(cur.count||0)+1);
+  try{ await updateDoc(doc(db,"matches",m.id),{["counters."+state.uid]:{target:cur.target,count}}); }catch(e){}
+  if(count>=cur.target){ playBeep([880,1100,1320]); toast("目標達成！おつかれさま🎉"); }
+}
+async function sendComment(){
+  const inp=$("ws-comment-input"); const t=(inp.value||"").trim(); if(!t) return;
+  const m=state.work.data; const comments=[...(m.comments||[]),{uid:state.uid,text:t,ts:Date.now()}].slice(-30);
+  inp.value="";
+  try{ await updateDoc(doc(db,"matches",m.id),{comments}); }catch(e){}
+}
+function proposeLoc(){
+  const m=state.work.data;
+  showModal("場所の変更を提案",`<p>新しい作業場所を入力すると、相手に「変えませんか？」と提案します。</p><input type="text" id="prop-loc" placeholder="作業場所（ルーム名・ID など）" maxlength="24">`,
+    [{label:"提案する",primary:true,onclick:async()=>{
+      const v=($("prop-loc").value||"").trim(); if(!v){ toast("入力してください"); return; }
+      try{ await updateDoc(doc(db,"matches",m.id),{proposedLoc:{value:v,byUid:state.uid,id:"p"+Date.now()}}); }catch(e){}
+      closeModal(); toast("提案しました");
+    }}]);
+}
+async function suggestPhoto(){
+  const m=state.work.data;
+  try{ await updateDoc(doc(db,"matches",m.id),{photoSuggest:{byUid:state.uid,ts:Date.now()}}); }catch(e){}
+  toast("「一緒に写真撮りませんか？」と伝えました");
+}
+async function updateFriendFab(){
+  const m=state.work&&state.work.data; if(!m) return;
+  const pu=otherUid(m);
+  const fset=await getFriendUids();
+  const btn=$("ws-friend-fab");
+  if(btn) btn.style.display = fset.has(pu)?"none":"flex";
+}
+async function friendReqFromWork(){
+  const m=state.work.data; const pu=otherUid(m);
+  await sendFriendRequest(pu);
 }
 
 // ================= 探し（スワイプ） =================
@@ -1088,58 +1336,157 @@ async function showMatch(uid){
   }catch(e){}
 }
 
-// ================= フレンド =================
+// ================= フレンド（申請・招待・承認拒否） =================
 async function getFriendUids(){
   const set=new Set();
   try{const s=await getDocs(query(collection(db,"friends"),where("uids","array-contains",state.uid)));s.forEach(d=>{const[a,b]=d.data().uids;set.add(a===state.uid?b:a);});}catch(e){}
   return set;
 }
-async function loadFriends(){
-  const box=$("tab-friends");
-  box.innerHTML='<div class="loading"><span class="spinner"></span>読み込み中…</div>';
+function reqId(from,to){ return from+"__"+to; }
+async function sendFriendRequest(toUid){
+  const fset=await getFriendUids();
+  if(fset.has(toUid)){ toast("すでにフレンドです"); return; }
+  try{
+    // 相手からの申請が既にある→承認扱い
+    const incoming=await getDoc(doc(db,"friendRequests",reqId(toUid,state.uid)));
+    if(incoming.exists()){ await approveRequest(toUid); return; }
+    await setDoc(doc(db,"friendRequests",reqId(state.uid,toUid)),{
+      from:state.uid, to:toUid, fromProfile:myProfileSnap("go",""), status:"pending", createdAt:serverTimestamp()
+    });
+    toast("フレンド申請を送りました");
+    updateFriendFab();
+  }catch(e){ console.error(e); toast("申請に失敗しました"); }
+}
+async function approveRequest(fromUid){
+  try{
+    await createFriendship(state.uid, fromUid);
+    try{ await deleteDoc(doc(db,"friendRequests",reqId(fromUid,state.uid))); }catch(e){}
+    toast("フレンドになりました");
+    loadFriendsScreen(); refreshFriendBadge();
+  }catch(e){ console.error(e); toast("承認に失敗しました"); }
+}
+async function rejectRequest(fromUid){
+  try{ await deleteDoc(doc(db,"friendRequests",reqId(fromUid,state.uid))); toast("却下しました"); loadFriendsScreen(); refreshFriendBadge(); }catch(e){}
+}
+async function getIncomingRequests(){
+  const arr=[];
+  try{ const s=await getDocs(query(collection(db,"friendRequests"),where("to","==",state.uid),where("status","==","pending"))); s.forEach(d=>arr.push(d.data())); }catch(e){ console.warn(e); }
+  return arr;
+}
+async function refreshFriendBadge(){
+  try{
+    const reqs=await getIncomingRequests();
+    const invs=state._pendingInvites||0;
+    const n=reqs.length+invs;
+    const lbl=$("friend-nav-label");
+    if(lbl) lbl.innerHTML = "フレンド"+(n>0?`<span class="badge-count">${n}</span>`:"");
+  }catch(e){}
+}
+
+async function loadFriendsScreen(){
+  const reqBox=$("friend-requests-area"), listBox=$("friends-list-area");
+  reqBox.innerHTML=""; listBox.innerHTML='<div class="loading"><span class="spinner"></span>読み込み中…</div>';
+  // 申請一覧
+  const reqs=await getIncomingRequests();
+  if(reqs.length){
+    reqBox.innerHTML=`<div class="card"><h3 style="font-size:14px;color:var(--pink);margin-bottom:10px">📬 フレンド申請（${reqs.length}）</h3>
+      ${reqs.map(r=>{
+        const fp=r.fromProfile||{};
+        const av=fp.photoData?`<img src="${fp.photoData}">`:(AVATARS[fp.avatarId]||"🐱");
+        return `<div class="req-item"><div class="av">${av}</div>
+          <div class="body"><div style="font-weight:700;font-size:14px">${esc(fp.handle||"？")}</div>
+          <div style="font-size:11px;color:var(--text-soft)">${fp.scene?esc(fp.scene.gameName):""}</div></div>
+          <div class="req-btns">
+            <button class="btn btn-pink" onclick="app.approveReq('${r.from}')">承認</button>
+            <button class="btn btn-ghost" onclick="app.rejectReq('${r.from}')">拒否</button>
+          </div></div>`;
+      }).join("")}</div>`;
+  }
+  // フレンド一覧
   try{
     const uids=[...await getFriendUids()];
-    if(uids.length===0){ box.innerHTML=`<div class="card"><div class="empty"><div style="font-size:40px;margin-bottom:10px">💛</div>まだフレンドがいません<br><span style="font-size:12px">「探し」タブで相互いいねするとフレンドになれます</span></div></div>`; state.friends=[]; return; }
+    if(uids.length===0){ listBox.innerHTML=`<div class="card"><div class="empty"><div style="font-size:40px;margin-bottom:10px">💛</div>まだフレンドがいません<br><span style="font-size:12px">「探し」で相互いいね、または作業画面から申請できます</span></div></div>`; state.friends=[]; refreshFriendBadge(); return; }
     const arr=[];
     for(const uid of uids){ const s=await getDoc(doc(db,"users",uid)); if(s.exists())arr.push({uid,...s.data()}); }
-    state.friends=arr; watchPresence(uids); renderFriendsIfActive();
-  }catch(e){ console.error(e); box.innerHTML='<div class="empty">読み込みに失敗しました</div>'; }
+    state.friends=arr; watchPresence(uids); renderFriendsList();
+  }catch(e){ console.error(e); listBox.innerHTML='<div class="empty">読み込みに失敗しました</div>'; }
+  refreshFriendBadge();
 }
-function renderFriendsIfActive(){
-  const box=$("tab-friends");
-  if(!box||box.style.display==="none"||!state.friends||!state.friends.length) return;
-  box.innerHTML=`<div class="card">${state.friends.map(f=>{
+function renderFriendsList(){
+  const box=$("friends-list-area");
+  if(!box||!state.friends||!state.friends.length) return;
+  box.innerHTML=`<div class="card"><h3 style="font-size:14px;color:var(--water-dark);margin-bottom:10px">💛 フレンド</h3>${state.friends.map(f=>{
     const pr=state.presenceMap[f.uid]||{online:false};
     let dot="online-dot offline-dot",txt=relTime(f.lastActive)+"にアクティブ";
     if(pr.online){ dot="online-dot"; txt="オンライン"; }
-    if(f.waiting){ dot="online-dot waiting-dot"; txt="マッチ待機中"; }
-    return `<div class="friend-item"><div class="av">${avatarHtml(f)}</div><div class="body"><div class="name">${esc(f.handle)}</div><div class="status-line"><span class="${dot}"></span>${txt}${f.scene?" ・ "+esc(f.scene.gameName):""}</div></div></div>`;
+    return `<div class="friend-item"><div class="av">${avatarHtml(f)}</div>
+      <div class="body"><div class="name">${esc(f.handle)}</div><div class="status-line"><span class="${dot}"></span>${txt}${f.scene?" ・ "+esc(f.scene.gameName):""}</div></div>
+      <button class="btn btn-small btn-pink" onclick="app.inviteToWork('${f.uid}')">誘う</button></div>`;
   }).join("")}</div>`;
+}
+function renderFriendsIfActive(){ renderFriendsList(); }
+
+// ---------- 作業のお誘い（招待） ----------
+async function inviteToWork(friendUid){
+  try{
+    const s=await getDoc(doc(db,"users",friendUid)); const fp=s.exists()?s.data():{};
+    const matchId="inv_"+state.uid+"_"+friendUid+"_"+Date.now();
+    await setDoc(doc(db,"workInvites",matchId),{
+      from:state.uid, to:friendUid, fromProfile:myProfileSnap("wait",""), status:"pending", matchId, createdAt:serverTimestamp()
+    });
+    toast(`${esc(fp.handle||"相手")}を作業に誘いました`);
+  }catch(e){ console.error(e); toast("お誘いに失敗しました"); }
+}
+function subscribeWorkInvites(){
+  if(state.invitesUnsub) return;
+  state._shownInvites=state._shownInvites||new Set();
+  state.invitesUnsub=onSnapshot(query(collection(db,"workInvites"),where("to","==",state.uid),where("status","==","pending")),(snap)=>{
+    let list=[]; snap.forEach(d=>list.push({id:d.id,...d.data()}));
+    state._pendingInvites=list.length; refreshFriendBadge();
+    list.forEach(inv=>{
+      if(state._shownInvites.has(inv.id)) return;
+      state._shownInvites.add(inv.id);
+      const fp=inv.fromProfile||{};
+      showModal("作業のお誘い",`<p><strong>${esc(fp.handle||"フレンド")}</strong>さんが「一緒に作業しませんか？」と誘っています。</p>`,
+        [{label:"参加する",primary:true,onclick:()=>{ closeModal(); acceptInvite(inv); }},
+         {label:"ことわる",onclick:async()=>{ try{ await updateDoc(doc(db,"workInvites",inv.id),{status:"declined"}); }catch(e){} closeModal(); }}]);
+    });
+  },(e)=>console.error("invites",e));
+}
+async function acceptInvite(inv){
+  unlockAudio();
+  const fp=inv.fromProfile||{};
+  try{
+    await setDoc(doc(db,"matches",inv.matchId),{
+      users:[inv.from,inv.to].sort(),
+      likes:{[inv.from]:true,[inv.to]:true},
+      status:"established", source:"invite",
+      profiles:{ [inv.from]:fp, [state.uid]:myProfileSnap("go","") },
+      location:{ value:fp.location||"", label:(fp.scene?fp.scene.locationLabel:"作業場所"), byUid:inv.from },
+      createdAt:serverTimestamp()
+    });
+    await updateDoc(doc(db,"workInvites",inv.id),{status:"accepted"});
+    // 自分のグローバル監視が established を拾って作業画面を開く
+  }catch(e){ console.error(e); toast("参加に失敗しました"); }
 }
 
 // ================= プロフィール =================
 function renderProfileView(){
   if(!state.profile) return;
   const p=state.profile;
-  const av=p.photoData?`<img src="${p.photoData}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;box-shadow:inset 3px 3px 8px var(--shadow-d)">`:`<div style="width:80px;height:80px;border-radius:50%;background:var(--bg);display:inline-flex;align-items:center;justify-content:center;font-size:48px;box-shadow:inset 3px 3px 8px var(--shadow-d),inset -3px -3px 8px var(--shadow-l)">${AVATARS[p.avatarId]||"🐱"}</div>`;
   let badge="";
   if(state.authType==="google")badge='<span class="g-badge">G</span>';
   else if(state.authType==="x")badge='<span class="x-badge">𝕏</span>';
-  const statusTxt = p.waiting?"🟠 マッチ待機中":"🟢 オンライン";
   $("my-profile-view").innerHTML=`
-    <div style="text-align:center;margin-bottom:16px">${av}
-      <div style="font-weight:700;font-size:18px;margin-top:8px">${esc(p.handle)}${badge}</div>
-      <div style="font-size:12px;color:var(--text-soft)">${statusTxt}</div>
-    </div>
-    <div style="font-size:13px;line-height:1.9">
+    ${pcardHtml(p)}
+    <div style="font-size:13px;line-height:1.9;margin-top:12px">
+      <div><strong>アカウント:</strong> ${state.isLoggedIn?(state.authType==="google"?"Googleログイン":"Xログイン"):"ゲスト"} ${badge}</div>
       <div><strong>界隈:</strong> ${p.scene?(p.scene.icon+" "+esc(p.scene.gameName)+"（"+esc(p.scene.locationLabel)+"）"):"未設定"}</div>
-      <div><strong>カテゴリー:</strong> ${(p.categories||[]).join("・")||"未設定"}</div>
       <div><strong>時間帯:</strong> ${(p.timeSlots||[]).join("・")||"未設定"}</div>
       ${p.focusStyle?`<div><strong>スタイル:</strong> ${esc(p.focusStyle)}</div>`:""}
-      ${p.goal?`<div><strong>いま:</strong> ${esc(p.goal)}</div>`:""}
+      ${p.neighborOk&&p.neighborOk!=="どちらでも"?`<div><strong>お隣:</strong> ${esc(p.neighborOk)}</div>`:""}
       <div><strong>最終アクティブ:</strong> ${relTime(p.lastActive)}</div>
     </div>`;
-  // アカウント欄
   const ab=$("account-body");
   if(state.isLoggedIn){
     ab.innerHTML=`<div style="padding:10px;background:var(--bg);border-radius:12px;text-align:center;color:var(--ok);font-weight:600;font-size:13px;margin-bottom:10px">✓ ${state.authType==="google"?"Google":"X"}ログイン済み（データは復元されます）</div>
@@ -1154,24 +1501,46 @@ function renderProfileView(){
 }
 
 // ---------- プロフィール編集 ----------
+function updateCardPreview(){
+  const p=Object.assign({},state.profile,{
+    handle:$("pe-handle")?.value||state.profile.handle,
+    avatarId:state.editing.avatarId, categories:state.editing.categories,
+    goal:$("pe-goal")?.value||"", cardColor:state.editing.cardColor, cardPattern:state.editing.cardPattern,
+    neighborOk:state.editing.neighborOk, photoData:state.photoDataURL||state.profile.photoData
+  });
+  const el=$("pe-card-preview"); if(el) el.innerHTML=pcardHtml(p);
+}
 function initProfileEdit(){
   const p=state.profile;
   state.editing=Object.assign({},state.editing,{
     categories:[...(p.categories||[])], timeSlots:[...(p.timeSlots||[])],
-    focusStyle:p.focusStyle||"", photoData:p.photoData||null, photoChangedAt:p.photoChangedAt||null, _photoChanged:false
+    focusStyle:p.focusStyle||"", photoData:p.photoData||null, photoChangedAt:p.photoChangedAt||null, _photoChanged:false,
+    cardColor:p.cardColor||"water", cardPattern:p.cardPattern||"none", neighborOk:p.neighborOk||"どちらでも",
   });
   state.photoDataURL=p.photoData||null;
   $("pe-handle").value=p.handle||"";
   $("pe-goal").value=p.goal||"";
   const av=$("pe-avatars"); av.innerHTML="";
-  AVATARS.forEach((e,i)=>{const el=document.createElement("button");el.type="button";el.className="avatar-opt"+(i===p.avatarId?" selected":"");el.textContent=e;el.onclick=()=>{state.editing.avatarId=i;av.querySelectorAll(".avatar-opt").forEach((x,j)=>x.classList.toggle("selected",j===i));};av.appendChild(el);});
+  AVATARS.forEach((e,i)=>{const el=document.createElement("button");el.type="button";el.className="avatar-opt"+(i===p.avatarId?" selected":"");el.textContent=e;el.onclick=()=>{state.editing.avatarId=i;av.querySelectorAll(".avatar-opt").forEach((x,j)=>x.classList.toggle("selected",j===i));updateCardPreview();};av.appendChild(el);});
   state.editing.avatarId=p.avatarId;
+  // カード色
+  const cc=$("pe-cardcolor"); cc.innerHTML="";
+  Object.entries(CARD_COLORS).forEach(([k,v])=>{const el=document.createElement("button");el.type="button";el.className="chip"+(k===state.editing.cardColor?" selected":"");el.textContent=v.label;el.onclick=()=>{state.editing.cardColor=k;cc.querySelectorAll(".chip").forEach(c=>c.classList.remove("selected"));el.classList.add("selected");updateCardPreview();};cc.appendChild(el);});
+  // カード柄
+  const cp=$("pe-cardpattern"); cp.innerHTML="";
+  Object.entries(CARD_PATTERNS).forEach(([k,v])=>{const el=document.createElement("button");el.type="button";el.className="chip"+(k===state.editing.cardPattern?" selected":"");el.textContent=v;el.onclick=()=>{state.editing.cardPattern=k;cp.querySelectorAll(".chip").forEach(c=>c.classList.remove("selected"));el.classList.add("selected");updateCardPreview();};cp.appendChild(el);});
   renderChips("pe-categories",CATEGORIES,state.editing.categories,"multi");
   renderChips("pe-timeslots",TIMESLOTS,state.editing.timeSlots,"multi",true);
   renderChips("pe-focus",FOCUS_STYLES,state.editing.focusStyle?[state.editing.focusStyle]:[],"single");
+  // お隣
+  const nb=$("pe-neighbor"); nb.innerHTML="";
+  NEIGHBOR_OPTS.forEach(opt=>{const el=document.createElement("button");el.type="button";el.className="chip"+(opt===state.editing.neighborOk?" selected":"");el.textContent=opt;el.onclick=()=>{state.editing.neighborOk=opt;nb.querySelectorAll(".chip").forEach(c=>c.classList.remove("selected"));el.classList.add("selected");};nb.appendChild(el);});
   $("pe-scene-display").innerHTML = p.scene?`${p.scene.icon} ${esc(p.scene.gameName)}（${esc(p.scene.locationLabel)}）`:"未設定";
   $("pe-photo-field").style.display=state.isLoggedIn?"block":"none";
   updatePhotoPreview();
+  updateCardPreview();
+  const hIn=$("pe-handle"), gIn=$("pe-goal");
+  hIn.oninput=updateCardPreview; gIn.oninput=updateCardPreview;
 }
 function renderChips(id,options,selected,mode,pink){
   const c=$(id);c.innerHTML="";
@@ -1185,7 +1554,7 @@ $("pe-photo-input").addEventListener("change",async e=>{
   try{const d=await resizeImage(file,100,0.6);state.photoDataURL=d;state.editing.photoData=d;state.editing._photoChanged=true;updatePhotoPreview();toast("画像を読み込みました");}catch(err){toast("読み込み失敗");}
 });
 function resizeImage(file,size,q){return new Promise((res,rej)=>{const r=new FileReader();r.onload=e=>{const img=new Image();img.onload=()=>{const cv=document.createElement("canvas");cv.width=size;cv.height=size;const ctx=cv.getContext("2d");const s=Math.min(img.width,img.height);ctx.drawImage(img,(img.width-s)/2,(img.height-s)/2,s,s,0,0,size,size);res(cv.toDataURL("image/jpeg",q));};img.onerror=rej;img.src=e.target.result;};r.onerror=rej;r.readAsDataURL(file);});}
-function updatePhotoPreview(){const slot=$("pe-photo-preview"),rm=$("pe-photo-remove");if(state.photoDataURL){slot.innerHTML=`<img src="${state.photoDataURL}"><span class="photo-badge">UP</span>`;rm.style.display="inline-block";}else{slot.innerHTML="📷";rm.style.display="none";}}
+function updatePhotoPreview(){const slot=$("pe-photo-preview"),rm=$("pe-photo-remove");if(!slot)return;if(state.photoDataURL){slot.innerHTML=`<img src="${state.photoDataURL}"><span class="photo-badge">UP</span>`;rm.style.display="inline-block";}else{slot.innerHTML="📷";rm.style.display="none";}if(typeof updateCardPreview==="function")updateCardPreview();}
 function removePhoto(){if(!confirm("画像を削除しますか？"))return;state.photoDataURL=null;state.editing.photoData=null;state.editing._photoChanged=true;updatePhotoPreview();}
 
 async function saveProfileEdit(){
@@ -1197,6 +1566,9 @@ async function saveProfileEdit(){
   state.profile.timeSlots=state.editing.timeSlots;
   state.profile.focusStyle=state.editing.focusStyle;
   state.profile.goal=$("pe-goal").value.trim();
+  state.profile.cardColor=state.editing.cardColor;
+  state.profile.cardPattern=state.editing.cardPattern;
+  state.profile.neighborOk=state.editing.neighborOk;
   if(state.editing._photoChanged){ state.profile.photoData=state.editing.photoData||""; state.profile.photoChangedAt=Timestamp.now(); }
   await persistProfile(false);
   toast("保存しました"); goto("profile");
@@ -1228,7 +1600,9 @@ window.app={
   setSceneSort,moreScenes,pickScene,finishOnboard,createScene,
   startMatching,leaveWaiting,
   likeMatch:likeCurrentMatch, passMatch:passCurrentMatch,
-  initSwipe,swipe,loadFriends,
+  leaveWorkScreen,addTodo,toggleTodo,delTodo,toggleTodoHide,setCounter,incCounter,sendComment,proposeLoc,suggestPhoto,friendReqFromWork,
+  loadFriendsScreen,approveReq:approveRequest,rejectReq:rejectRequest,inviteToWork,
+  initSwipe,swipe,
   saveProfileEdit,removePhoto,changeScene,signOut:doSignOut,
   showModal,closeModal,showTerms,renderMatchTab,
 };
