@@ -359,8 +359,8 @@ nav.bottom-nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);pad
 <!-- ========== ホーム ========== -->
 <section id="screen-home" class="screen">
   <div class="tabs">
-    <button class="tab active" data-tab="match" onclick="app.switchTab('match')">🤝 マッチ</button>
-    <button class="tab" data-tab="find" onclick="app.switchTab('find')">🔍 さがす</button>
+    <button class="tab active" data-tab="match" onclick="app.switchTab('match')">🤝 マッチ<span id="tab-match-n" style="opacity:.8;font-weight:700"></span></button>
+    <button class="tab" data-tab="find" onclick="app.switchTab('find')">🔍 さがす<span id="tab-find-n" style="opacity:.8;font-weight:700"></span></button>
   </div>
   <div id="tab-match"></div>
   <div id="tab-find" style="display:none"></div>
@@ -870,12 +870,6 @@ async function persistProfile(isFirst){
 
 // ================= ホーム：マッチタブ =================
 function switchTab(name){
-  if(name==="find" && !state.isLoggedIn){
-    showModal("ログインが必要です",
-      `<p>スワイプで探すには、なりすまし防止のため<strong>ログイン</strong>が必要です。</p>`,
-      [{label:"ログインする",primary:true,onclick:()=>{closeModal();goto("profile");}}]);
-    return;
-  }
   document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("active",t.dataset.tab===name));
   $("tab-match").style.display=name==="match"?"block":"none";
   $("tab-find").style.display=name==="find"?"block":"none";
@@ -943,35 +937,40 @@ function pcardHtml(p, opts){
 
 async function renderMatchTab(){
   const box=$("tab-match");
-  const p=state.profile;
   box.innerHTML=`
-    <div style="position:relative">
-      ${pcardHtml(p,{mode:"home",topRight:`<button class="vc-scene" style="border:none" onclick="app.goto('profile-edit')">編集</button>`})}
-      <div class="home-match" id="home-match"></div>
-    </div>`;
-  renderHomeMatch(false);
+    <div class="card" style="text-align:center;padding:26px 20px">
+      <div style="font-size:44px;margin-bottom:6px">🤝✨</div>
+      <div style="font-size:18px;font-weight:800;color:var(--water-dark);line-height:1.4">ひとりの作業に、<br>そっと誰かを。</div>
+      <p style="font-size:13px;color:var(--text-soft);margin-top:8px;line-height:1.7">いま集中したい人と、リアルタイムでつながれます。<br>あいさつはスタンプ程度でOK。気楽にどうぞ。</p>
+      <div id="rt-count" style="font-size:13px;color:var(--pink);font-weight:700;margin-top:12px">　</div>
+      <button class="btn btn-pink" style="margin-top:14px;font-size:16px;padding:16px" onclick="app.openMatchChoice()">いま つながってみる</button>
+      <div id="home-choice"></div>
+    </div>
+    <p style="text-align:center;font-size:12px;color:var(--text-soft);line-height:1.7">知らない人と話すのは緊張するもの。<br>でも「一緒に作業する」だけなら、意外と気楽です。</p>`;
   loadMatchStats();
 }
-function renderHomeMatch(open){
-  const el=$("home-match"); if(!el) return;
-  if(!open){
-    el.innerHTML=`<button class="hm-main" onclick="app.openMatchChoice()">作業マッチ <span id="hm-total" style="opacity:.85;font-weight:700"></span></button>`;
-  }else{
-    el.innerHTML=`<div class="hm-main" style="padding:12px">どっちで作業する？
-      <div class="hm-choices">
-        <button onclick="app.startMatching('wait')">🏠 部屋で待つ<span class="n" id="hm-wait">-</span></button>
-        <button onclick="app.startMatching('go')">🚪 部屋へ向かう<span class="n" id="hm-go">-</span></button>
-      </div></div>`;
-    fillChoiceCounts();
-  }
+function openMatchChoice(){
+  const el=$("home-choice"); if(!el) return;
+  el.innerHTML=`
+    <div style="display:flex;gap:10px;margin-top:12px">
+      <button class="btn btn-pink" style="flex:1" onclick="app.startMatching('wait')">🏠 部屋で待つ<span class="n" id="hm-wait" style="display:block;font-size:11px;opacity:.9">-</span></button>
+      <button class="btn" style="flex:1" onclick="app.startMatching('go')">🚪 部屋へ行く<span class="n" id="hm-go" style="display:block;font-size:11px;color:var(--pink)">-</span></button>
+    </div>
+    <p style="font-size:11px;color:var(--text-soft);margin-top:8px">「待つ」は今いる部屋で待機。「行く」は相手の部屋へ。</p>`;
+  fillChoiceCounts();
 }
-function openMatchChoice(){ renderHomeMatch(true); }
 
 async function loadMatchStats(){
   try{
-    const usnap=await getDoc(doc(db,"stats","users"));
-    const total=usnap.exists()?(usnap.data().count||0):0;
-    const el=$("hm-total"); if(el) el.textContent=`／ 登録 ${total}人`;
+    const wsnap=await getDocs(query(collection(db,"waiting"),where("status","==","searching")));
+    const now=Date.now(); let w=0;
+    wsnap.forEach(d=>{ const x=d.data(); if(x.uid===state.uid)return; if(x.updatedAt&&(now-x.updatedAt.toMillis())>2*60*1000)return; w++; });
+    const rc=$("rt-count"); if(rc) rc.textContent = w>0?`🟢 いま ${w}人 がつながれます`:"🟡 いまは待機中の人がいません（あなたが最初に待てます）";
+    const tm=$("tab-match-n"); if(tm) tm.textContent = w>0?` ${w}`:"";
+    // さがす枚数
+    const usnap=await getDocs(query(collection(db,"users"),limit(300)));
+    let pub=0; usnap.forEach(d=>{ const u=d.data(); if(!u.isAnonymous && u.photoData && u.searchable!==false) pub++; });
+    const tf=$("tab-find-n"); if(tf) tf.textContent = pub>0?` ${pub}枚`:"";
   }catch(e){}
 }
 async function fillChoiceCounts(){
@@ -979,7 +978,7 @@ async function fillChoiceCounts(){
     const wsnap=await getDocs(query(collection(db,"waiting"),where("status","==","searching")));
     const now=Date.now(); let w=0,g=0;
     wsnap.forEach(d=>{ const x=d.data(); if(x.updatedAt&&(now-x.updatedAt.toMillis())>2*60*1000)return; if(x.role==="wait")w++; else g++; });
-    const we=$("hm-wait"), ge=$("hm-go"); if(we)we.textContent=w+"人待機"; if(ge)ge.textContent=g+"人";
+    const we=$("hm-wait"), ge=$("hm-go"); if(we)we.textContent=w+"人が待機中"; if(ge)ge.textContent=g+"人が探し中";
   }catch(e){}
 }
 
@@ -998,22 +997,22 @@ function startMatching(role){
   const sc=state.profile.scene; const fmt=LOC_FORMATS[sc?.locationFormat||"free"];
   const untilRow=`<label style="margin-top:10px">何時まで作業する？（任意）</label><input type="text" id="opt-until" maxlength="10" placeholder="例: 22:00">`;
   if(role==="wait"){
-    showModal(`${sc?.icon||"🎮"} 部屋で待つ`,
-      `<p>作業場所（ルーム名・IDなど）を入力してください。マッチした相手に伝わります。</p>
-       <input type="text" id="wait-loc" placeholder="作業場所（ルーム名・ID など）" maxlength="24" value="${escA(state.profile.workLocation||"")}">
-       <p class="hint" style="margin-top:6px">${sc?("この界隈の形式: "+fmt.label):""}</p>${untilRow}`,
-      [{label:"この場所で待つ",primary:true,onclick:()=>{
+    showModal(`🏠 部屋で待つ`,
+      `<p>いま自分がいる部屋の場所を教えてください。来てくれた人がここに入れます。</p>
+       <input type="text" id="wait-loc" placeholder="今いる部屋のID・ワールド名など" maxlength="24" value="${escA(state.profile.workLocation||"")}">
+       <p class="hint" style="margin-top:6px">${sc?(sc.icon+" "+esc(sc.gameName)+"界隈"):""}</p>${untilRow}`,
+      [{label:"この部屋で待つ",primary:true,onclick:()=>{
         const val=($("wait-loc").value||"").trim();
-        if(!val){ toast("場所を入力してください"); return; }
-        if(fmt.re && !fmt.re.test(val)){ toast("入力形式が違います（"+fmt.label+"）"); return; }
+        if(!val){ toast("部屋を入力してください"); return; }
+        if(fmt.re && !fmt.re.test(val)){ toast("入力形式が違うみたい（"+fmt.label+"）"); return; }
         const until=($("opt-until").value||"").trim();
         state.profile.workLocation=val; saveLocal(); closeModal();
         enterWaiting("wait", val, {workUntil:until});
       }}]);
   } else {
-    showModal("🚪 部屋へ向かう",
-      `<p>相手の部屋へ向かう側です。マッチしたら相手の作業場所が表示されます。</p>${untilRow}`,
-      [{label:"探しはじめる",primary:true,onclick:()=>{ const until=($("opt-until").value||"").trim(); closeModal(); enterWaiting("go","",{workUntil:until}); }}]);
+    showModal("🚪 部屋へ行く",
+      `<p>誰かの部屋にお邪魔する側です。つながったら相手の部屋が表示されます。</p>${untilRow}`,
+      [{label:"仲間を探す",primary:true,onclick:()=>{ const until=($("opt-until").value||"").trim(); closeModal(); enterWaiting("go","",{workUntil:until}); }}]);
   }
 }
 
@@ -1085,7 +1084,18 @@ function handleActiveMatch(m){
     } else { patchWorkScreen(m); }
     return;
   }
-  if(m.status==="pending" && state.match.active){ handlePendingMatch(m); }
+  if(m.status==="pending"){
+    // どちらのクライアントでも、両者いいねなら成立させる（保険）
+    const bothLiked=m.users.every(u=>m.likes&&m.likes[u]);
+    if(bothLiked){
+      let wu=null;
+      try{ wu=m.users.find(u=>m.profiles[u] && m.profiles[u].role==="wait" && m.profiles[u].location); }catch(e){}
+      const locVal=wu?m.profiles[wu].location:"";
+      const locLabel=(wu&&m.profiles[wu].scene)?m.profiles[wu].scene.locationLabel:"作業場所";
+      updateDoc(doc(db,"matches",m.id),{status:"established",location:{value:locVal,label:locLabel,byUid:wu||null}}).catch(()=>{});
+    }
+    if(state.match.active){ handlePendingMatch(m); }
+  }
 }
 function handlePendingMatch(m){
   const firstTime=state.match.matchId!==m.id;
@@ -1098,11 +1108,13 @@ function handlePendingMatch(m){
     state.match.cancelTimer=setTimeout(()=>{ autoCancelPending(m.id); },180000);
   }
   const bothLiked=m.users.every(u=>m.likes&&m.likes[u]);
-  if(bothLiked && m.status==="pending" && state.uid===m.users[0]){
-    const wu=m.users.find(u=>m.profiles[u].role==="wait" && m.profiles[u].location);
+  if(bothLiked && m.status==="pending"){
+    // 両者が成立処理（同じ値の冪等更新なので競合しても安全）→ 片方だけ入れないバグ回避
+    let wu=null;
+    try{ wu=m.users.find(u=>m.profiles[u] && m.profiles[u].role==="wait" && m.profiles[u].location); }catch(e){}
     const locVal=wu?m.profiles[wu].location:"";
-    const locLabel=wu&&m.profiles[wu].scene?m.profiles[wu].scene.locationLabel:"作業場所";
-    try{ updateDoc(doc(db,"matches",m.id),{status:"established",location:{value:locVal,label:locLabel,byUid:wu||null}}); }catch(e){}
+    const locLabel=(wu&&m.profiles[wu].scene)?m.profiles[wu].scene.locationLabel:"作業場所";
+    updateDoc(doc(db,"matches",m.id),{status:"established",location:{value:locVal,label:locLabel,byUid:wu||null}}).catch(e=>console.warn("establish",e));
   }
   renderWaitOverlay();
 }
@@ -1183,14 +1195,14 @@ function renderWaitOverlay(){
   const box=$("wait-overlay-content");
   const M=state.match; const m=M.matchData;
   if(!m || m.status==="established"){
-    const roleTxt = M.role==="wait" ? `🏠 作業場所: ${esc(M.location)} で待っています` : "🚪 入れる部屋を探しています";
+    const roleTxt = M.role==="wait" ? `🏠 「${esc(M.location)}」で待っています` : "🚪 入れる部屋をさがしています";
     box.innerHTML=`
       <div class="big-spinner"></div>
-      <h2>現在 相手を探しています</h2>
-      <div class="wo-sub">${roleTxt}<br>誰かが参加するまで待機します</div>
+      <h2>いま 仲間をさがしています</h2>
+      <div class="wo-sub">${roleTxt}<br>見つかるまで、のんびり作業して待っててね ☕<br>誰か来たら音でお知らせします</div>
       <div id="wo-timer" class="wo-timer">待機時間 0分00秒</div>
       <div style="display:flex;gap:10px;margin-top:24px">
-        <button class="btn btn-ghost" style="color:#fff" onclick="app.toPip()">🗕 小さく</button>
+        <button class="btn btn-ghost" style="color:#fff" onclick="app.toPip()">🗕 小さく表示</button>
         <button class="btn btn-ghost" style="color:#fff" onclick="app.leaveWaiting()">やめる</button>
       </div>`;
     return;
@@ -1225,19 +1237,18 @@ function openWorkScreen(m){
   $("work-screen").classList.add("active");
   $("pip").classList.remove("active");
   closeWaitOverlay();
-  const body=$("ws-body");
-  body.innerHTML=`
-    <div style="display:flex;gap:10px" id="ws-pair"></div>
-    <div style="text-align:center;margin:14px 0 6px;font-size:12px;color:var(--text-soft)">進捗の母数を決めて ± で進めよう（達成で音）</div>
-    <div id="ws-comments-wrap" style="margin-top:8px">
+  $("ws-body").innerHTML=`
+    <div style="display:flex;gap:10px;margin-bottom:10px" id="ws-pair"></div>
+    <div id="ws-todos"></div>
+    <div style="margin-top:14px">
       <div style="font-size:13px;font-weight:700;color:var(--water-dark);margin-bottom:6px">コメント</div>
       <div id="ws-comments"></div>
       <div style="display:flex;gap:6px;margin-top:8px"><input type="text" id="ws-comment-input" placeholder="コメントを送る" maxlength="60"><button class="btn btn-small" onclick="app.sendComment()">送信</button></div>
     </div>`;
   $("ws-fab").innerHTML=`
-    <button title="待機/作業をPIPに" onclick="app.toPip()">🗕</button>
-    <button title="場所変更を提案" onclick="app.proposeLoc()">📍</button>
-    <button title="一緒に写真さそう" onclick="app.suggestPhoto()">📷</button>
+    <button title="小さく表示" onclick="app.toPip()">🗕</button>
+    <button title="場所を提案" onclick="app.proposeLoc()">📍</button>
+    <button title="写真さそう" onclick="app.suggestPhoto()">📷</button>
     <button id="ws-friend-fab" title="フレンド申請" onclick="app.friendReqFromWork()" style="display:none">➕</button>`;
   patchWorkScreen(m);
   updateFriendFab();
@@ -1253,6 +1264,7 @@ async function leaveWorkScreen(){
 }
 
 let _lastPhotoSuggestTs=0, _lastLocPropId="";
+function getTodoData(m,uid){ return (m.todos&&m.todos[uid])||{items:[],hideTitles:false}; }
 function patchWorkScreen(m){
   if(!state.work) return;
   state.work.data=m;
@@ -1261,33 +1273,51 @@ function patchWorkScreen(m){
   $("ws-loc-label").textContent=loc.label||"作業場所";
   $("ws-loc-value").innerHTML=(loc.value?esc(loc.value):"（未設定・📍から提案）")+(loc.value?`<button class="copy-btn" onclick="app.copyLoc()">コピー</button>`:"");
   $("ws-partner-line").textContent=`${pp.handle||"相手"} と作業中`+(pp.workUntil?`・${pp.workUntil}まで`:"");
-  const cs=m.counters||{};
-  const cell=(uid,prof,isMe)=>{
-    const c=cs[uid]||{target:0,count:0};
-    const done=c.target>0 && c.count>=c.target;
-    const val = c.target>0 ? `${c.count}/${c.target}` : "－/－";
-    let controls="";
-    if(isMe){
-      controls = c.target>0
-        ? `<div class="wc-counter"><button class="cbtn" onclick="app.decCounter()">−</button><div class="cval ${done?"done":""}">${val}${done?" ✓":""}</div><button class="cbtn" onclick="app.incCounter()">＋</button></div>
-           <button class="btn btn-small btn-ghost" style="margin-top:6px" onclick="app.setCounter()">母数を変える</button>`
-        : `<div class="cval" style="color:var(--text-soft);font-size:16px;margin-top:8px">母数を決めよう</div><button class="btn btn-small btn-pink" style="margin-top:6px" onclick="app.setCounter()">母数を決める</button>`;
-    } else {
-      controls = c.target>0 ? `<div class="cval ${done?"done":""}" style="margin-top:8px">${val}${done?" ✓":""}</div>` : `<div class="cval" style="color:var(--text-soft);font-size:16px;margin-top:8px">－</div>`;
-    }
-    return `<div class="ws-person2" style="flex:1">${iconEl(prof,64)}<div style="font-weight:700;font-size:13px;margin-top:6px">${esc(prof.handle||"")}${isMe?"（あなた）":""}</div>${controls}</div>`;
+  // アイコン2人（アイコンをタップでタイトル隠しON/OFF＝自分のみ）
+  const myTd=getTodoData(m,state.uid);
+  const iconCard=(uid,prof,isMe)=>{
+    const td=getTodoData(m,uid);
+    const hideMark = td.hideTitles?"🙈":"";
+    const onclick = isMe?`onclick="app.toggleHideTitles()"`:"";
+    return `<div class="ws-person2" style="flex:1"><span ${onclick} style="cursor:${isMe?"pointer":"default"}">${iconEl(prof,60)}</span>
+      <div style="font-weight:700;font-size:13px;margin-top:6px">${esc(prof.handle||"")}${isMe?"（あなた）":""} ${hideMark}</div>
+      ${isMe?`<div style="font-size:10px;color:var(--text-soft)">アイコンでタイトル隠す</div>`:""}</div>`;
   };
-  $("ws-pair").innerHTML=cell(state.uid,me,true)+cell(pu,pp,false);
+  $("ws-pair").innerHTML=iconCard(state.uid,me,true)+iconCard(pu,pp,false);
+  // TODOリスト（自分・相手）
+  const renderList=(uid,isMe)=>{
+    const td=getTodoData(m,uid);
+    const prof=m.profiles[uid]||{};
+    const rows = td.items.length ? td.items.map((it,i)=>{
+      const done=it.target>0 && it.count>=it.target;
+      const title = td.hideTitles ? (isMe?esc(it.name):"（ひみつ）") : esc(it.name);
+      const prog = it.target>0?`${it.count}/${it.target}`:`${it.count}`;
+      const ctrl = isMe?`<button class="cbtn" style="width:32px;height:32px;font-size:18px" onclick="app.todoDec(${i})">−</button><button class="cbtn" style="width:32px;height:32px;font-size:18px" onclick="app.todoInc(${i})">＋</button><button class="btn btn-small btn-ghost" style="padding:2px 8px" onclick="app.todoDel(${i})">✕</button>`:"";
+      return `<div class="todo-item ${done?"done":""}" style="gap:10px">
+        <div class="tt" style="font-weight:600">${title}</div>
+        <div style="font-weight:800;color:${done?"var(--ok)":"var(--pink)"};font-size:15px">${prog}${done?" ✓":""}</div>
+        ${ctrl}
+      </div>`;
+    }).join("") : `<div style="font-size:12px;color:var(--text-soft);padding:4px">まだありません</div>`;
+    return `<div class="card" style="padding:14px;margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <div style="font-size:13px;font-weight:700;color:var(--water-dark)">${isMe?"あなた":esc(prof.handle||"相手")}のリスト</div>
+        ${isMe?`<button class="btn btn-small btn-pink" onclick="app.todoAdd()">＋ 追加</button>`:""}
+      </div>${rows}</div>`;
+  };
+  $("ws-todos").innerHTML=renderList(state.uid,true)+renderList(pu,false);
+  // コメント
   const cms=m.comments||[];
   $("ws-comments").innerHTML = cms.length? cms.map(c=>`<div class="comment-bubble" style="${c.uid===state.uid?"background:var(--water)":""}">${c.uid===state.uid?"あなた":esc(pp.handle||"相手")}: ${esc(c.text)}</div>`).join("") : '<div style="font-size:12px;color:var(--text-soft)">まだコメントはありません</div>';
-  m.users.forEach(u=>{
-    const c=cs[u]; if(c && c.target>0 && c.count>=c.target){
-      const key="done_"+u; if(!state.work[key]){ state.work[key]=true; if(u!==state.uid){ playBeep([880,1100,1320]); toast(`${esc(pp.handle||"相手")}が達成！コメントできます`);} }
-    } else if(c){ state.work["done_"+u]=false; }
+  // 相手の完了音（どれか達成した瞬間）
+  const pTd=getTodoData(m,pu);
+  pTd.items.forEach((it,i)=>{
+    if(it.target>0 && it.count>=it.target){ const key="pdone_"+i+"_"+it.name; if(!state.work[key]){ state.work[key]=true; playBeep([880,1100,1320]); toast(`${esc(pp.handle||"相手")}が「${td_short(it.name)}」達成！`);} }
   });
+  // 場所変更提案
   if(m.proposedLoc && m.proposedLoc.byUid && m.proposedLoc.byUid!==state.uid && m.proposedLoc.id!==_lastLocPropId){
     _lastLocPropId=m.proposedLoc.id;
-    showModal("場所の変更提案",`<p>${esc(pp.handle||"相手")}さんが作業場所を「<strong>${esc(m.proposedLoc.value)}</strong>」に変えませんか？と提案しています。</p>`,
+    showModal("場所の変更提案",`<p>${esc(pp.handle||"相手")}さんが場所を「<strong>${esc(m.proposedLoc.value)}</strong>」に変えませんか？と提案しています。</p>`,
       [{label:"変更する",primary:true,onclick:async()=>{ try{ await updateDoc(doc(db,"matches",m.id),{location:{value:m.proposedLoc.value,label:m.location?.label||"作業場所",byUid:state.uid},proposedLoc:null}); }catch(e){} closeModal(); }},
        {label:"却下",onclick:async()=>{ try{ await updateDoc(doc(db,"matches",m.id),{proposedLoc:null}); }catch(e){} closeModal(); }}]);
   }
@@ -1296,33 +1326,47 @@ function patchWorkScreen(m){
     toast(`📷 ${esc(pp.handle||"相手")}が「一緒に写真撮りませんか？」`);
   }
 }
+function td_short(s){ return s.length>8?s.slice(0,8)+"…":s; }
+async function saveTodos(items,hideTitles){
+  const m=state.work.data;
+  try{ await updateDoc(doc(db,"matches",m.id),{["todos."+state.uid]:{items,hideTitles:!!hideTitles}}); }catch(e){ console.error(e); }
+}
 function copyLoc(){
   const v=(state.work&&state.work.data&&state.work.data.location&&state.work.data.location.value)||"";
   if(!v) return;
   try{ navigator.clipboard.writeText(v); toast("コピーしました"); }catch(e){ toast("コピーできませんでした"); }
 }
-function setCounter(){
-  showModal("母数を決める",`<p>いくつで完了？（例: 30）</p><input type="text" id="cnt-target" inputmode="numeric" placeholder="30" maxlength="4">`,
-    [{label:"決定",primary:true,onclick:async()=>{
-      const n=parseInt(($("cnt-target").value||"").replace(/[^0-9]/g,""),10);
-      if(!n||n<1){ toast("数字を入れてください"); return; }
-      const m=state.work.data; const cur=(m.counters&&m.counters[state.uid])||{count:0};
-      try{ await updateDoc(doc(db,"matches",m.id),{["counters."+state.uid]:{target:n,count:Math.min(cur.count||0,n)}}); }catch(e){}
-      state.work["done_"+state.uid]=false; closeModal();
+function todoAdd(){
+  showModal("やることを追加",`<p>名前と、いくつで完了かを決めます（1/○○の○○）。</p>
+    <input type="text" id="td-name" placeholder="例: 英単語" maxlength="20" style="margin-bottom:8px">
+    <input type="text" id="td-target" inputmode="numeric" placeholder="30（母数）" maxlength="4">`,
+    [{label:"追加",primary:true,onclick:async()=>{
+      const name=($("td-name").value||"").trim(); const n=parseInt(($("td-target").value||"").replace(/[^0-9]/g,""),10);
+      if(!name){ toast("名前を入れてください"); return; }
+      const td=getTodoData(state.work.data,state.uid);
+      const items=[...td.items,{name,count:0,target:(n&&n>0)?n:0}];
+      await saveTodos(items,td.hideTitles); closeModal();
     }}]);
 }
-async function incCounter(){
-  const m=state.work.data; const cur=(m.counters&&m.counters[state.uid])||{target:0,count:0};
-  if(!cur.target) return;
-  const count=Math.min(cur.target,(cur.count||0)+1);
-  try{ await updateDoc(doc(db,"matches",m.id),{["counters."+state.uid]:{target:cur.target,count}}); }catch(e){}
-  if(count>=cur.target){ playBeep([880,1100,1320]); toast("達成！おつかれさま🎉"); }
+async function todoInc(i){
+  const td=getTodoData(state.work.data,state.uid);
+  const items=td.items.map((it,idx)=>{ if(idx!==i)return it; const c=it.target>0?Math.min(it.target,it.count+1):it.count+1; return {...it,count:c}; });
+  await saveTodos(items,td.hideTitles);
+  const it=items[i]; if(it.target>0 && it.count>=it.target){ playBeep([880,1100,1320]); toast("達成！おつかれさま🎉"); }
 }
-async function decCounter(){
-  const m=state.work.data; const cur=(m.counters&&m.counters[state.uid])||{target:0,count:0};
-  if(!cur.target) return;
-  const count=Math.max(0,(cur.count||0)-1);
-  try{ await updateDoc(doc(db,"matches",m.id),{["counters."+state.uid]:{target:cur.target,count}}); }catch(e){}
+async function todoDec(i){
+  const td=getTodoData(state.work.data,state.uid);
+  const items=td.items.map((it,idx)=>idx===i?{...it,count:Math.max(0,it.count-1)}:it);
+  await saveTodos(items,td.hideTitles);
+}
+async function todoDel(i){
+  const td=getTodoData(state.work.data,state.uid);
+  const items=td.items.filter((_,idx)=>idx!==i);
+  await saveTodos(items,td.hideTitles);
+}
+async function toggleHideTitles(){
+  const td=getTodoData(state.work.data,state.uid);
+  await saveTodos(td.items,!td.hideTitles);
 }
 async function sendComment(){
   const inp=$("ws-comment-input"); const t=(inp.value||"").trim(); if(!t) return;
@@ -1379,43 +1423,71 @@ async function loadFeedCandidates(teaser){
     const exclude=new Set([...liked,...friendUids,state.uid]);
     const usersSnap=await getDocs(query(collection(db,"users"),limit(100)));
     const cands=[];
-    usersSnap.forEach(d=>{ const u=d.data(); if(exclude.has(d.id))return; if(u.isAnonymous)return; if(!u.handle)return; if(!u.photoData)return; cands.push({uid:d.id,...u}); });
-    if(!teaser){
-      const myCats=new Set(state.profile.categories||[]), myTS=new Set(state.profile.timeSlots||[]), myScene=state.profile.scene?.gameName;
-      cands.forEach(c=>{ c._s=(c.scene?.gameName===myScene?3:0)+2*(c.categories||[]).filter(x=>myCats.has(x)).length+(c.timeSlots||[]).filter(x=>myTS.has(x)).length; });
-      cands.sort((a,b)=>b._s-a._s);
-    }
+    usersSnap.forEach(d=>{ const u=d.data(); if(exclude.has(d.id))return; if(u.isAnonymous)return; if(!u.handle)return; if(!u.photoData)return; if(u.searchable===false)return; cands.push({uid:d.id,...u}); });
+    // 近い順＋最近アクティブ順
+    const myCats=new Set(state.profile?.categories||[]), myTS=new Set(state.profile?.timeSlots||[]), myScene=state.profile?.scene?.gameName;
+    const now=Date.now();
+    cands.forEach(c=>{
+      const sim=(c.scene?.gameName===myScene?3:0)+2*(c.categories||[]).filter(x=>myCats.has(x)).length+(c.timeSlots||[]).filter(x=>myTS.has(x)).length;
+      const la=c.lastActive?c.lastActive.toMillis():0;
+      const recency = la ? Math.max(0, 5 - Math.floor((now-la)/(60*60*1000))) : 0; // 直近ほど加点(最大5)
+      c._s = sim*2 + recency;
+    });
+    cands.sort((a,b)=>b._s-a._s);
     state.feed={list:cands, idx:0, teaser, liked, friends:friendUids};
     renderFeed();
   }catch(e){ console.error(e); $("tab-find").innerHTML='<div class="empty">読み込みに失敗しました</div>'; }
 }
 function renderFeed(){
   const box=$("tab-find"); const F=state.feed;
-  if(!F.list.length){ box.innerHTML=`<div class="card"><div class="empty"><div style="font-size:40px">🔎</div>まだ画像つきのプロフィールがありません<br><span style="font-size:12px">プロフィールに画像を設定した人がここに出ます</span></div></div>`; return; }
+  if(F.teaser){
+    // 未ログイン：1枚だけぼかして見せる＋閉じる
+    const c=F.list[0];
+    box.innerHTML=`
+      <div class="feed">
+        <div class="feed-card active">${c?pcardHtml(c,{mode:"plain",blurred:true}):`<div class="vcard" style="background:linear-gradient(135deg,var(--water),var(--water-dark))"></div>`}</div>
+        <div class="feed-lock"><div class="fl-card">
+          <div style="font-size:40px">🔒</div>
+          <h3 style="margin:6px 0;color:var(--water-dark)">ログインで解放</h3>
+          <p style="font-size:13px;color:var(--text-soft)">仲間さがしはログインした人だけ。<br>どんな人がいるか、うっすら見えています。</p>
+          <button class="btn btn-google" onclick="app.loginGoogle()" style="margin-top:10px">Ⓖ Googleで解放</button>
+          <button class="btn btn-x" onclick="app.loginX()" style="margin-top:6px">𝕏 Xで解放</button>
+          <button class="btn btn-ghost" onclick="app.switchTab('match')" style="margin-top:6px">閉じる</button>
+        </div></div>
+      </div>`;
+    return;
+  }
+  if(!F.list.length){ box.innerHTML=`<div class="card"><div class="empty"><div style="font-size:40px">🔎</div>まだ画像つきのプロフィールがいません<br><span style="font-size:12px">プロフィールに画像を設定した人がここに出ます</span></div></div>
+    <label style="display:flex;align-items:center;gap:8px;justify-content:center;margin-top:10px;font-size:13px"><input type="checkbox" id="feed-private" ${state.profile.searchable===false?"checked":""} onchange="app.togglePrivate()"> 自分をさがすに出さない（非公開）</label>`; return; }
   const c=F.list[F.idx];
   const liked=F.liked.has(c.uid);
   box.innerHTML=`
     <div class="feed">
-      <div class="feed-card active">${pcardHtml(c,{mode:F.teaser?"plain":"feed",blurred:F.teaser,liked})}</div>
-      ${F.teaser?`<div class="feed-lock"><div class="fl-card">
-        <div style="font-size:40px">🔒</div>
-        <h3 style="margin:6px 0;color:var(--water-dark)">ログインで解放</h3>
-        <p style="font-size:13px;color:var(--text-soft)">作業仲間をさがす機能はログインした人だけ。<br>どんな人がいるか、うっすら見えています。</p>
-        <button class="btn btn-google" onclick="app.loginGoogle()" style="margin-top:10px">Ⓖ Googleで解放</button>
-        <button class="btn btn-x" onclick="app.loginX()" style="margin-top:6px">𝕏 Xで解放</button>
-      </div></div>`:""}
+      <div class="feed-card active" id="feed-current">${pcardHtml(c,{mode:"feed",liked})}</div>
     </div>
-    <div class="feed-hintbar">${F.idx+1} / ${F.list.length}　・　↑↓スクロール / ホイールで次の人</div>`;
-  if(!F.teaser) attachFeedNav();
+    <div class="feed-hintbar">${F.idx+1} / ${F.list.length}　・　↑↓スクロール / ホイール　<label style="margin-left:8px"><input type="checkbox" id="feed-private" ${state.profile.searchable===false?"checked":""} onchange="app.togglePrivate()"> 自分を非公開</label></div>`;
+  attachFeedNav();
+}
+function slideTo(dir){
+  const el=$("feed-current");
+  if(el){ el.style.transition="transform .18s ease, opacity .18s ease"; el.style.transform=`translateY(${dir>0?-24:24}px)`; el.style.opacity="0"; }
+  setTimeout(()=>renderFeed(),150);
 }
 function attachFeedNav(){
   const area=$("tab-find").querySelector(".feed");
   if(!area) return;
   let sy=0, lock=false;
-  const go=(dir)=>{ const F=state.feed; const ni=F.idx+dir; if(ni<0||ni>=F.list.length){ return; } F.idx=ni; renderFeed(); };
-  area.onwheel=(e)=>{ if(lock)return; lock=true; setTimeout(()=>lock=false,400); go(e.deltaY>0?1:-1); e.preventDefault(); };
+  const go=(dir)=>{ const F=state.feed; const ni=F.idx+dir; if(ni<0||ni>=F.list.length){ return; } F.idx=ni; slideTo(dir); };
+  area.onwheel=(e)=>{ if(lock)return; lock=true; setTimeout(()=>lock=false,320); go(e.deltaY>0?1:-1); e.preventDefault(); };
   area.ontouchstart=(e)=>{ sy=e.touches[0].clientY; };
-  area.ontouchend=(e)=>{ const dy=e.changedTouches[0].clientY-sy; if(Math.abs(dy)>60) go(dy<0?1:-1); };
+  area.ontouchend=(e)=>{ const dy=e.changedTouches[0].clientY-sy; if(Math.abs(dy)>50) go(dy<0?1:-1); };
+}
+async function togglePrivate(){
+  const on=$("feed-private").checked;
+  state.profile.searchable = on ? false : true;
+  try{ await updateDoc(doc(db,"users",state.uid),{searchable:state.profile.searchable}); }catch(e){}
+  saveLocal();
+  toast(on?"さがすに出さない設定にしました":"さがすに公開しました");
 }
 async function feedLike(){
   const F=state.feed; const c=F.list[F.idx];
@@ -1774,9 +1846,9 @@ window.app={
   setSceneSort,moreScenes,pickScene,finishOnboard,createScene,
   startMatching,leaveWaiting,openMatchChoice,
   likeMatch:likeCurrentMatch, passMatch:passCurrentMatch,
-  leaveWorkScreen,setCounter,incCounter,decCounter,sendComment,proposeLoc,suggestPhoto,friendReqFromWork,copyLoc,toPip,fromPip,
+  leaveWorkScreen,todoAdd,todoInc,todoDec,todoDel,toggleHideTitles,sendComment,proposeLoc,suggestPhoto,friendReqFromWork,copyLoc,toPip,fromPip,
   loadFriendsScreen,approveReq:approveRequest,rejectReq:rejectRequest,inviteToWork,
-  initSwipe,feedLike,feedFriend,feedDetail,
+  initSwipe,feedLike,feedFriend,feedDetail,togglePrivate,
   saveProfileEdit,removePhoto,changeScene,signOut:doSignOut,
   showModal,closeModal,showTerms,renderMatchTab,
 };
