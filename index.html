@@ -207,6 +207,58 @@ nav.bottom-nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);pad
 .req-btns{display:flex;gap:6px}
 .req-btns button{padding:6px 12px;border-radius:10px;font-size:12px;font-weight:700}
 .badge-count{display:inline-block;min-width:16px;height:16px;line-height:16px;background:var(--danger);color:#fff;border-radius:8px;font-size:10px;font-weight:700;padding:0 4px;margin-left:3px}
+/* 円アイコン（プロフ画像から切り抜き） */
+.ic{border-radius:50%;overflow:hidden;background:var(--water-light);display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;background-repeat:no-repeat}
+/* 縦カード（9:16） */
+.vcard{position:relative;width:100%;aspect-ratio:9/16;max-height:72vh;border-radius:22px;overflow:hidden;background:linear-gradient(135deg,var(--water),var(--water-dark));box-shadow:6px 6px 18px var(--shadow-d)}
+.vcard .vc-img{position:absolute;inset:0;background-size:cover;background-position:center;background-repeat:no-repeat}
+.vcard .vc-grad{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.05) 0%,rgba(0,0,0,0) 35%,rgba(0,0,0,.55) 100%)}
+.vcard .vc-top{position:absolute;top:12px;left:14px;right:14px;display:flex;justify-content:space-between;align-items:flex-start;color:#fff}
+.vcard .vc-scene{font-size:12px;font-weight:700;background:rgba(0,0,0,.35);padding:4px 10px;border-radius:12px;backdrop-filter:blur(4px);text-shadow:0 1px 2px rgba(0,0,0,.4)}
+.vcard .vc-info{position:absolute;left:16px;right:70px;bottom:16px;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.6)}
+.vcard .vc-name{font-size:24px;font-weight:800;line-height:1.2}
+.vcard .vc-sub{font-size:12px;opacity:.95;margin-top:2px}
+.vcard .vc-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.vcard .vc-tag{font-size:11px;padding:3px 9px;border-radius:9px;background:rgba(255,255,255,.28);font-weight:600;backdrop-filter:blur(3px)}
+.vcard .vc-line{font-size:12px;margin-top:6px}
+.vcard .vc-actions{position:absolute;right:12px;bottom:20px;display:flex;flex-direction:column;gap:14px;align-items:center}
+.vcard .vc-abtn{width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,.9);display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 4px 12px rgba(0,0,0,.25);transition:transform .1s}
+.vcard .vc-abtn:active{transform:scale(.88)}
+.vcard .vc-abtn.on{background:var(--pink);color:#fff}
+.vcard .vc-abtn small{font-size:9px}
+.vcard.blurred .vc-img{filter:blur(18px);transform:scale(1.1)}
+.vcard.blurred .vc-info,.vcard.blurred .vc-actions,.vcard.blurred .vc-top{filter:blur(5px);pointer-events:none}
+/* ホームのマッチ起動オーバーレイ */
+.home-match{position:absolute;top:12px;left:50%;transform:translateX(-50%);z-index:3;width:calc(100% - 40px);max-width:340px}
+.home-match .hm-main{width:100%;padding:16px;border-radius:18px;background:rgba(224,88,143,.95);color:#fff;font-weight:800;font-size:17px;box-shadow:0 6px 20px rgba(0,0,0,.3);backdrop-filter:blur(6px)}
+.home-match .hm-choices{display:flex;gap:8px;margin-top:8px}
+.home-match .hm-choices button{flex:1;padding:12px 8px;border-radius:14px;background:rgba(255,255,255,.95);color:var(--water-dark);font-weight:700;font-size:14px;box-shadow:0 4px 12px rgba(0,0,0,.2)}
+.home-match .hm-choices button .n{display:block;font-size:11px;color:var(--pink);font-weight:800}
+/* フィード（さがす） */
+.feed{position:relative;height:calc(100vh - 190px);min-height:420px}
+.feed-card{position:absolute;inset:0;display:none}
+.feed-card.active{display:block}
+.feed-nav{position:absolute;right:12px;top:50%;transform:translateY(-50%);z-index:4;display:flex;flex-direction:column;gap:8px}
+.feed-hintbar{text-align:center;font-size:11px;color:var(--text-soft);padding:6px}
+.feed-lock{position:absolute;inset:0;z-index:6;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#fff;background:rgba(58,74,85,.35);padding:24px}
+.feed-lock .fl-card{background:rgba(255,255,255,.95);color:var(--text);border-radius:20px;padding:22px;max-width:300px;box-shadow:0 12px 40px rgba(0,0,0,.3)}
+/* コピーボタン */
+.copy-btn{background:rgba(255,255,255,.25);color:#fff;border-radius:10px;padding:4px 10px;font-size:12px;font-weight:700;margin-left:8px}
+/* 作業画面カウンター */
+.wc-counter{display:flex;align-items:center;justify-content:center;gap:14px;margin-top:8px}
+.wc-counter .cbtn{width:40px;height:40px;border-radius:50%;background:var(--card);box-shadow:3px 3px 8px var(--shadow-d),-3px -3px 8px var(--shadow-l);font-size:22px;display:flex;align-items:center;justify-content:center}
+.wc-counter .cval{font-size:26px;font-weight:800;color:var(--pink);min-width:80px;text-align:center}
+.wc-counter .cval.done{color:var(--ok)}
+.ws-person2{text-align:center;background:var(--card);border-radius:18px;padding:14px 10px;box-shadow:4px 4px 10px var(--shadow-d),-4px -4px 10px var(--shadow-l)}
+/* PIP ミニ窓 */
+.pip{position:fixed;right:12px;bottom:80px;width:150px;z-index:170;background:var(--card);border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,.3);padding:12px;display:none;text-align:center;cursor:move}
+.pip.active{display:block}
+.pip .pip-title{font-size:12px;font-weight:700;color:var(--water-dark)}
+.pip .pip-sub{font-size:11px;color:var(--text-soft);margin:4px 0}
+.pip .pip-close{position:absolute;top:4px;right:8px;font-size:14px;color:var(--text-soft)}
+.icon-cropper{position:relative;width:180px;height:320px;margin:0 auto;border-radius:14px;overflow:hidden;background:#000;touch-action:none}
+.icon-cropper .cimg{position:absolute;inset:0;background-size:cover;background-position:center}
+.icon-cropper .ccircle{position:absolute;border:3px solid #fff;border-radius:50%;box-shadow:0 0 0 2000px rgba(0,0,0,.45);cursor:move}
 </style>
 </head>
 <body>
@@ -308,7 +360,7 @@ nav.bottom-nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);pad
 <section id="screen-home" class="screen">
   <div class="tabs">
     <button class="tab active" data-tab="match" onclick="app.switchTab('match')">🤝 マッチ</button>
-    <button class="tab" data-tab="find" onclick="app.switchTab('find')">🔍 探し</button>
+    <button class="tab" data-tab="find" onclick="app.switchTab('find')">🔍 さがす</button>
   </div>
   <div id="tab-match"></div>
   <div id="tab-find" style="display:none"></div>
@@ -350,15 +402,23 @@ nav.bottom-nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);pad
       <div class="avatars" id="pe-avatars"></div>
     </div>
     <div class="field" id="pe-photo-field" style="display:none">
-      <label>自撮り画像（任意・ログイン限定）</label>
-      <div style="display:flex;align-items:center;gap:14px">
-        <div class="photo-slot" id="pe-photo-preview">📷</div>
-        <div style="flex:1">
-          <button class="btn btn-small" onclick="document.getElementById('pe-photo-input').click()">画像を選ぶ</button>
-          <button class="btn btn-small btn-ghost" onclick="app.removePhoto()" id="pe-photo-remove" style="display:none;margin-top:4px">削除</button>
-          <input type="file" id="pe-photo-input" accept="image/*" style="display:none">
-          <p class="hint" style="margin-top:6px">100×100に縮小。変更は30日に1回。</p>
+      <label>プロフィール画像（9:16・さがすで表示）</label>
+      <input type="file" id="pe-photo-input" accept="image/*" style="display:none">
+      <div id="pe-crop-wrap" style="display:none">
+        <div style="display:flex;gap:14px;align-items:flex-start">
+          <div class="icon-cropper" id="pe-cropper"><div class="cimg" id="pe-cimg"></div><div class="ccircle" id="pe-ccircle"></div></div>
+          <div style="flex:1">
+            <div style="font-size:12px;color:var(--text-soft);margin-bottom:6px">アイコンのプレビュー</div>
+            <div id="pe-icon-preview"></div>
+            <label style="margin-top:12px">円の大きさ</label>
+            <input type="range" id="pe-icon-size" min="20" max="90" value="55" style="width:100%">
+            <p class="hint">円をドラッグで位置、スライダーで大きさ。この2つだけ保存します。</p>
+          </div>
         </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button class="btn btn-small" onclick="document.getElementById('pe-photo-input').click()">画像を選ぶ</button>
+        <button class="btn btn-small btn-ghost" onclick="app.removePhoto()" id="pe-photo-remove" style="display:none">削除</button>
       </div>
     </div>
     <div class="field">
@@ -426,6 +486,12 @@ nav.bottom-nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);pad
   </div>
   <div class="ws-body" id="ws-body"></div>
   <div class="ws-fab" id="ws-fab"></div>
+</div>
+<div class="pip" id="pip">
+  <span class="pip-close" onclick="app.fromPip()">✕</span>
+  <div class="pip-title" id="pip-title">作業中</div>
+  <div class="pip-sub" id="pip-sub"></div>
+  <button class="btn btn-small btn-pink" onclick="app.fromPip()" style="width:100%">もどす</button>
 </div>
 <div class="toast" id="toast"></div>
 
@@ -504,7 +570,19 @@ function relTime(ts){
   if(d<86400000) return Math.floor(d/3600000)+"時間前";
   return Math.floor(d/86400000)+"日前";
 }
-function avatarHtml(p){ return p&&p.photoData ? `<img src="${p.photoData}" alt="">` : (AVATARS[p?.avatarId??0]||"🐱"); }
+function iconStyle(p,S){
+  if(!(p&&p.photoData)) return null;
+  const c=p.iconCrop||{cx:0.5,cy:0.35,size:0.6};
+  const dispW=S/c.size, dispH=dispW*(16/9);
+  const posX=S/2 - c.cx*dispW, posY=S/2 - c.cy*dispH;
+  return `background-image:url('${p.photoData}');background-size:${dispW}px ${dispH}px;background-position:${posX}px ${posY}px`;
+}
+function iconEl(p,S){
+  const st=iconStyle(p,S);
+  if(st) return `<span class="ic" style="width:${S}px;height:${S}px;${st}"></span>`;
+  return `<span class="ic" style="width:${S}px;height:${S}px;font-size:${Math.round(S*0.55)}px;background:var(--bg)">${AVATARS[p?.avatarId??0]||"🐱"}</span>`;
+}
+function avatarHtml(p){ const st=iconStyle(p,44); return st?`<span class="ic" style="width:100%;height:100%;${st}"></span>`:(AVATARS[p?.avatarId??0]||"🐱"); }
 
 // ---------- ローカル保存（匿名用） ----------
 function saveLocal(){
@@ -777,7 +855,7 @@ async function persistProfile(isFirst){
     categories:p.categories||[], timeSlots:p.timeSlots||[],
     focusStyle:p.focusStyle||"", goal:p.goal||"",
     cardColor:p.cardColor||"water", cardPattern:p.cardPattern||"none", neighborOk:p.neighborOk||"どちらでも",
-    photoData:p.photoData||"", photoChangedAt:p.photoChangedAt||null,
+    photoData:p.photoData||"", iconCrop:p.iconCrop||null, photoChangedAt:p.photoChangedAt||null,
     authType:state.authType, isAnonymous:auth.currentUser?auth.currentUser.isAnonymous:true,
     updatedAt:serverTimestamp(), lastActive:serverTimestamp(),
     waiting:p.waiting||false,
@@ -834,20 +912,33 @@ function playBeep(freqs){
 function startMatchSound(){ stopMatchSound(); playBeep([660,880,1320]); soundLoop=setInterval(()=>playBeep([660,880,1320]),1700); }
 function stopMatchSound(){ if(soundLoop){ clearInterval(soundLoop); soundLoop=null; } }
 
-// ---------- プロフィールカード描画 ----------
-function pcardHtml(p, extra){
-  const col=CARD_COLORS[p.cardColor||"water"]||CARD_COLORS.water;
-  const pat=p.cardPattern&&p.cardPattern!=="none"?("pat-"+p.cardPattern):"";
-  const av=p.photoData?`<img src="${p.photoData}">`:(AVATARS[p.avatarId]||"🐱");
-  return `<div class="pcard ${pat}" style="background:${col.css}">
-    <div class="pc-av">${av}</div>
-    <div class="pc-name pc-shadow-text">${esc(p.handle)}</div>
-    ${p.scene?`<div class="pc-row pc-shadow-text">${p.scene.icon} ${esc(p.scene.gameName)}</div>`:""}
-    <div class="pc-tags">${(p.categories||[]).slice(0,5).map(c=>`<span class="pc-tag">${esc(c)}</span>`).join("")}</div>
-    ${p.goal?`<div class="pc-row pc-shadow-text" style="margin-top:8px">🔥 ${esc(p.goal)}</div>`:""}
-    ${p.neighborOk&&p.neighborOk!=="どちらでも"?`<div class="pc-row pc-shadow-text">🪑 ${esc(p.neighborOk)}</div>`:""}
-    ${extra||""}
-  </div>`;
+// ---------- 縦プロフィールカード ----------
+// opts: {mode:'home'|'feed'|'plain', blurred, liked, friended}
+function pcardHtml(p, opts){
+  opts=opts||{};
+  const col=(CARD_COLORS[p.cardColor||"water"]||CARD_COLORS.water).css;
+  const bg = p.photoData ? `<div class="vc-img" style="background-image:url('${p.photoData}')"></div>` : `<div class="vc-img" style="background:${col}"></div>`;
+  const scene = p.scene?`<div class="vc-scene">${p.scene.icon} ${esc(p.scene.gameName)}界隈</div>`:`<div class="vc-scene">界隈未設定</div>`;
+  const tags=(p.categories||[]).slice(0,4).map(c=>`<span class="vc-tag">${esc(c)}</span>`).join("");
+  const info=`
+    <div class="vc-info">
+      <div class="vc-name">${esc(p.handle)}</div>
+      <div class="vc-tags">${tags}</div>
+      ${p.goal?`<div class="vc-line">🔥 ${esc(p.goal)}</div>`:""}
+      ${p.timeSlots&&p.timeSlots.length?`<div class="vc-line">🕒 ${(p.timeSlots).join("・")}</div>`:""}
+      ${p.neighborOk&&p.neighborOk!=="どちらでも"?`<div class="vc-line">🪑 ${esc(p.neighborOk)}</div>`:""}
+      ${p.workUntil?`<div class="vc-line">⏰ ${esc(p.workUntil)}まで</div>`:""}
+    </div>`;
+  let actions="";
+  if(opts.mode==="feed"){
+    actions=`<div class="vc-actions">
+      <div class="vc-abtn ${opts.liked?"on":""}" onclick="app.feedLike()">♡</div>
+      <div class="vc-abtn ${opts.friended?"on":""}" onclick="app.feedFriend()">➕<small></small></div>
+      <div class="vc-abtn" onclick="app.feedDetail()" style="font-size:16px">詳しく</div>
+    </div>`;
+  }
+  return `<div class="vcard ${opts.blurred?"blurred":""}">${bg}<div class="vc-grad"></div>
+    <div class="vc-top">${scene}${opts.topRight||""}</div>${info}${actions}</div>`;
 }
 
 async function renderMatchTab(){
@@ -855,37 +946,46 @@ async function renderMatchTab(){
   const p=state.profile;
   box.innerHTML=`
     <div style="position:relative">
-      ${pcardHtml(p)}
-      <button class="btn btn-small" style="position:absolute;top:12px;right:12px;background:rgba(255,255,255,.9);color:var(--water-dark)" onclick="app.goto('profile-edit')">編集</button>
-    </div>
-    <div class="card" style="text-align:center">
-      <p class="hint" style="margin-bottom:10px">どうやって作業する？</p>
-      <div style="display:flex;gap:10px">
-        <button class="btn btn-pink" onclick="app.startMatching('wait')">🏠 お部屋で待つ</button>
-        <button class="btn" onclick="app.startMatching('go')">🚪 お部屋へ向かう</button>
-      </div>
-      <p class="hint" style="margin-top:10px">「待つ」は自分の作業場所を登録して待ちます。<br>「向かう」は相手の場所へ行きます。</p>
-    </div>
-    <div id="match-stats" style="text-align:center;color:var(--text-soft);font-size:13px;padding:4px 8px 10px">集計中…</div>`;
+      ${pcardHtml(p,{mode:"home",topRight:`<button class="vc-scene" style="border:none" onclick="app.goto('profile-edit')">編集</button>`})}
+      <div class="home-match" id="home-match"></div>
+    </div>`;
+  renderHomeMatch(false);
   loadMatchStats();
 }
+function renderHomeMatch(open){
+  const el=$("home-match"); if(!el) return;
+  if(!open){
+    el.innerHTML=`<button class="hm-main" onclick="app.openMatchChoice()">作業マッチ <span id="hm-total" style="opacity:.85;font-weight:700"></span></button>`;
+  }else{
+    el.innerHTML=`<div class="hm-main" style="padding:12px">どっちで作業する？
+      <div class="hm-choices">
+        <button onclick="app.startMatching('wait')">🏠 部屋で待つ<span class="n" id="hm-wait">-</span></button>
+        <button onclick="app.startMatching('go')">🚪 部屋へ向かう<span class="n" id="hm-go">-</span></button>
+      </div></div>`;
+    fillChoiceCounts();
+  }
+}
+function openMatchChoice(){ renderHomeMatch(true); }
 
 async function loadMatchStats(){
   try{
+    const usnap=await getDoc(doc(db,"stats","users"));
+    const total=usnap.exists()?(usnap.data().count||0):0;
+    const el=$("hm-total"); if(el) el.textContent=`／ 登録 ${total}人`;
+  }catch(e){}
+}
+async function fillChoiceCounts(){
+  try{
     const wsnap=await getDocs(query(collection(db,"waiting"),where("status","==","searching")));
-    const now=Date.now(); const wcat={}; let wtotal=0;
-    wsnap.forEach(d=>{ const w=d.data(); if(w.updatedAt&&(now-w.updatedAt.toMillis())>2*60*1000)return; wtotal++; (w.categories||[]).forEach(c=>wcat[c]=(wcat[c]||0)+1); });
-    const el=$("match-stats"); if(!el) return;
-    const parts=Object.entries(wcat).sort((a,b)=>b[1]-a[1]).map(([c,n])=>`${esc(c)} ${n}人`);
-    el.innerHTML = wtotal>0
-      ? `いま <strong style="color:var(--pink)">${wtotal}人</strong> が待機中　`+(parts.length?"（"+parts.join("・")+"）":"")
-      : "いま待機中の人はいません";
-  }catch(e){ console.error(e); }
+    const now=Date.now(); let w=0,g=0;
+    wsnap.forEach(d=>{ const x=d.data(); if(x.updatedAt&&(now-x.updatedAt.toMillis())>2*60*1000)return; if(x.role==="wait")w++; else g++; });
+    const we=$("hm-wait"), ge=$("hm-go"); if(we)we.textContent=w+"人待機"; if(ge)ge.textContent=g+"人";
+  }catch(e){}
 }
 
 function myProfileSnap(role, location, extra){
   const p=state.profile;
-  return Object.assign({ handle:p.handle, avatarId:p.avatarId, photoData:p.photoData||"", scene:p.scene||null,
+  return Object.assign({ handle:p.handle, avatarId:p.avatarId, photoData:p.photoData||"", iconCrop:p.iconCrop||null, scene:p.scene||null,
     categories:p.categories||[], timeSlots:p.timeSlots||[], goal:p.goal||"", focusStyle:p.focusStyle||"",
     cardColor:p.cardColor||"water", cardPattern:p.cardPattern||"none", neighborOk:p.neighborOk||"どちらでも",
     role, location: role==="wait"?(location||""):"" }, extra||{});
@@ -955,7 +1055,7 @@ async function tryInitiate(snap){
         likes:{[state.uid]:false,[partner.uid]:false},
         status:"pending", source:"match",
         profiles:{ [state.uid]:myProfileSnap(state.match.role,state.match.location,{workUntil:state.match.workUntil||""}),
-          [partner.uid]:{handle:partner.handle,avatarId:partner.avatarId,photoData:partner.photoData||"",scene:partner.scene||null,categories:partner.categories||[],timeSlots:partner.timeSlots||[],goal:partner.goal||"",focusStyle:partner.focusStyle||"",cardColor:partner.cardColor||"water",cardPattern:partner.cardPattern||"none",neighborOk:partner.neighborOk||"どちらでも",role:partner.role,location:partner.location||"",workUntil:partner.workUntil||""} },
+          [partner.uid]:{handle:partner.handle,avatarId:partner.avatarId,photoData:partner.photoData||"",iconCrop:partner.iconCrop||null,scene:partner.scene||null,categories:partner.categories||[],timeSlots:partner.timeSlots||[],goal:partner.goal||"",focusStyle:partner.focusStyle||"",cardColor:partner.cardColor||"water",cardPattern:partner.cardPattern||"none",neighborOk:partner.neighborOk||"どちらでも",role:partner.role,location:partner.location||"",workUntil:partner.workUntil||""} },
         createdAt:serverTimestamp()
       });
     }catch(e){ console.warn("initiate",e); }
@@ -1052,6 +1152,33 @@ async function leaveWaiting(){
 function openWaitOverlay(){ $("wait-overlay").classList.add("active"); }
 function closeWaitOverlay(){ $("wait-overlay").classList.remove("active"); }
 
+// ---------- PIP（待機/作業を小窓化） ----------
+function toPip(){
+  const isWork=$("work-screen").classList.contains("active");
+  $("pip-title").textContent=isWork?"作業中":"待機中";
+  const m=state.work&&state.work.data;
+  $("pip-sub").textContent=isWork&&m?((m.location&&m.location.value)?m.location.value:"作業中"):"相手を探しています";
+  $("work-screen").classList.remove("active");
+  $("wait-overlay").classList.remove("active");
+  $("pip").classList.add("active");
+  state._pipMode=isWork?"work":"wait";
+}
+function fromPip(){
+  $("pip").classList.remove("active");
+  if(state._pipMode==="work"){ $("work-screen").classList.add("active"); }
+  else { $("wait-overlay").classList.add("active"); }
+}
+// PIPドラッグ
+(function(){
+  const pip=$("pip"); if(!pip) return;
+  let dx=0,dy=0,sx=0,sy=0,drag=false;
+  const down=e=>{ if(e.target.classList.contains("pip-close")||e.target.tagName==="BUTTON")return; drag=true; const p=e.touches?e.touches[0]:e; sx=p.clientX; sy=p.clientY; const r=pip.getBoundingClientRect(); dx=r.left; dy=r.top; };
+  const move=e=>{ if(!drag)return; const p=e.touches?e.touches[0]:e; pip.style.left=(dx+p.clientX-sx)+"px"; pip.style.top=(dy+p.clientY-sy)+"px"; pip.style.right="auto"; pip.style.bottom="auto"; if(e.cancelable)e.preventDefault(); };
+  const up=()=>drag=false;
+  pip.addEventListener("mousedown",down); window.addEventListener("mousemove",move); window.addEventListener("mouseup",up);
+  pip.addEventListener("touchstart",down,{passive:true}); window.addEventListener("touchmove",move,{passive:false}); window.addEventListener("touchend",up);
+})();
+
 function renderWaitOverlay(){
   const box=$("wait-overlay-content");
   const M=state.match; const m=M.matchData;
@@ -1062,7 +1189,10 @@ function renderWaitOverlay(){
       <h2>現在 相手を探しています</h2>
       <div class="wo-sub">${roleTxt}<br>誰かが参加するまで待機します</div>
       <div id="wo-timer" class="wo-timer">待機時間 0分00秒</div>
-      <button class="btn btn-ghost" style="color:#fff;margin-top:24px;max-width:220px" onclick="app.leaveWaiting()">待機をやめる</button>`;
+      <div style="display:flex;gap:10px;margin-top:24px">
+        <button class="btn btn-ghost" style="color:#fff" onclick="app.toPip()">🗕 小さく</button>
+        <button class="btn btn-ghost" style="color:#fff" onclick="app.leaveWaiting()">やめる</button>
+      </div>`;
     return;
   }
   const pu=otherUid(m); const pp=m.profiles[pu]||{};
@@ -1091,26 +1221,21 @@ function renderWaitOverlay(){
 
 // ================= 作業画面 =================
 function openWorkScreen(m){
-  state.work={ matchId:m.id, data:m, myTodoInput:"", commentInput:"" };
+  state.work={ matchId:m.id, data:m };
   $("work-screen").classList.add("active");
+  $("pip").classList.remove("active");
   closeWaitOverlay();
   const body=$("ws-body");
   body.innerHTML=`
-    <div class="ws-pair" id="ws-pair"></div>
-    <div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-      <h3 style="font-size:14px;color:var(--water-dark)">あなたのTODO</h3>
-      <button class="btn btn-small btn-ghost" id="ws-hide-btn" onclick="app.toggleTodoHide()"></button>
-    </div>
-      <div style="display:flex;gap:6px;margin-bottom:8px"><input type="text" id="ws-todo-input" placeholder="やることを追加" maxlength="40"><button class="btn btn-small btn-pink" onclick="app.addTodo()">＋</button></div>
-      <div id="ws-todos-mine"></div>
-    </div>
-    <div class="card"><h3 style="font-size:14px;color:var(--water-dark);margin-bottom:8px">相手のTODO</h3><div id="ws-todos-partner"></div></div>
-    <div class="card"><h3 style="font-size:14px;color:var(--water-dark);margin-bottom:8px">コメント</h3>
+    <div style="display:flex;gap:10px" id="ws-pair"></div>
+    <div style="text-align:center;margin:14px 0 6px;font-size:12px;color:var(--text-soft)">進捗の母数を決めて ± で進めよう（達成で音）</div>
+    <div id="ws-comments-wrap" style="margin-top:8px">
+      <div style="font-size:13px;font-weight:700;color:var(--water-dark);margin-bottom:6px">コメント</div>
       <div id="ws-comments"></div>
       <div style="display:flex;gap:6px;margin-top:8px"><input type="text" id="ws-comment-input" placeholder="コメントを送る" maxlength="60"><button class="btn btn-small" onclick="app.sendComment()">送信</button></div>
     </div>`;
-  const fab=$("ws-fab");
-  fab.innerHTML=`
+  $("ws-fab").innerHTML=`
+    <button title="待機/作業をPIPに" onclick="app.toPip()">🗕</button>
     <button title="場所変更を提案" onclick="app.proposeLoc()">📍</button>
     <button title="一緒に写真さそう" onclick="app.suggestPhoto()">📷</button>
     <button id="ws-friend-fab" title="フレンド申請" onclick="app.friendReqFromWork()" style="display:none">➕</button>`;
@@ -1123,7 +1248,7 @@ async function leaveWorkScreen(){
   const m=state.work&&state.work.data;
   if(m){ try{ await updateDoc(doc(db,"matches",m.id),{status:"ended"}); }catch(e){} }
   try{ await deleteDoc(doc(db,"waiting",state.uid)); }catch(e){}
-  $("work-screen").classList.remove("active"); state.work=null; state.match={active:false};
+  $("work-screen").classList.remove("active"); $("pip").classList.remove("active"); state.work=null; state.match={active:false};
   goto("home");
 }
 
@@ -1132,91 +1257,57 @@ function patchWorkScreen(m){
   if(!state.work) return;
   state.work.data=m;
   const pu=otherUid(m); const pp=m.profiles[pu]||{}; const me=m.profiles[state.uid]||{};
-  // 場所
   const loc=m.location||{value:"",label:"作業場所"};
   $("ws-loc-label").textContent=loc.label||"作業場所";
-  $("ws-loc-value").textContent=loc.value||"（未設定・提案できます）";
+  $("ws-loc-value").innerHTML=(loc.value?esc(loc.value):"（未設定・📍から提案）")+(loc.value?`<button class="copy-btn" onclick="app.copyLoc()">コピー</button>`:"");
   $("ws-partner-line").textContent=`${pp.handle||"相手"} と作業中`+(pp.workUntil?`・${pp.workUntil}まで`:"");
-  // カウンター（ペア）
   const cs=m.counters||{};
   const cell=(uid,prof,isMe)=>{
     const c=cs[uid]||{target:0,count:0};
     const done=c.target>0 && c.count>=c.target;
-    const av=prof.photoData?`<img src="${prof.photoData}">`:(AVATARS[prof.avatarId]||"🐱");
-    let ctr = c.target>0 ? `<div class="ws-counter ${done?"done":""}">${c.count}/${c.target}${done?" ✓":""}</div>` : `<div style="font-size:11px;color:var(--text-soft)">目標なし</div>`;
-    let btns="";
+    const val = c.target>0 ? `${c.count}/${c.target}` : "－/－";
+    let controls="";
     if(isMe){
-      btns = c.target>0
-        ? `<button class="btn btn-small btn-pink" onclick="app.incCounter()" ${done?"disabled":""}>＋1</button> <button class="btn btn-small btn-ghost" onclick="app.setCounter()">目標変更</button>`
-        : `<button class="btn btn-small btn-pink" onclick="app.setCounter()">目標を決める</button>`;
+      controls = c.target>0
+        ? `<div class="wc-counter"><button class="cbtn" onclick="app.decCounter()">−</button><div class="cval ${done?"done":""}">${val}${done?" ✓":""}</div><button class="cbtn" onclick="app.incCounter()">＋</button></div>
+           <button class="btn btn-small btn-ghost" style="margin-top:6px" onclick="app.setCounter()">母数を変える</button>`
+        : `<div class="cval" style="color:var(--text-soft);font-size:16px;margin-top:8px">母数を決めよう</div><button class="btn btn-small btn-pink" style="margin-top:6px" onclick="app.setCounter()">母数を決める</button>`;
+    } else {
+      controls = c.target>0 ? `<div class="cval ${done?"done":""}" style="margin-top:8px">${val}${done?" ✓":""}</div>` : `<div class="cval" style="color:var(--text-soft);font-size:16px;margin-top:8px">－</div>`;
     }
-    return `<div class="ws-person"><div class="av">${av}</div><div class="nm">${esc(prof.handle||"")}${isMe?"（あなた）":""}</div>${ctr}<div style="margin-top:6px">${btns}</div></div>`;
+    return `<div class="ws-person2" style="flex:1">${iconEl(prof,64)}<div style="font-weight:700;font-size:13px;margin-top:6px">${esc(prof.handle||"")}${isMe?"（あなた）":""}</div>${controls}</div>`;
   };
   $("ws-pair").innerHTML=cell(state.uid,me,true)+cell(pu,pp,false);
-  // TODO 自分
-  const myTodo=(m.todos&&m.todos[state.uid])||{items:[],hidden:false};
-  $("ws-hide-btn").textContent = myTodo.hidden?"🙈 相手に非表示中":"👁 相手に公開中";
-  $("ws-todos-mine").innerHTML = myTodo.items.length? myTodo.items.map((it,i)=>`
-    <div class="todo-item ${it.done?"done":""}">
-      <div class="todo-check ${it.done?"on":""}" onclick="app.toggleTodo(${i})">${it.done?"✓":""}</div>
-      <div class="tt">${esc(it.t)}</div>
-      <button class="btn btn-small btn-ghost" onclick="app.delTodo(${i})" style="padding:2px 8px">✕</button>
-    </div>`).join("") : '<div class="hint">まだありません</div>';
-  // TODO 相手
-  const pTodo=(m.todos&&m.todos[pu])||{items:[],hidden:false};
-  $("ws-todos-partner").innerHTML = pTodo.hidden ? '<div class="hint">🙈 相手が非表示にしています</div>'
-    : (pTodo.items.length? pTodo.items.map(it=>`<div class="todo-item ${it.done?"done":""}"><div class="todo-check ${it.done?"on":""}">${it.done?"✓":""}</div><div class="tt">${esc(it.t)}</div></div>`).join("") : '<div class="hint">まだありません</div>');
-  // コメント
   const cms=m.comments||[];
-  $("ws-comments").innerHTML = cms.length? cms.map(c=>`<div class="comment-bubble" style="${c.uid===state.uid?"background:var(--water)":""}">${c.uid===state.uid?"あなた":esc(pp.handle||"相手")}: ${esc(c.text)}</div>`).join("") : '<div class="hint">まだコメントはありません</div>';
-  // 完了サウンド（相手が完了した瞬間）
+  $("ws-comments").innerHTML = cms.length? cms.map(c=>`<div class="comment-bubble" style="${c.uid===state.uid?"background:var(--water)":""}">${c.uid===state.uid?"あなた":esc(pp.handle||"相手")}: ${esc(c.text)}</div>`).join("") : '<div style="font-size:12px;color:var(--text-soft)">まだコメントはありません</div>';
   m.users.forEach(u=>{
     const c=cs[u]; if(c && c.target>0 && c.count>=c.target){
-      const key="done_"+u; if(!state.work[key]){ state.work[key]=true; if(u!==state.uid){ playBeep([880,1100,1320]); toast(`${esc(pp.handle||"相手")}が目標達成！コメントできます`);} }
-    }
+      const key="done_"+u; if(!state.work[key]){ state.work[key]=true; if(u!==state.uid){ playBeep([880,1100,1320]); toast(`${esc(pp.handle||"相手")}が達成！コメントできます`);} }
+    } else if(c){ state.work["done_"+u]=false; }
   });
-  // 場所変更提案の通知
   if(m.proposedLoc && m.proposedLoc.byUid && m.proposedLoc.byUid!==state.uid && m.proposedLoc.id!==_lastLocPropId){
     _lastLocPropId=m.proposedLoc.id;
-    showModal("場所の変更提案",`<p>${esc(pp.handle||"相手")}さんが作業場所を<br><strong>${esc(m.proposedLoc.value)}</strong><br>に変えませんか？と提案しています。</p>`,
+    showModal("場所の変更提案",`<p>${esc(pp.handle||"相手")}さんが作業場所を「<strong>${esc(m.proposedLoc.value)}</strong>」に変えませんか？と提案しています。</p>`,
       [{label:"変更する",primary:true,onclick:async()=>{ try{ await updateDoc(doc(db,"matches",m.id),{location:{value:m.proposedLoc.value,label:m.location?.label||"作業場所",byUid:state.uid},proposedLoc:null}); }catch(e){} closeModal(); }},
        {label:"却下",onclick:async()=>{ try{ await updateDoc(doc(db,"matches",m.id),{proposedLoc:null}); }catch(e){} closeModal(); }}]);
   }
-  // 写真さそいの通知
   if(m.photoSuggest && m.photoSuggest.byUid!==state.uid && m.photoSuggest.ts!==_lastPhotoSuggestTs){
     _lastPhotoSuggestTs=m.photoSuggest.ts;
     toast(`📷 ${esc(pp.handle||"相手")}が「一緒に写真撮りませんか？」`);
   }
 }
-
-async function addTodo(){
-  const inp=$("ws-todo-input"); const t=(inp.value||"").trim(); if(!t) return;
-  const m=state.work.data; const cur=(m.todos&&m.todos[state.uid])||{items:[],hidden:false};
-  const items=[...cur.items,{t,done:false}];
-  inp.value="";
-  try{ await updateDoc(doc(db,"matches",m.id),{["todos."+state.uid]:{items,hidden:cur.hidden||false}}); }catch(e){ console.error(e); }
-}
-async function toggleTodo(i){
-  const m=state.work.data; const cur=(m.todos&&m.todos[state.uid])||{items:[],hidden:false};
-  const items=cur.items.map((it,idx)=>idx===i?{...it,done:!it.done}:it);
-  try{ await updateDoc(doc(db,"matches",m.id),{["todos."+state.uid]:{items,hidden:cur.hidden||false}}); }catch(e){}
-}
-async function delTodo(i){
-  const m=state.work.data; const cur=(m.todos&&m.todos[state.uid])||{items:[],hidden:false};
-  const items=cur.items.filter((_,idx)=>idx!==i);
-  try{ await updateDoc(doc(db,"matches",m.id),{["todos."+state.uid]:{items,hidden:cur.hidden||false}}); }catch(e){}
-}
-async function toggleTodoHide(){
-  const m=state.work.data; const cur=(m.todos&&m.todos[state.uid])||{items:[],hidden:false};
-  try{ await updateDoc(doc(db,"matches",m.id),{["todos."+state.uid]:{items:cur.items,hidden:!cur.hidden}}); }catch(e){}
+function copyLoc(){
+  const v=(state.work&&state.work.data&&state.work.data.location&&state.work.data.location.value)||"";
+  if(!v) return;
+  try{ navigator.clipboard.writeText(v); toast("コピーしました"); }catch(e){ toast("コピーできませんでした"); }
 }
 function setCounter(){
-  showModal("目標を決める",`<p>いくつ終わらせる？（例: 20）</p><input type="text" id="cnt-target" inputmode="numeric" placeholder="20" maxlength="4">`,
+  showModal("母数を決める",`<p>いくつで完了？（例: 30）</p><input type="text" id="cnt-target" inputmode="numeric" placeholder="30" maxlength="4">`,
     [{label:"決定",primary:true,onclick:async()=>{
       const n=parseInt(($("cnt-target").value||"").replace(/[^0-9]/g,""),10);
       if(!n||n<1){ toast("数字を入れてください"); return; }
       const m=state.work.data; const cur=(m.counters&&m.counters[state.uid])||{count:0};
-      try{ await updateDoc(doc(db,"matches",m.id),{["counters."+state.uid]:{target:n,count:cur.count||0}}); }catch(e){}
+      try{ await updateDoc(doc(db,"matches",m.id),{["counters."+state.uid]:{target:n,count:Math.min(cur.count||0,n)}}); }catch(e){}
       state.work["done_"+state.uid]=false; closeModal();
     }}]);
 }
@@ -1225,7 +1316,13 @@ async function incCounter(){
   if(!cur.target) return;
   const count=Math.min(cur.target,(cur.count||0)+1);
   try{ await updateDoc(doc(db,"matches",m.id),{["counters."+state.uid]:{target:cur.target,count}}); }catch(e){}
-  if(count>=cur.target){ playBeep([880,1100,1320]); toast("目標達成！おつかれさま🎉"); }
+  if(count>=cur.target){ playBeep([880,1100,1320]); toast("達成！おつかれさま🎉"); }
+}
+async function decCounter(){
+  const m=state.work.data; const cur=(m.counters&&m.counters[state.uid])||{target:0,count:0};
+  if(!cur.target) return;
+  const count=Math.max(0,(cur.count||0)-1);
+  try{ await updateDoc(doc(db,"matches",m.id),{["counters."+state.uid]:{target:cur.target,count}}); }catch(e){}
 }
 async function sendComment(){
   const inp=$("ws-comment-input"); const t=(inp.value||"").trim(); if(!t) return;
@@ -1259,80 +1356,100 @@ async function friendReqFromWork(){
   await sendFriendRequest(pu);
 }
 
-// ================= 探し（スワイプ） =================
+// ================= さがす（縦フィード） =================
 async function initSwipe(){
   const box=$("tab-find");
-  box.innerHTML='<div class="loading"><span class="spinner"></span>候補を読み込み中…</div>';
+  // 未ログイン → ぼかしティーザー
+  if(!state.isLoggedIn){
+    box.innerHTML='<div class="loading"><span class="spinner"></span>読み込み中…</div>';
+    await loadFeedCandidates(true);
+    return;
+  }
+  box.innerHTML='<div class="loading"><span class="spinner"></span>読み込み中…</div>';
+  await loadFeedCandidates(false);
+}
+async function loadFeedCandidates(teaser){
   try{
-    const likesSnap=await getDocs(query(collection(db,"likes"),where("likerUid","==",state.uid)));
-    const liked=new Set(likesSnap.docs.map(d=>d.data().likedUid));
-    const friendUids=await getFriendUids();
+    let liked=new Set(), friendUids=new Set();
+    if(!teaser){
+      const likesSnap=await getDocs(query(collection(db,"likes"),where("likerUid","==",state.uid)));
+      liked=new Set(likesSnap.docs.map(d=>d.data().likedUid));
+      friendUids=await getFriendUids();
+    }
     const exclude=new Set([...liked,...friendUids,state.uid]);
     const usersSnap=await getDocs(query(collection(db,"users"),limit(100)));
     const cands=[];
-    usersSnap.forEach(d=>{ const u=d.data(); if(exclude.has(d.id))return; if(u.isAnonymous)return; if(!u.handle)return; cands.push({uid:d.id,...u}); });
-    const myCats=new Set(state.profile.categories||[]), myTS=new Set(state.profile.timeSlots||[]), myScene=state.profile.scene?.gameName;
-    cands.forEach(c=>{ c._s=(c.scene?.gameName===myScene?3:0)+2*(c.categories||[]).filter(x=>myCats.has(x)).length+(c.timeSlots||[]).filter(x=>myTS.has(x)).length; });
-    cands.sort((a,b)=>b._s-a._s);
-    state.swipeQueue=cands; state.swipeIndex=0; renderSwipe();
-  }catch(e){ console.error(e); box.innerHTML='<div class="empty">読み込みに失敗しました</div>'; }
+    usersSnap.forEach(d=>{ const u=d.data(); if(exclude.has(d.id))return; if(u.isAnonymous)return; if(!u.handle)return; if(!u.photoData)return; cands.push({uid:d.id,...u}); });
+    if(!teaser){
+      const myCats=new Set(state.profile.categories||[]), myTS=new Set(state.profile.timeSlots||[]), myScene=state.profile.scene?.gameName;
+      cands.forEach(c=>{ c._s=(c.scene?.gameName===myScene?3:0)+2*(c.categories||[]).filter(x=>myCats.has(x)).length+(c.timeSlots||[]).filter(x=>myTS.has(x)).length; });
+      cands.sort((a,b)=>b._s-a._s);
+    }
+    state.feed={list:cands, idx:0, teaser, liked, friends:friendUids};
+    renderFeed();
+  }catch(e){ console.error(e); $("tab-find").innerHTML='<div class="empty">読み込みに失敗しました</div>'; }
 }
-function renderSwipe(){
-  const box=$("tab-find");
-  const rem=state.swipeQueue.slice(state.swipeIndex,state.swipeIndex+3);
-  if(rem.length===0){
-    box.innerHTML=`<div class="card"><div class="empty"><div style="font-size:40px;margin-bottom:10px">✨</div>候補がなくなりました<br><span style="font-size:12px">時間をおいてまた見に来てください</span><div style="margin-top:16px"><button class="btn btn-small" onclick="app.initSwipe()">🔄 更新</button></div></div></div>`;
-    return;
-  }
-  const cards=rem.map((c,i)=>{
-    const cls=i===0?"":(i===1?"stacked-1":"stacked-2");
-    return `<div class="swipe-card ${cls}" data-uid="${c.uid}">
-      <span class="swipe-hint like">LIKE</span><span class="swipe-hint nope">SKIP</span>
-      <div class="av-big">${avatarHtml(c)}</div>
-      <div class="sc-name">${esc(c.handle)}</div>
-      <div class="sc-sub">${c.scene?(c.scene.icon+" "+esc(c.scene.gameName)):""}・${relTime(c.lastActive)}にアクティブ</div>
-      <div class="sc-cats">${(c.categories||[]).map(cc=>`<span class="sc-cat">${esc(cc)}</span>`).join("")}</div>
-      <div class="sc-body">
-        ${c.goal?`<div><strong>いま:</strong> ${esc(c.goal)}</div>`:""}
-        ${c.focusStyle?`<div><strong>スタイル:</strong> ${esc(c.focusStyle)}</div>`:""}
-        <div><strong>時間帯:</strong> ${(c.timeSlots||[]).join("・")||"未設定"}</div>
-      </div>
-    </div>`;
-  }).reverse().join("");
-  box.innerHTML=`<div class="swipe-area">${cards}</div>
-    <div class="swipe-actions"><button class="swipe-btn nope" onclick="app.swipe('nope')">✕</button><button class="swipe-btn like" onclick="app.swipe('like')">♡</button></div>
-    <p class="hint" style="text-align:center;margin-top:10px">← スキップ ／ 気になったら ♡</p>`;
-  attachSwipe();
+function renderFeed(){
+  const box=$("tab-find"); const F=state.feed;
+  if(!F.list.length){ box.innerHTML=`<div class="card"><div class="empty"><div style="font-size:40px">🔎</div>まだ画像つきのプロフィールがありません<br><span style="font-size:12px">プロフィールに画像を設定した人がここに出ます</span></div></div>`; return; }
+  const c=F.list[F.idx];
+  const liked=F.liked.has(c.uid);
+  box.innerHTML=`
+    <div class="feed">
+      <div class="feed-card active">${pcardHtml(c,{mode:F.teaser?"plain":"feed",blurred:F.teaser,liked})}</div>
+      ${F.teaser?`<div class="feed-lock"><div class="fl-card">
+        <div style="font-size:40px">🔒</div>
+        <h3 style="margin:6px 0;color:var(--water-dark)">ログインで解放</h3>
+        <p style="font-size:13px;color:var(--text-soft)">作業仲間をさがす機能はログインした人だけ。<br>どんな人がいるか、うっすら見えています。</p>
+        <button class="btn btn-google" onclick="app.loginGoogle()" style="margin-top:10px">Ⓖ Googleで解放</button>
+        <button class="btn btn-x" onclick="app.loginX()" style="margin-top:6px">𝕏 Xで解放</button>
+      </div></div>`:""}
+    </div>
+    <div class="feed-hintbar">${F.idx+1} / ${F.list.length}　・　↑↓スクロール / ホイールで次の人</div>`;
+  if(!F.teaser) attachFeedNav();
 }
-function attachSwipe(){
-  const card=document.querySelector(".swipe-card:not(.stacked-1):not(.stacked-2)");
-  if(!card) return;
-  let sx=0,sy=0,dx=0,dragging=false;
-  const lh=card.querySelector(".swipe-hint.like"), nh=card.querySelector(".swipe-hint.nope");
-  const down=e=>{dragging=true;card.classList.add("dragging");const p=e.touches?e.touches[0]:e;sx=p.clientX;sy=p.clientY;};
-  const move=e=>{if(!dragging)return;const p=e.touches?e.touches[0]:e;dx=p.clientX-sx;const dy=p.clientY-sy;card.style.transform=`translate(${dx}px,${dy}px) rotate(${dx/15}deg)`;lh.style.opacity=Math.max(0,Math.min(1,dx/100));nh.style.opacity=Math.max(0,Math.min(1,-dx/100));if(e.cancelable)e.preventDefault();};
-  const up=()=>{if(!dragging)return;dragging=false;card.classList.remove("dragging");if(dx>100)fling(card,"like");else if(dx<-100)fling(card,"nope");else{card.style.transform="";lh.style.opacity=0;nh.style.opacity=0;}dx=0;};
-  card.addEventListener("mousedown",down);window.addEventListener("mousemove",move);window.addEventListener("mouseup",up);
-  card.addEventListener("touchstart",down,{passive:true});window.addEventListener("touchmove",move,{passive:false});window.addEventListener("touchend",up);
+function attachFeedNav(){
+  const area=$("tab-find").querySelector(".feed");
+  if(!area) return;
+  let sy=0, lock=false;
+  const go=(dir)=>{ const F=state.feed; const ni=F.idx+dir; if(ni<0||ni>=F.list.length){ return; } F.idx=ni; renderFeed(); };
+  area.onwheel=(e)=>{ if(lock)return; lock=true; setTimeout(()=>lock=false,400); go(e.deltaY>0?1:-1); e.preventDefault(); };
+  area.ontouchstart=(e)=>{ sy=e.touches[0].clientY; };
+  area.ontouchend=(e)=>{ const dy=e.changedTouches[0].clientY-sy; if(Math.abs(dy)>60) go(dy<0?1:-1); };
 }
-function fling(card,action){const dir=action==="like"?1:-1;card.style.transform=`translate(${dir*500}px,0) rotate(${dir*30}deg)`;card.style.opacity="0";setTimeout(()=>handleSwipe(card.dataset.uid,action),250);}
-function swipe(action){const c=document.querySelector(".swipe-card:not(.stacked-1):not(.stacked-2)");if(c)fling(c,action);}
-async function handleSwipe(uid,action){
-  state.swipeIndex++;
-  if(action==="like"){
-    try{
-      await setDoc(doc(db,"likes",state.uid+"_"+uid),{likerUid:state.uid,likedUid:uid,createdAt:serverTimestamp()});
-      const back=await getDoc(doc(db,"likes",uid+"_"+state.uid));
-      if(back.exists()){ await createFriendship(state.uid,uid); showMatch(uid); }
-    }catch(e){ console.error(e); }
-  }
-  renderSwipe();
+async function feedLike(){
+  const F=state.feed; const c=F.list[F.idx];
+  try{
+    await setDoc(doc(db,"likes",state.uid+"_"+c.uid),{likerUid:state.uid,likedUid:c.uid,createdAt:serverTimestamp()});
+    F.liked.add(c.uid);
+    const back=await getDoc(doc(db,"likes",c.uid+"_"+state.uid));
+    if(back.exists()){ await createFriendship(state.uid,c.uid); showMatch(c.uid); }
+    else toast("いいねを送りました");
+    renderFeed();
+  }catch(e){ console.error(e); }
+}
+async function feedFriend(){
+  const F=state.feed; const c=F.list[F.idx];
+  await sendFriendRequest(c.uid);
+}
+function feedDetail(){
+  const F=state.feed; const c=F.list[F.idx];
+  showModal(esc(c.handle),`
+    <div style="font-size:13px;line-height:1.9">
+      <div><strong>界隈:</strong> ${c.scene?(c.scene.icon+" "+esc(c.scene.gameName)):"未設定"}</div>
+      <div><strong>カテゴリー:</strong> ${(c.categories||[]).join("・")||"未設定"}</div>
+      <div><strong>時間帯:</strong> ${(c.timeSlots||[]).join("・")||"未設定"}</div>
+      ${c.focusStyle?`<div><strong>スタイル:</strong> ${esc(c.focusStyle)}</div>`:""}
+      ${c.neighborOk&&c.neighborOk!=="どちらでも"?`<div><strong>お隣:</strong> ${esc(c.neighborOk)}</div>`:""}
+      ${c.goal?`<div><strong>いま:</strong> ${esc(c.goal)}</div>`:""}
+      <div><strong>最終アクティブ:</strong> ${relTime(c.lastActive)}</div>
+    </div>`,
+    [{label:"♡ いいね",primary:true,onclick:()=>{closeModal();feedLike();}},{label:"➕ フレンド申請",onclick:()=>{closeModal();feedFriend();}}]);
 }
 async function createFriendship(a,b){const[u1,u2]=[a,b].sort();try{await setDoc(doc(db,"friends",u1+"_"+u2),{uids:[u1,u2],createdAt:serverTimestamp()});}catch(e){}}
 async function showMatch(uid){
   try{const s=await getDoc(doc(db,"users",uid));if(!s.exists())return;const u=s.data();
-    const av=u.photoData?`<img src="${u.photoData}" style="width:80px;height:80px;border-radius:50%;object-fit:cover">`:`<div style="font-size:60px">${AVATARS[u.avatarId]||"🐱"}</div>`;
-    showModal("🎉 マッチしました！",`<div style="text-align:center;padding:10px 0">${av}<div style="font-weight:700;font-size:18px;margin-top:10px">${esc(u.handle)}</div><div style="font-size:12px;color:var(--text-soft);margin-top:6px">フレンドになりました。<br>フレンドタブから会いに行きましょう。</div></div>`);
+    showModal("🎉 フレンドになりました！",`<div style="text-align:center;padding:10px 0">${iconEl(u,80)}<div style="font-weight:700;font-size:18px;margin-top:10px">${esc(u.handle)}</div><div style="font-size:12px;color:var(--text-soft);margin-top:6px">フレンドから作業に誘えます。</div></div>`);
   }catch(e){}
 }
 
@@ -1447,9 +1564,10 @@ function subscribeWorkInvites(){
       if(state._shownInvites.has(inv.id)) return;
       state._shownInvites.add(inv.id);
       const fp=inv.fromProfile||{};
+      unlockAudio(); startMatchSound();
       showModal("作業のお誘い",`<p><strong>${esc(fp.handle||"フレンド")}</strong>さんが「一緒に作業しませんか？」と誘っています。</p>`,
-        [{label:"参加する",primary:true,onclick:()=>{ closeModal(); acceptInvite(inv); }},
-         {label:"ことわる",onclick:async()=>{ try{ await updateDoc(doc(db,"workInvites",inv.id),{status:"declined"}); }catch(e){} closeModal(); }}]);
+        [{label:"参加する",primary:true,onclick:()=>{ stopMatchSound(); closeModal(); acceptInvite(inv); }},
+         {label:"ことわる",onclick:async()=>{ stopMatchSound(); try{ await updateDoc(doc(db,"workInvites",inv.id),{status:"declined"}); }catch(e){} closeModal(); }}]);
     });
   },(e)=>console.error("invites",e));
 }
@@ -1516,6 +1634,7 @@ function initProfileEdit(){
     categories:[...(p.categories||[])], timeSlots:[...(p.timeSlots||[])],
     focusStyle:p.focusStyle||"", photoData:p.photoData||null, photoChangedAt:p.photoChangedAt||null, _photoChanged:false,
     cardColor:p.cardColor||"water", cardPattern:p.cardPattern||"none", neighborOk:p.neighborOk||"どちらでも",
+    iconCrop:p.iconCrop?{...p.iconCrop}:(p.photoData?{cx:0.5,cy:0.35,size:0.55}:null),
   });
   state.photoDataURL=p.photoData||null;
   $("pe-handle").value=p.handle||"";
@@ -1551,11 +1670,65 @@ function renderChips(id,options,selected,mode,pink){
 $("pe-photo-input").addEventListener("change",async e=>{
   const file=e.target.files[0];if(!file)return;
   if(state.editing.photoChangedAt){const last=state.editing.photoChangedAt.toMillis?state.editing.photoChangedAt.toMillis():new Date(state.editing.photoChangedAt).getTime();const el=Date.now()-last;if(el<PHOTO_COOLDOWN_MS){toast("画像変更まであと"+Math.ceil((PHOTO_COOLDOWN_MS-el)/86400000)+"日");return;}}
-  try{const d=await resizeImage(file,100,0.6);state.photoDataURL=d;state.editing.photoData=d;state.editing._photoChanged=true;updatePhotoPreview();toast("画像を読み込みました");}catch(err){toast("読み込み失敗");}
+  try{
+    const d=await resize916(file,0.62);
+    state.photoDataURL=d; state.editing.photoData=d; state.editing._photoChanged=true;
+    state.editing.iconCrop=state.editing.iconCrop||{cx:0.5,cy:0.35,size:0.55};
+    updatePhotoPreview(); updateCardPreview(); toast("画像を読み込みました");
+  }catch(err){ console.error(err); toast("読み込み失敗"); }
 });
-function resizeImage(file,size,q){return new Promise((res,rej)=>{const r=new FileReader();r.onload=e=>{const img=new Image();img.onload=()=>{const cv=document.createElement("canvas");cv.width=size;cv.height=size;const ctx=cv.getContext("2d");const s=Math.min(img.width,img.height);ctx.drawImage(img,(img.width-s)/2,(img.height-s)/2,s,s,0,0,size,size);res(cv.toDataURL("image/jpeg",q));};img.onerror=rej;img.src=e.target.result;};r.onerror=rej;r.readAsDataURL(file);});}
-function updatePhotoPreview(){const slot=$("pe-photo-preview"),rm=$("pe-photo-remove");if(!slot)return;if(state.photoDataURL){slot.innerHTML=`<img src="${state.photoDataURL}"><span class="photo-badge">UP</span>`;rm.style.display="inline-block";}else{slot.innerHTML="📷";rm.style.display="none";}if(typeof updateCardPreview==="function")updateCardPreview();}
-function removePhoto(){if(!confirm("画像を削除しますか？"))return;state.photoDataURL=null;state.editing.photoData=null;state.editing._photoChanged=true;updatePhotoPreview();}
+// 9:16（360x640）にリサイズ（中央クロップ）
+function resize916(file,q){return new Promise((res,rej)=>{const r=new FileReader();r.onload=e=>{const img=new Image();img.onload=()=>{const W=360,H=640;const cv=document.createElement("canvas");cv.width=W;cv.height=H;const ctx=cv.getContext("2d");const ar=img.width/img.height, tar=W/H;let sw,sh,sx,sy;if(ar>tar){sh=img.height;sw=sh*tar;sx=(img.width-sw)/2;sy=0;}else{sw=img.width;sh=sw/tar;sx=0;sy=(img.height-sh)/2;}ctx.drawImage(img,sx,sy,sw,sh,0,0,W,H);res(cv.toDataURL("image/jpeg",q));};img.onerror=rej;img.src=e.target.result;};r.onerror=rej;r.readAsDataURL(file);});}
+
+function updatePhotoPreview(){
+  const wrap=$("pe-crop-wrap"), rm=$("pe-photo-remove");
+  if(!wrap) return;
+  if(state.photoDataURL){
+    wrap.style.display="block"; rm.style.display="inline-block";
+    $("pe-cimg").style.backgroundImage=`url('${state.photoDataURL}')`;
+    if(!state.editing.iconCrop) state.editing.iconCrop={cx:0.5,cy:0.35,size:0.55};
+    $("pe-icon-size").value=Math.round(state.editing.iconCrop.size*100);
+    layoutCropCircle(); updateIconPreview(); attachCropDrag();
+  } else {
+    wrap.style.display="none"; rm.style.display="none";
+  }
+}
+function layoutCropCircle(){
+  const cropper=$("pe-cropper"); const circle=$("pe-ccircle");
+  if(!cropper||!circle) return;
+  const W=cropper.clientWidth||180, H=cropper.clientHeight||320;
+  const c=state.editing.iconCrop;
+  const d=c.size*W;                 // 円直径 = 画像幅×size
+  circle.style.width=d+"px"; circle.style.height=d+"px";
+  circle.style.left=(c.cx*W - d/2)+"px";
+  circle.style.top=(c.cy*H - d/2)+"px";
+}
+function updateIconPreview(){
+  const el=$("pe-icon-preview"); if(!el) return;
+  el.innerHTML=iconEl({photoData:state.photoDataURL,iconCrop:state.editing.iconCrop},72);
+}
+let _cropBound=false;
+function attachCropDrag(){
+  if(_cropBound) return; _cropBound=true;
+  const cropper=$("pe-cropper"), circle=$("pe-ccircle");
+  let drag=false;
+  const pt=e=>e.touches?e.touches[0]:e;
+  const down=e=>{drag=true;if(e.cancelable)e.preventDefault();};
+  const move=e=>{ if(!drag)return; const r=cropper.getBoundingClientRect(); const p=pt(e);
+    let cx=(p.clientX-r.left)/r.width, cy=(p.clientY-r.top)/r.height;
+    cx=Math.max(0,Math.min(1,cx)); cy=Math.max(0,Math.min(1,cy));
+    state.editing.iconCrop.cx=cx; state.editing.iconCrop.cy=cy;
+    layoutCropCircle(); updateIconPreview(); if(e.cancelable)e.preventDefault();
+  };
+  const up=()=>drag=false;
+  circle.addEventListener("mousedown",down); cropper.addEventListener("mousedown",e=>{down(e);move(e);});
+  window.addEventListener("mousemove",move); window.addEventListener("mouseup",up);
+  circle.addEventListener("touchstart",down,{passive:false}); cropper.addEventListener("touchstart",e=>{down(e);move(e);},{passive:false});
+  window.addEventListener("touchmove",move,{passive:false}); window.addEventListener("touchend",up);
+  const sizeEl=$("pe-icon-size");
+  if(sizeEl) sizeEl.oninput=()=>{ state.editing.iconCrop.size=parseInt(sizeEl.value,10)/100; layoutCropCircle(); updateIconPreview(); };
+}
+function removePhoto(){if(!confirm("画像を削除しますか？"))return;state.photoDataURL=null;state.editing.photoData=null;state.editing.iconCrop=null;state.editing._photoChanged=true;updatePhotoPreview();updateCardPreview();}
 
 async function saveProfileEdit(){
   const handle=$("pe-handle").value.trim();
@@ -1569,7 +1742,8 @@ async function saveProfileEdit(){
   state.profile.cardColor=state.editing.cardColor;
   state.profile.cardPattern=state.editing.cardPattern;
   state.profile.neighborOk=state.editing.neighborOk;
-  if(state.editing._photoChanged){ state.profile.photoData=state.editing.photoData||""; state.profile.photoChangedAt=Timestamp.now(); }
+  if(state.editing._photoChanged){ state.profile.photoData=state.editing.photoData||""; state.profile.iconCrop=state.editing.iconCrop||null; state.profile.photoChangedAt=Timestamp.now(); }
+  else if(state.editing.iconCrop){ state.profile.iconCrop=state.editing.iconCrop; }
   await persistProfile(false);
   toast("保存しました"); goto("profile");
 }
@@ -1598,11 +1772,11 @@ function showTerms(){
 window.app={
   startGuest,loginGoogle,loginX,goto,switchTab,
   setSceneSort,moreScenes,pickScene,finishOnboard,createScene,
-  startMatching,leaveWaiting,
+  startMatching,leaveWaiting,openMatchChoice,
   likeMatch:likeCurrentMatch, passMatch:passCurrentMatch,
-  leaveWorkScreen,addTodo,toggleTodo,delTodo,toggleTodoHide,setCounter,incCounter,sendComment,proposeLoc,suggestPhoto,friendReqFromWork,
+  leaveWorkScreen,setCounter,incCounter,decCounter,sendComment,proposeLoc,suggestPhoto,friendReqFromWork,copyLoc,toPip,fromPip,
   loadFriendsScreen,approveReq:approveRequest,rejectReq:rejectRequest,inviteToWork,
-  initSwipe,swipe,
+  initSwipe,feedLike,feedFriend,feedDetail,
   saveProfileEdit,removePhoto,changeScene,signOut:doSignOut,
   showModal,closeModal,showTerms,renderMatchTab,
 };
