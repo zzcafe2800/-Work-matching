@@ -740,7 +740,7 @@ function lobbyView(){
   html+=`<div class="vn"><div class="vn-portrait">${artTag("neko")}</div><div class="vn-box"><div class="vn-name">黒猫</div><div class="vn-text">${line}</div></div></div>`;
   if(inRoom){
     if(isLeader()) html+=`<div class="ready"><button class="nextbtn ${canStart?'':'off'}" ${canStart?'onclick="startGame()"':''}>はじめる ▶</button></div>`;
-    else html+=`<div class="ready"><span class="small">開始はホスト</span></div>`;
+    else html+=`<div class="ready"><span class="small">部屋を立てた人（ホスト）が「はじめる」を押すと開始します</span></div>`;
   }
   app.innerHTML=html;
 }
@@ -756,6 +756,7 @@ async function createRoom(){
   localStorage.setItem("yoikage_room", roomId);
   await roomRef.set({
     createdAt: firebase.database.ServerValue.TIMESTAMP,
+    host: me,               // 最初に部屋を立てた人＝ホスト
     step: -1,               // -1=ロビー
     players: {},
     computedStep: -1,
@@ -792,7 +793,13 @@ async function joinAsPlayer(){
    ============================================================ */
 function players(){ return room?.players ? Object.entries(room.players).map(([id,v])=>({id,...v})) : []; }
 function connectedPlayers(){ return players().filter(p=>p.connected); }
-function isLeader(){ const c=connectedPlayers().map(p=>p.id).sort(); return c.length && c[0]===me; }
+function hostId(){
+  // 原則：部屋を立てた人（room.host）がホスト。ただしホストが未接続なら、接続中のいちばん先頭へ自動で繰り上げ。
+  const conn=connectedPlayers().map(p=>p.id);
+  if(room && room.host && conn.includes(room.host)) return room.host;
+  return conn.slice().sort()[0]||null;
+}
+function isLeader(){ return !!me && hostId()===me; }
 function myPlayer(){ return room?.players?.[me]; }
 function myChar(){ return myPlayer()?.char; }
 function charTaken(cid){ return players().some(p=>p.char===cid); }
