@@ -230,6 +230,17 @@ hr.sep{border:none;border-top:1px solid var(--line);margin:.8em 0}
 .tlno{flex:0 0 1.6em;height:1.6em;border-radius:50%;background:var(--shu);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.8em}
 .tltext{flex:1;font-size:.9em;line-height:1.4}
 .tlbtns{display:flex;gap:.25em}
+/* 達成ランク */
+.rankbadge{display:inline-flex;align-items:center;justify-content:center;width:2.4em;height:2.4em;border-radius:50%;font-size:1.6em;font-weight:700;border:2px solid;letter-spacing:0}
+.rank-S{color:#f0d078;border-color:#f0d078;background:rgba(240,208,120,.12)}
+.rank-A{color:#8fd6ac;border-color:#8fd6ac;background:rgba(143,214,172,.12)}
+.rank-B{color:#bfe0f0;border-color:#5a8fb0;background:rgba(90,143,176,.12)}
+.rank-C{color:#e6b38a;border-color:#c98a5a;background:rgba(201,138,90,.12)}
+.rank-D{color:#c98;border-color:#7a5a5a;background:rgba(120,90,90,.12)}
+.fournames{display:flex;gap:.5em;justify-content:center;flex-wrap:wrap;margin:.5em 0}
+.fournames .np{min-width:3.4em;padding:.35em .6em;border-radius:.5em;border:1px dashed #454b63;color:#5b6079;font-size:.85em}
+.fournames .np.on{border-style:solid;border-color:var(--shu);color:var(--washi);background:rgba(201,70,60,.12)}
+.fournames .np.part{border-style:solid;border-color:#b7a880;color:#e6dcc0;background:rgba(183,168,128,.12)}
 /* マップ拠点のカード枠ピップ＆一覧 */
 .npips{display:flex;gap:2px;justify-content:center;margin-top:2px;flex-wrap:wrap;max-width:5em}
 .npip{width:.5em;height:.5em;border-radius:1px;background:#2a3040;border:1px solid #464d66}
@@ -238,6 +249,12 @@ hr.sep{border:none;border-top:1px solid var(--line);margin:.8em 0}
 .slotrow{display:flex;justify-content:space-between;gap:.6em;font-size:.8em;padding:.15em 0;border-bottom:1px solid rgba(255,255,255,.06)}
 .slotrow .sn{color:var(--washi)}
 .slotrow .sd{color:var(--sub);white-space:nowrap}
+.exwrap{margin:.5em 0}
+.exlabel{font-size:.8em;color:var(--washi);margin-bottom:.3em}
+.exopts{display:flex;gap:.4em;flex-wrap:wrap;justify-content:center}
+.exbtn{background:rgba(20,24,36,.8);border:1px solid var(--line);color:var(--washi);border-radius:.4em;padding:.35em .7em;font-size:.82em}
+.exbtn.sel{border-color:var(--shu);background:rgba(201,70,60,.16)}
+.exwrap.sub{font-size:.78em;color:var(--sub);text-align:center}
 /* ロビー：上部の部屋バー（作成/合言葉＋参加者名） */
 .roombar{position:absolute;top:2.6em;left:3%;right:3%;z-index:8;background:rgba(9,11,18,.86);border:1px solid var(--line);border-radius:.6em;padding:.55em .8em;display:flex;flex-direction:column;gap:.45em;backdrop-filter:blur(2px)}
 .rbrow{display:flex;gap:.5em;align-items:center;flex-wrap:wrap}
@@ -350,8 +367,8 @@ const SFX = {
 const CHARS = {
   chikage:{name:"千景", art:"t_chikage", tagline:"行動が早い、面倒見のいい姉御肌。", ho:{
     prof:"22歳／女性／村役場職員。行動が早く、面倒見がいい。巌を兄のように慕っていた。",
-    memory:"子どもの頃、あなたには仲のいい友達がいた。透、蓮司、紗良……そして、もう一人。どうしても顔と名前の思い出せない“あの子”が、いた気がする。\n巌は、みんなの兄貴分だった。\n三週間ほど前から、巌は何かを熱心に調べていた。事件の少し前、巌はあなたにこう頼んだ。『石碑の裏に、古い記録がある。持ち出してくれ。ただし、四人が揃うまで、誰にも見せるな』。\n事件の夜、あなたは一人で石碑の裏へ回り、隠し棚の鍵を開けた。中にあったのは、一枚の古い木札。そこには――『千代』と書かれていた。\n千代。あなたはその時はじめて、忘れていた“あの子”の名前を知った。胸が、ざわついた。\n巌が本当は何をしようとしていたのかは、まだ分からない（？？？）。",
-    secret:"石碑の裏で『千代』と記された木札を見つけたが、隠している。巌に『四人が揃ってから見せろ』と言われたから。……でも、あなたが鍵を開けて木札を動かしたことで、“証拠が動いた”と、誰かに気づかれたかもしれない。",
+    memory:"子どもの頃、あなたには仲のいい友達がいた。透、蓮司、紗良……そして、もう一人。どうしても顔と名前の思い出せない“あの子”が、いた気がする。\n巌は、みんなの兄貴分だった。\n三週間ほど前から、巌は何かを熱心に調べていた。事件の少し前、巌はあなたにこう頼んだ。『石碑の裏に、古い記録がある。持ち出してくれ。ただし、四人が揃うまで、誰にも見せるな。……これを消しに来る者が、いるかもしれないから』。巌は、何かを恐れているようだった。\n事件の夜、あなたは一人で石碑の裏へ回り、隠し棚の鍵を開けた。中にあったのは、一枚の古い木札。そこには――『千代』と書かれていた。\n千代。あなたはその時はじめて、忘れていた“あの子”の名前を知った。胸が、ざわついた。\n巌が本当は何をしようとしていたのかは、まだ分からない（？？？）。",
+    secret:"石碑の裏で『千代』と記された木札を見つけたが、隠している。巌に『四人が揃うまで見せるな。これを消しに来る者がいるかも』と言われたから。……でも、あなたが鍵を開けて木札を動かしたことで、“証拠が動いた”と、その誰かに気づかれてしまったのかもしれない。",
     alibi:"あの夜、あなたは一人で石碑の裏にいた。誰も見ていない。木札を持ち出したと知られれば、真っ先に『証拠を隠した』と疑われる。だから、簡単には言えない。",
     reveal:{title:"木札『千代』",text:"石碑の裏の隠し棚にあった古い木札。表に『千代』、裏に『預けた名は、消すためにあらず』。――忘れられていた“あの子”には、千代という名があった。",note:"公開すれば“あの子＝千代”が全員の共通認識になるが、証拠を動かしたのが自分だと露見する。"},
     fear:"自分が木札を動かしたせいで、巌が狙われたのではないか。",
@@ -360,22 +377,22 @@ const CHARS = {
     axis:"善意で動いたのに、それが事件を動かしたのかもしれない。全部を最初から話す必要はない。"
   }},
   toru:{name:"透", art:"t_toru", tagline:"記録を重んじる、冷静な理屈屋。", ho:{
-    prof:"23歳／男性／図書館職員。記録を重んじる理屈屋。17年前の火災で、幼い弟を亡くしている。父は、今の村長。",
-    memory:"幼なじみは、千景・蓮司・紗良、そして巌。……もう一人いた気もするが、思い出せない。\n17年前、旧校舎が火事になり、あなたは弟を失った。村は『子どものいたずらが原因』だと言った。だがあなたは、ずっと前から気づいていた――火災の夜、防災倉庫の鍵を持ち出したのは、あなたの父だと。\nだから、巌が古い鍵台帳を見つけ、『お前の父が鍵を持ち出した証拠がある。千代の名を戻す』と言い出したとき、あなたは凍りついた。真実が明るみに出れば、父も、家も、村も終わる。\n事件の夜、あなたは証拠帳だけを奪うつもりで、水車小屋の巌に会いに行った。口論になった。巌の腕をつかみ、揉み合った。巌は崖際へ逃げ、あなたは一度、手を離した。\n――だが巌が言った。『千代の名前を消したのは、お前の父親だ』。\nかっとなって、あなたは巌の肩を強く押した。巌は、足を滑らせて落ちた。\nあなたは証拠帳を拾い、通報しようとして――まだ息のある巌に気づいた。巌は『……四人に、名前を』と言った。あなたは、自分の罪が露見するのが怖くて、通報を遅らせた。\nあなたが、巌を殺した。それは、消せない。",
-    secret:"あなたが巌を殺し、証拠帳を奪い、通報を遅らせた。父が17年前の火災の鍵を持ち出したことを、あなたは以前から知っている。――これが全員に知られたら、終わりだ。",
+    prof:"23歳／男性／図書館職員。記録を重んじる理屈屋。いつも青い上着を着ている。17年前の火災で、幼い弟を亡くしている。父は、今の村長。",
+    memory:"幼なじみは、千景・蓮司・紗良、そして巌。……もう一人いた気もするが、思い出せない。\n17年前、旧校舎が火事になり、あなたは弟を失った。村は『子どものいたずらが原因』だと言った。だがあなたは、ずっと前から気づいていた――火災の夜、防災倉庫の鍵を持ち出したのは、あなたの父だと。\nだから、巌が古い鍵台帳を見つけ、『お前の父が鍵を持ち出した証拠がある。千代の名を戻す』と言い出したとき、あなたは凍りついた。真実が明るみに出れば、父も、家も、村も終わる。\nあなたはまず、村長宅の古文書から、父につながる一文だけをこっそり消した。それでも足りないと悟り――\n事件の夜、あなたは証拠帳だけを奪うつもりで、水車小屋の巌に会いに行った。口論になった。だが巌は証拠帳を渡さず、『四人に真実を渡す』と言い残して、雨の山道へ歩き出した。あなたは追いかけた。崖際で腕をつかみ、揉み合った。巌はさらに崖のきわへ逃げ、あなたは一度、手を離した。\n――だが巌が言った。『千代の名前を消したのは、お前の父親だ』。\nかっとなって、あなたは巌の肩を強く押した。巌は、足を滑らせて落ちた。\nあなたは証拠帳を拾い、通報しようとして――まだ息のある巌に気づいた。巌は『……四人に、名前を』と言った。あなたは、自分の罪が露見するのが怖くて、通報を遅らせた。\nあなたが、巌を殺した。それは、消せない。",
+    secret:"あなたが巌を殺し、証拠帳を奪い、通報を遅らせた。その前に、村長宅の古文書から父につながる一文も消していた。父が17年前の火災の鍵を持ち出したことを、あなたは以前から知っている。――これが全員に知られたら、終わりだ。",
     alibi:"事件の夜、あなたは水車小屋で巌と会っていた。二人きりで。もしそこにいたと知られれば、真っ先に疑われる。何としても、隠し通すしかない。",
     reveal:{title:"破れた証拠帳",text:"あなたが巌から奪った証拠帳。その破れた角と、あなたの上着に残る同じ紙の繊維。――これが出れば、巌を殺したのがあなただと確定する。",note:"これは、あなたの罪そのもの。公開すれば、自白になる。"},
     fear:"父の罪と、自分の罪が、同時に暴かれること。",
-    goal:["自分が犯人だと悟られない","証拠帳を、誰にも見つけさせない","疑いを、他の誰かへ向ける","できれば、父の名も守る"],
+    goal:["自分が犯人だと悟られない","証拠帳を、誰にも見つけさせない","疑いを、他の誰かへ向ける","（隠された願い）もし千代の名が戻るのなら、自分の罪も記録に残していい。ただし、父ひとりに全責任を背負わせることだけは、避けたい"],
     want:["誰が、どこまで気づいているか","蓮司は、あの夜の何を見たのか"],
-    axis:"あなたは冷血な悪人ではない。父を憎みながら、家と村を守りたい気持ちと、罪の重さの間で揺れている。追い詰められたら、感情的になってもいい。"
+    axis:"あなたは冷血な悪人ではない。父を憎みながら、家と村を守りたい気持ちと、罪の重さの間で揺れている。……終盤、四人が本当の真相にたどり着いたなら――自分から罪を認める、という選び方もある。それは負けではなく、あなたなりの決着だ。"
   }},
   renji:{name:"蓮司", art:"t_renji", tagline:"巌の親友。まっすぐで、面倒見がいい。", ho:{
     prof:"24歳／男性／消防団員。巌の一番の親友。",
     memory:"千景、透、紗良、巌。物心ついた頃から一緒だった。……本当は、もう一人いた気がする。名前は、出てこない。\n巌は、兄弟みたいな存在だった。\n事件の夜、あなたは山道で巌に会った。巌は何かを急いでいて、『透を追うな』と言った。意味が分からないまま、あなたは巌の後を追った。\n崖のきわで、あなたは巌の腕をつかんだ。次の瞬間、巌は落ちた。\nあなたは、自分が最後に巌に触れたのだと思った。だから――殺したと疑われるのが怖くて、あの夜のことを、誰にも言えていない。\nでも本当は、あなたが腕をつかんだのは、巌が落ちる“直前”のこと。その少し前、崖際で何があったのかを、あなたは見ていない（？？？）。",
     secret:"山道で最後に巌に触れたのは自分だと思い込み、殺人を疑われるのが怖くて黙っている。実際にあなたが触れたのは、巌が落ちる直前――その少し前に何があったかは、見ていない。",
     alibi:"あなたは山道で、最後に巌の腕をつかんだ。二人きりで、証人はいない。『自分は落としていない』を証明する手立ては、ほとんどない。",
-    reveal:{title:"巌の封筒",text:"巌から預かった封筒。中の手紙にはこうある。『千代の名前を戻すため、四人全員の記憶を照合してほしい』。――巌の本当の目的。",note:"公開すれば巌の目的が一気に見えるが、黙っていたことも露見する。"},
+    reveal:{title:"巌の封筒",text:"巌から預かった封筒。中の手紙にはこうある。『四つの名前を集めてくれ。千景・透・蓮司・紗良――四人の記憶が揃ったとき、消された五人目の名は戻る。頼めるのは、お前だけだ』。――これが“四つの名前”の意味であり、巌が遺した最後の指示。",note:"これを出せば、四人が何をすべきかが決まる。だが、黙っていたことも露見する。終盤の切り札。"},
     fear:"自分のせいで巌が死んだのではないか、という思い。",
     goal:["自分が落としたのではないと確かめたい","崖際で本当は何があったのかを知る","巌の目的を、無駄にしない"],
     want:["巌が『透を追うな』と言った理由","崖際で、巌に何が起きたのか"],
@@ -383,10 +400,10 @@ const CHARS = {
   }},
   sara:{name:"紗良", art:"t_sara", tagline:"村の言い伝えを知る、物静かな観察者。", ho:{
     prof:"22歳／女性／神社の手伝い。『名預け』の古い記録を、誰よりよく知っている。",
-    memory:"幼なじみは、千景・透・蓮司・巌。そして――名前の思い出せない、“あの子”。\nあなたは神社で古い言い伝えを守るうち、ひとつの真実を知った。『名預け』は、名を“消す”儀式ではない。失われそうな名を“預けて、後世へ残す”仕組みだ。石碑の裏には、預けた名を戻すための作法さえある。\nそして、17年前。旧校舎の火災のあと、“あの子”が大人たちに連れて行かれる直前――あなたは見た。透の父と、村長の父が、『あの子一人にすればいい』と言い争っているのを。\nあなたは、それを今まで誰にも話していない。\n巌が『名を戻す』と動き出したとき、あなたは薄々、彼の目的を察していた。止める方法も知っていた。でも――話せば、透の父を告発することになる。透まで、巻き込んでしまう。だから、動けなかった。",
-    secret:"名預けが『名を消す儀式』ではなく『名を戻せる仕組み』だと知っている。そして17年前、透の父と村長の父が“あの子”に罪を着せる相談をしていたのを見た。黙っていたのは――話せば透まで巻き込むと思ったから。",
+    memory:"幼なじみは、千景・透・蓮司・巌。そして――名前の思い出せない、“あの子”。\nあなたは神社で古い言い伝えを守るうち、ひとつの真実を知った。『名預け』は、名を“消す”儀式ではない。失われそうな名を“預けて、後世へ残す”仕組みだ。石碑の裏には、預けた名を戻すための作法さえある。\nそして、17年前。旧校舎の火災のあと、“あの子”が大人たちに連れて行かれる直前――あなたは見た。透の父――今の村長が、他の大人たちに『あの子一人にすればいい』と言い含めているのを。\nあなたは、それを今まで誰にも話していない。\n巌が『名を戻す』と動き出したとき、あなたは薄々、彼の目的を察していた。止める方法も知っていた。でも――話せば、透の父を告発することになる。透まで、巻き込んでしまう。だから、動けなかった。",
+    secret:"名預けが『名を消す儀式』ではなく『名を戻せる仕組み』だと知っている。そして17年前、透の父――今の村長が、他の大人たちと“あの子”に罪を着せる相談をしていたのを見た。黙っていたのは――話せば透まで巻き込むと思ったから。",
     alibi:"あなたは多くを知りながら、何も言わずにきた。それが知られれば、『本当は共犯だったのでは』と疑われかねない。",
-    reveal:{title:"17年前の目撃",text:"“あの子”が連れて行かれる直前、透の父と村長の父が『あの子一人にすればいい』と言い争っていた。――火災の罪は、あの子に着せられたものだった。",note:"公開すれば千代の無罪と17年前の構図が見えるが、透の父＝村長を告発することになり、透を追い詰める。"},
+    reveal:{title:"17年前の目撃",text:"“あの子”が連れて行かれる直前、透の父――今の村長が、他の大人たちに『あの子一人にすればいい』と言い含めていた。――火災の罪は、あの子に着せられたものだった。",note:"公開すれば千代の無罪と17年前の構図が見えるが、透の父＝村長を告発することになり、透を追い詰める。"},
     fear:"自分が黙っていたことが、巌の死につながったのではないか。",
     goal:["“あの子”が無実だったことを明らかにする","名預けの本当の意味を伝える","透を壊さずに、真実を残す方法を探す"],
     want:["巌は、誰に殺されたのか","千景が石碑で見つけたものは何か"],
@@ -407,65 +424,68 @@ const LOCS = {
   kou:{name:"旧校舎", art:"L_kou",
     overview:"17年前の火災で焼けた学校。今は使われていない。子どもたちの痕跡が残る。",
     first:[{id:"B01",name:"塗り潰された落書き",kei:"past",combo:1,text:"焼け残った壁に、子ども五人分の落書き。だが、一人分の名前だけが、あとから黒く塗り潰されている。"}],
-    second:[{id:"B02",name:"防災倉庫の鍵台帳",kei:"past",combo:1,text:"焼け残りの記録。防災倉庫の鍵貸出台帳。火災当夜に鍵を持ち出した欄が、墨で塗り潰されている。紙の凹みには、消しきれない筆圧が残っている。"}]},
+    second:[{id:"B02",name:"防災倉庫の鍵台帳",kei:"past",combo:1,text:"焼け残りの記録。防災倉庫の鍵貸出台帳。火災当夜に鍵を持ち出した欄が、墨で塗り潰されている。紙の凹みには、消しきれない筆圧が残っている。"},
+            {id:"B03",name:"燃料の搬入記録",kei:"past",combo:1,text:"焼け残った帳簿。防災倉庫に、規定外の燃料が持ち込まれていた記録。火の“本当の火元”は、子どものいたずらではなく――村が置いた燃料だった。"}]},
   sui:{name:"水車小屋", art:"L_sui",
     overview:"村外れの古い水車小屋。巌がよく出入りしていた。何かを録音していたらしい。",
     first:[{id:"C01",name:"録音・前半",kei:"murder",combo:1,text:"巌が残した録音。前半――『蓮司、お前にしか頼めないことがある』。"}],
-    second:[{id:"C02",name:"録音・後半",kei:"murder",req:"C01",combo:1,text:"録音の続き。『……戻れなかったら、四人に、名前を』。"}]},
+    second:[{id:"C02",name:"録音・後半",kei:"murder",req:"C01",combo:1,text:"録音の続き。『……戻れなかったら、四人に、名前を』。"},
+            {id:"C03",name:"争いの跡",kei:"murder",combo:1,text:"水車小屋の床に、最近、誰かと争ったような跡。柱には、青い上着の糸くずが引っかかっている。巌の服は、青くない。"}]},
   sai:{name:"神社", art:"L_sai",
     overview:"村の神社。『名預け』の古い作法が記録として残されている。紗良が手伝っている。",
-    first:[{id:"D01",name:"名預けの巻物",kei:"name",combo:1,text:"『名預け』の作法が記された古い巻物。だが、肝心の“名の戻し方”の頁が、破り取られている。"}],
-    second:[{id:"D02",name:"破られた頁の写し",kei:"name",combo:1,text:"別に残されていた写し。『四つの名が揃うとき、預けられた名は戻る』。――名預けは、消す儀式ではない。"}]},
+    first:[{id:"D01",name:"名預けの巻物",kei:"name",combo:1,text:"『名預け』の作法が記された古い巻物。曰く、名を消すのは呪いではなく“記録と証言をそろえて、皆で忘れること”。だが、肝心の“名の戻し方”の頁が、破り取られている。"}],
+    second:[{id:"D02",name:"破られた頁の写し",kei:"name",combo:1,text:"別に残されていた写し。『四つの名が揃うとき、預けられた名は戻る』。――名預けは、消す儀式ではない。名を記録から外し、皆に“その子の話をするな”と口をつぐませる。ただそれだけで、幼い記憶は十七年で“確かめようのないもの”になる。魔法ではない。人が、人の記憶を消したのだ。"}]},
   son:{name:"村長宅", art:"L_son",
     overview:"村の記録が保管されている、村長の家。巌が最近ここへ出入りしていた。",
-    first:[{id:"E01",name:"書き換えの痕",kei:"past",combo:1,text:"書斎の古文書の一部が、最近になって書き換えられた痕跡。新しい墨が、古い紙に浮いている。"}],
+    first:[{id:"E01",name:"書き換えの痕",kei:"past",combo:1,text:"書斎の古文書の一部が、最近になって書き換えられた痕跡。新しい墨が、古い紙に浮いている。使われた墨と筆は、この書斎（村長宅）のもの。外部の者ではなく、家に出入りできる誰かが、消した一文がある。"}],
     second:[{id:"E02",name:"巌のメモ",kei:"murder",combo:1,text:"巌が残した走り書き。『鍵台帳／17年前／T父』。そして、台帳から一枚、ページが抜き取られた跡。"}]},
   san:{name:"山道", art:"L_san",
     overview:"巌が最後に向かった場所。雨で足場が悪く、崖もある。",
     first:[{id:"F01",name:"二種類の足跡",kei:"murder",combo:1,text:"崖のきわ、ぬかるみに二種類の足跡。一つは崖から離れていく向き。もう一つは、崖のふちへ強く踏み込んでいる。"}],
-    second:[{id:"F02",name:"袖口の繊維",kei:"murder",combo:1,text:"巌の袖口に、別の誰かの上着の繊維が強く食い込んでいる。掴まれた跡だ。だが、掴んだだけでは、突き落としたことにはならない。"}]},
+    second:[{id:"F02",name:"袖口の繊維",kei:"murder",combo:1,text:"巌の袖口に、濃い青の上着の繊維が強く食い込んでいる。掴まれた跡だ。だが、掴んだだけでは、突き落としたことにはならない。この青が、誰の服の色なのか――。"}]},
 };
 const LOC_ORDER=["sekihi","kou","sui","sai","son","san"];
 
 // 照合カード（2人で同じ場所へ行くと読める・共通・1回）
 const COLLATION = {
   sekihi:{id:"XA",name:"照合・石碑",kei:"name",combo:1,text:"隠し棚には本来、“預けた名”を記した木札が納められていた。最近、一枚だけ持ち去られた跡。誰かが、この石碑から“ある名”を持ち出している。"},
-  kou:{id:"XB",name:"照合・旧校舎",kei:"past",combo:1,text:"鍵台帳の黒塗りの下、筆圧をなぞると『T・父』らしき字。火災当夜に鍵を持ち出したのは、村側――透の父だった可能性が浮かぶ。"},
-  sui:{id:"XC",name:"照合・水車小屋",kei:"murder",combo:1,text:"録音の前半と後半をつなぐと――『頼む』は蓮司への指示ではなく、死を予感した巌が“四人に真実を託した”言葉だと分かる。"},
+  kou:{id:"XB",name:"照合・旧校舎",kei:"past",combo:1,text:"鍵台帳の黒塗りの下、筆圧をなぞると『T・父』らしき字。火災当夜に鍵を持ち出したのは――透の父、つまり今の村長だった可能性が浮かぶ。"},
+  sui:{id:"XC",name:"照合・水車小屋",kei:"murder",combo:1,text:"録音をつなぐと、『頼む』は蓮司への指示ではなく、巌が“四人に真実を託した”言葉だと分かる。そして水車小屋の青い糸くずと、山道で巌の袖に残った青い繊維――同じ、青い上着のものだ。"},
   sai:{id:"XD",name:"照合・神社",kei:"name",combo:1,text:"巻物と写しを合わせると、名預けは名を“消す”のではなく“預けて残す”仕組みだと分かる。誰かが、それを消す方向に悪用してきた。"},
   son:{id:"XE",name:"照合・村長宅",kei:"past",combo:1,text:"書き換えられた古文書と鍵台帳を合わせると、17年前の火災の責任が村側にあり、それを隠すために記録が改ざんされたと分かる。"},
-  san:{id:"XF",name:"照合・山道",kei:"murder",combo:1,text:"足跡の向き、袖の繊維、肩に残った土を合わせると――巌は“後ろから”ではなく“正面から強く押されて”落ちた。蓮司が掴んだだけでは、説明がつかない。"},
+  san:{id:"XF",name:"照合・山道",kei:"murder",combo:1,text:"足跡の向き、袖の繊維、そして巌の右肩に残った丸い圧痕――上着のボタンの跡。掴んだ痕は“腕”に、押した痕は“肩”に残る。巌は、腕をつかまれただけで落ちたのではない。誰かに“正面から、肩を強く押されて”落ちた。"},
 };
 const COL_ORDER=["sekihi","kou","sui","sai","son","san"];
 
 // 救済：第二探索終了時、足りない系統を黒猫が補う（代表カード）
 // ④ 救済は“答え”を出さず、見落としの方向をぼかして示すだけ（系統は自動で埋めない）
 const RESCUE = {
-  past:{hint:"〔17年前の火災〕の真相に、まだ誰も届いていない。旧校舎の焼け跡と、村長宅の記録に、見落としがあるかもしれない。"},
-  name:{hint:"〔名預けと“あの子”〕――あの子が誰で、名預けが本当は何なのか、まだ言葉になっていない。石碑と神社に、鍵がある。"},
-  murder:{hint:"〔巌の死〕は、本当に事故だったのか。水車小屋の録音と、山道の跡を、もう一度たどってみて。"},
+  past:{hint:"〔17年前の火災〕の真相に、まだ誰も届いていない。旧校舎の焼け跡と、村長宅の記録に、見落としがあるかも。……“火元”は、本当に子どものいたずらだった? 鍵を持ち出したのは、誰?"},
+  name:{hint:"〔名預けと“あの子”〕――あの子が誰で、名預けが本当は何なのか、まだ言葉になっていない。石碑と神社に鍵がある。……“持ち去られた木札”は、今どこに? それを持っているのは、誰?"},
+  murder:{hint:"〔巌の死〕は、本当に事故だったのか。水車小屋の録音と、山道の跡を、もう一度。……“青い糸”を見つけたなら、それが誰の服の色か、確かめた?"},
 };
 
 // ⑤-① 事件の再構成（正しい順） / ⑤-② 四人の行動
 const TIMELINE = [
-  {id:"t1",text:"17年前、千代の名が村の記録から消された"},
-  {id:"t2",text:"巌が、名預けの本当の意味を知る"},
-  {id:"t3",text:"千景が、石碑の隠し棚から木札を持ち出す"},
-  {id:"t4",text:"透が、巌を止めようと古文書を書き換える"},
-  {id:"t5",text:"紗良が、止める方法を知りながら使わなかった"},
-  {id:"t6",text:"蓮司が腕をつかみ、巌が転落する"},
+  {id:"t1",text:"17年前、旧校舎の火災。村は“あの子”に罪を着せ、その名を消す"},
+  {id:"t2",text:"巌が、鍵台帳から17年前の改ざんに気づく"},
+  {id:"t3",text:"巌が、四人に別々の“名前”を託す"},
+  {id:"t4",text:"透が、証拠帳を奪おうと水車小屋で巌に会う"},
+  {id:"t5",text:"崖際の口論の末、透が巌を突き落とす"},
+  {id:"t6",text:"蓮司が腕をつかむが間に合わず、透は通報を遅らせる"},
 ];
 const TL_CORRECT = ["t1","t2","t3","t4","t5","t6"];
 const DEDUCT_ACTIONS = [
-  {q:"千景は、何をした？",opt:["石碑の隠し棚を開け、木札を持ち出した","巌を突き落とした","録音を消した","何もしていない"],a:0},
-  {q:"透は、何をした？",opt:["巌を山道へ誘い出した","古文書を書き換え、一文を消した","千代を記録から消した","何もしていない"],a:1},
-  {q:"紗良は、何をした？",opt:["巌を突いた","止める方法を知りながら、使わなかった","写真を隠した","何も知らなかった"],a:1},
-  {q:"蓮司は、何をした？",opt:["殺意を持って突き落とした","腕をつかんだ（が、突き落としてはいない）","山道に行っていない","巌を毒殺した"],a:1},
+  {q:"千景は、何をした？",opt:["石碑の隠し棚を開け、木札を持ち出した","巌を突き落とした","証拠帳を奪った","何もしていない"],a:0},
+  {q:"透は、何をした？",opt:["巌を助けようとした","巌を突き落とし、証拠帳を奪った","山道には行っていない","何も知らなかった"],a:1},
+  {q:"紗良は、何をした？",opt:["巌を突いた","真実を知りながら、黙っていた","記録を燃やした","何も知らなかった"],a:1},
+  {q:"蓮司は、何をした？",opt:["殺意を持って突き落とした","落ちる直前の腕をつかんだ（が、落としてはいない）","山道に行っていない","巌を毒殺した"],a:1},
 ];
 
 // エンディング（v5）
 const ENDINGS = {
-  "1":{name:"四つの名前",art:"ed1",text:"犯人は透。透は、罪を認めた。\nあの子――千代は無実だったと記録され、その名は村の記録へ戻された。そして四人は、十七年前に村側が何をしたのかも、隠さず書き残した。\n誰か一人を消して終わらせる、そのやり方を、村は初めて手放した。千代の名前だけでなく、四人がそれぞれ何を隠し、何を選んだかも――四つの名前として、残った。"},
+  "1":{name:"四つの名前",art:"ed1",text:"犯人は透。透は、罪を認めた。\nあの子――千代は無実だったと記録され、その名は村の記録へ戻された。そして四人は、十七年前に村側が何をしたのかも、隠さず書き残した。\n誰か一人を消して終わらせる、そのやり方を、村は初めて手放した。\n四つの名前――それは、千代を覚えていた四人が、証人として自らの名を記録に残すこと。千景・透・蓮司・紗良。この四つの名が、消された一つの名――千代を、証明する。"},
+  "1a":{name:"記録された村",art:"ed1",text:"犯人は透だと、四人は突き止めた。千代は無実とされ、その名は記録へ戻り、十七年前の村の責任も、隠さず書き残された。\n――だが、全員が自分の真実を差し出したわけではない。誰かは、最後まで口をつぐんだ。\n真相は記録された。それでも、四つ目の名前は、まだ欠けたままだ。"},
   "2":{name:"千代は戻った",art:"ed2",text:"犯人は透。千代の名は、記録へ戻った。\nだが、罪を負ったのは透ひとり。十七年前の大人たちの責任は、曖昧なまま残された。\n正しい一歩ではある。けれど、完全な清算では、なかった。"},
   "3":{name:"また一人",art:"ed3",text:"村は『透さえ悪かったのだ』として、事件を閉じた。千代の名前は、再び記録から外された。\n十七年前と、同じやり方で。一人を消せば、みんなが安心できる。\n……また、一人。石碑の奥で、何かが静かに息をひそめた。"},
   "4":{name:"事故の村",art:"ed4",text:"証拠は、足りなかった。犯人を確かめることも、あの子が誰なのかも、はっきりしないまま。\n村は、巌の死を「事故」として処理した。\n四人は、それぞれの秘密を抱えたまま、村を去っていく。まだ、誰も終われない。"},
@@ -507,7 +527,7 @@ const SYNOPSIS = `雨の夜、山あいの「宵影村」で巌（いわお）�
 四人でその夜と十七年前をたどり、最後に『巌は殺されたのか』『犯人は誰か』『あの子は本当に犯人だったのか』『名前を戻すか』『責任を一人に集めるか』を選ぶ物語。`;
 
 const GLOSSARY = [
-  ["名預け（なあずけ）","村に古くから伝わる、名前や出来事を石碑と記録庫に“預けて残す”ための仕組み――とされる。だが、その実態には諸説あるらしい。石碑の裏に、何か鍵がある。"],
+  ["名預け（なあずけ）","村に古くから伝わる、名前や出来事を石碑と記録庫に“預けて残す”ための仕組み――とされる。石碑や記録から名が外れ、皆が口をつぐめば、その人は少しずつ“いなかったこと”になっていく。魔法ではない。記録と、沈黙の話だ。石碑の裏に、何か鍵がある。"],
   ["石碑","村の中央にある古い石碑。裏に、鍵のかかった隠し棚がある。"],
   ["巌（いわお）","四人の兄貴分。この数週間、村の古い記録を調べていた。昨夜、崖下で亡くなった。"],
   ["“あの子”／五人目","子どもの頃、四人と一緒に遊んだ、もう一人。だが顔も名前も、誰も思い出せない。"],
@@ -542,6 +562,8 @@ const TRUTH = `――では、あの夜と、十七年前を、ひとつに。
 
 蓮司が巌の腕をつかんだのは、その“あと”。落ちる直前の一瞬だけを見て、自分が落としたと思い込んだ。
 
+巌が遺した『四つの名前を集めろ』――それは、四人それぞれの記憶をつなげれば、消された五人目の名が戻る、という意味だった。四つの名前が、一つの名前を取り戻す。
+
 だからこの物語の問いは、ひとつではない。巌を殺したのは誰か。十七年前、千代は本当に犯人だったのか。そして――また一人に責任を集めて終わらせるのか、それとも、村がしてきたことごと、記録に残すのか。
 
 さて。あなたたちは、どう終わらせた?`;
@@ -562,6 +584,8 @@ const FLOW = [
   {k:"discuss",r:2, sec:1200, prompt:"", act:"話す", cat:"断片は、つながりはじめた? それとも、まだ。"},
   // 終幕
   {k:"confession", act:"決定的情報を出すか決める", cat:"あなたが握る、決定的なひとつ。……出すか、隠すか。真実は、誰かが口を開かなければ、闇のまま。"},
+  {k:"deduct1", act:"事件を時系列に並べる", cat:"まず、起きた順に。四人で、あの夜と十七年前を組み立てて。"},
+  {k:"deduct2", act:"四人の行動を当てる", cat:"そして――誰が、何をした?"},
   {k:"vote", act:"五つを選ぶ", cat:"最後に、五つ。巌は殺されたのか。犯人は。あの子は。名前は。責任は――誰に。"},
   {k:"truth", act:"真相を聞く", cat:"――では。ほんとうのことを、話そうか。"},
   {k:"ending", act:"結末を見る", cat:"あなたたちが選んだ、結末を。"},
@@ -770,11 +794,26 @@ async function maybeAdvance(){
   if(cp.length===0) return;
   const need = cp.length;
   if(readyCount()>=need){
+    const ph=FLOW[room.step];
+    // 最終投票が同票なら進めず、やり直し（データ並び順で勝手に決めない）
+    if(ph && ph.k==="vote" && voteTie()){
+      await roomRef.update({ voteRedo:(room.voteRedo||0)+1 });
+      await roomRef.child("ready").remove();
+      await roomRef.update({ vMurder:null, vCulprit:null, vChiyo:null, vName:null, vResp:null });
+      return;
+    }
     const cur=room.step;
     await roomRef.child("ready").remove();
     await roomRef.update({ step: cur+1 });
   }
 }
+function isTie(map){
+  const t={}; Object.values(map||{}).forEach(v=>t[v]=(t[v]||0)+1);
+  const n=Object.values(t); if(n.length<2) return false;
+  const mx=Math.max(...n); return n.filter(x=>x===mx).length>1;
+}
+// 決定的な二問（殺人か・犯人）が割れたら再投票
+function voteTie(){ return isTie(room.vMurder)||isTie(room.vCulprit); }
 
 /* ===== VN風のステージ（背景どん＋下にセリフ窓） ===== */
 function stageBg(key){
@@ -797,6 +836,7 @@ function bgFor(ph){
   if(ph.k==="prologue"||ph.k==="truth"||ph.k==="hoview"||ph.k==="briefing") return "prologue";
   if(ph.k==="cards"){ const l=room.sel&&room.sel[me]; return (l&&LOCS[l])?LOCS[l].art:"scene"; }
   if(ph.k==="confession") return "scene";
+  if(ph.k==="deduct1"||ph.k==="deduct2") return "deduction";
   if(ph.k==="ending"){ const {ed}=computeEnding(); return ENDINGS[ed].art; }
   if(ph.k==="select") return "map";
   return "scene";
@@ -814,6 +854,8 @@ function phaseInfo(ph){
   if(k==="discuss")  return {label:"🗣 議論フェイズ", sub:(ph.prompt||"全員で話し合う"), v:"talk", vl:"🟢 全員で話す"};
   if(k==="guarantee")return {label:"🐈‍⬛ 黒猫の補足", sub:"足りない系統を補う", v:"talk", vl:"🟢 話し合いOK"};
   if(k==="confession")return {label:"🗝 告白", sub:"決定的情報を出すか、隠すか", v:"talk", vl:"🟢 相談OK"};
+  if(k==="deduct1")return {label:"🧩 再構成", sub:"事件を時系列に並べる", v:"talk", vl:"🟢 相談OK"};
+  if(k==="deduct2")return {label:"🧩 四人の行動", sub:"誰が何をしたか", v:"talk", vl:"🟢 相談OK"};
   if(k==="vote")     return {label:"🗳 最終投票", sub:"五つを選ぶ", v:"talk", vl:"🟢 相談OK"};
   if(k==="truth")    return {label:"📖 真相", sub:"", v:"listen", vl:"🔵 聞く時間"};
   if(k==="ending")   return {label:"🌙 結末", sub:"", v:"listen", vl:"🔵 聞く時間"};
@@ -1025,9 +1067,9 @@ async function ensureComputed(step, ph){
 }
 
 function needsReady(ph){
-  return ["prologue","briefing","hoview","intro","cards","discuss","guarantee","select","confession","vote","truth"].includes(ph.k);
+  return ["prologue","briefing","hoview","intro","cards","discuss","guarantee","select","confession","deduct1","deduct2","vote","truth"].includes(ph.k);
 }
-function isSubmitPhase(ph){ return ["select","confession","vote"].includes(ph.k); }
+function isSubmitPhase(ph){ return ["select","confession","deduct1","deduct2","vote"].includes(ph.k); }
 
 /* ---------- 各フェーズ描画 ---------- */
 function renderPhase(step, ph){
@@ -1041,6 +1083,8 @@ function renderPhase(step, ph){
     case "discuss":  return phDiscuss(step, ph);
     case "guarantee":return phGuarantee();
     case "confession":return phConfession();
+    case "deduct1":  return phDeduct1();
+    case "deduct2":  return phDeduct2();
     case "vote":     return phVote();
     case "truth":    return phTruth();
     case "ending":   return phEnding();
@@ -1100,8 +1144,15 @@ function locSlots(l){
   if(COLLATION[l] && room.discovered && room.discovered[COLLATION[l].id]) s.push(COLLATION[l]);
   return s;
 }
+// この巡、その拠点で“今から調べられる”手がかり（未取得・条件クリア）
+function examinable(l, ph){
+  const held=heldIds(me);
+  const tier=(ph.r===1? LOCS[l].first : LOCS[l].second) || [];
+  return tier.filter(c=>!(room.gaveCard&&room.gaveCard[me+"_"+c.id]) && !held.has(c.id) && (!c.req || held.has(c.req)));
+}
 function phSelect(ph){
   const sel=(room.sel&&room.sel[me])||null;
+  const exam=(room.examine&&room.examine[me])||null;
   const locked=iAmReady();
   let html=`<div class="mapwrap">`;
   LOC_ORDER.forEach(l=>{
@@ -1121,7 +1172,7 @@ function phSelect(ph){
   });
   html+=`</div>`;
   if(sel && LOCS[sel]){
-    // 選んだ拠点の“カードの空き状況”（何が発見済みで、誰が開けたか）
+    const opts=examinable(sel, ph);
     let list="";
     locSlots(sel).forEach(c=>{
       const disc = room.discovered && room.discovered[c.id] ? Object.keys(room.discovered[c.id]) : [];
@@ -1134,24 +1185,45 @@ function phSelect(ph){
       }
     });
     html+=`<div class="locinfo"><b>${LOCS[sel].name}</b>　${esc(LOCS[sel].overview||"")}
-      <div class="slotlist">${list}</div>
-      <div style="margin-top:.5em">`;
+      <div class="slotlist">${list}</div>`;
+    // 何を見る？（この拠点で調べられる手がかりを1つ選ぶ）
+    if(!locked){
+      if(opts.length){
+        html+=`<div class="exwrap"><div class="exlabel">ここで、何を調べる?（ひとつ）</div><div class="exopts">`;
+        opts.forEach(c=>{ html+=`<button class="exbtn ${exam===c.id?'sel':''}" onclick="pickExamine('${c.id}')">${esc(examineLabel(c))}</button>`; });
+        html+=`</div></div>`;
+      }else{
+        html+=`<div class="exwrap sub">ここで新しく調べられるものは、もうなさそう。（誰かと同行すれば“照合”は読める）</div>`;
+      }
+    }
+    html+=`<div style="margin-top:.5em">`;
     if(locked){
-      html+=`<span class="pill">✅ ${LOCS[sel].name} に決定</span> <button class="tbtn" onclick="unconfirmLoc()">選び直す</button>`;
+      const exName = exam? examineLabelById(exam) : (opts.length?"":"（調べるものなし）");
+      html+=`<span class="pill">✅ ${LOCS[sel].name}${exName?" / "+esc(exName):""} に決定</span> <button class="tbtn" onclick="unconfirmLoc()">選び直す</button>`;
     }else{
-      html+=`<button class="nextbtn" onclick="confirmLoc()">ここに決める ▶</button>`;
+      const ready = opts.length? !!exam : true;   // 調べる候補があるなら1つ選ぶまで確定不可
+      html+=`<button class="nextbtn ${ready?'':'off'}" ${ready?'onclick="confirmLoc()"':''}>ここに決める ▶</button>`;
     }
     html+=`</div></div>`;
   }else{
-    html+=`<div class="locinfo sub">拠点をタップすると、そこのカードの空き状況（誰が何を発見したか）が見える。行き先は「ここに決める」で確定するよ。</div>`;
+    html+=`<div class="locinfo sub">拠点をタップ→そこで“何を調べるか”を選ぶ。行き先は「ここに決める」で確定するよ。</div>`;
   }
   return html;
 }
-async function pickLoc(l){
-  // タップは“プレビュー”のみ。確定は confirmLoc。
-  if(iAmReady()) await setReady(false);   // 決定後に選び直したら未確定へ戻す
-  await roomRef.child("sel/"+me).set(l);
+function examineLabel(c){
+  // 内容ネタバレなしの“調べ方”ラベル
+  const map={A01:"隠し棚を調べる",A02:"石碑の裏を調べる",B01:"壁の落書きを調べる",B02:"焼け残りの記録を調べる",B03:"帳簿を調べる",
+    C01:"録音を聞く（前半）",C02:"録音の続きを聞く",C03:"床の争いの跡を調べる",D01:"巻物を読む",D02:"別の写しを探す",
+    E01:"古文書を調べる",E02:"巌の残した形跡を探す",F01:"崖ぎわの足跡を見る",F02:"巌の服を調べる"};
+  return map[c.id]||(c.name+"を調べる");
 }
+function examineLabelById(id){ return examineLabel({id,name:id}); }
+async function pickLoc(l){
+  if(iAmReady()) await setReady(false);
+  await roomRef.child("sel/"+me).set(l);
+  await roomRef.child("examine/"+me).remove();   // 場所を変えたら“何を見る”はリセット
+}
+async function pickExamine(id){ await roomRef.child("examine/"+me).set(id); }
 async function confirmLoc(){
   if(room.sel && room.sel[me]) await setReady(true);
 }
@@ -1171,13 +1243,19 @@ async function computeCards(r){
     const tier = (r===1? loc.first : loc.second) || [];
     for(const pid of perLoc[l]){
       const held=heldIds(pid);
-      for(const c of tier){
-        if(room.gaveCard && room.gaveCard[pid+"_"+c.id]) continue; // 既に取得済み
-        if(c.req && !held.has(c.req)) continue;                    // C01が無ければC02は取れない
-        await pushDisc(pid,{round:r,kind:"探索",id:c.id,name:c.name,kei:c.kei,combo:c.combo||0,text:c.text,loc:l});
-        await roomRef.child("gaveCard/"+pid+"_"+c.id).set(true);
-        await roomRef.child("discovered/"+c.id+"/"+pid).set(true);
-        held.add(c.id);
+      const chosen=(room.examine&&room.examine[pid])||null;
+      // 「何を調べるか」で選んだ手がかりを1つだけ取得（未選択なら、条件を満たす先頭を1つ）
+      let target = chosen ? tier.find(c=>c.id===chosen) : null;
+      if(!target){ target = tier.find(c=>!(room.gaveCard&&room.gaveCard[pid+"_"+c.id]) && !held.has(c.id) && (!c.req||held.has(c.req))) || null; }
+      if(target){
+        const c=target;
+        const ok = !(room.gaveCard&&room.gaveCard[pid+"_"+c.id]) && !held.has(c.id) && (!c.req||held.has(c.req));
+        if(ok){
+          await pushDisc(pid,{round:r,kind:"探索",id:c.id,name:c.name,kei:c.kei,combo:c.combo||0,text:c.text,loc:l});
+          await roomRef.child("gaveCard/"+pid+"_"+c.id).set(true);
+          await roomRef.child("discovered/"+c.id+"/"+pid).set(true);
+          held.add(c.id);
+        }
       }
     }
     // 照合：2人以上で同行→その場所専用の照合を1回だけ、その本人たちへ
@@ -1188,6 +1266,7 @@ async function computeCards(r){
       await roomRef.child("coDone/"+l).set(true);
     }
   }
+  await roomRef.child("examine").remove();   // この巡の“何を見る”をリセット（次の巡で選び直し）
   playSfx("reveal");
 }
 // そのプレイヤーが今持っているカードIDの集合
@@ -1224,72 +1303,13 @@ function phDiscuss(step, ph){
 }
 
 /* 交換 */
-function phExchange(ph){
-  const mine=(room.hands&&room.hands[me])?Object.values(room.hands[me]):[];
-  const offers=room.offers||{};
-  // 自分あてのオファー
-  const toMe=Object.entries(offers).filter(([id,o])=>o.to===me && !o.done);
-  let html="";
-  if(toMe.length){
-    html+=`<div class="card mine"><b>📩 あなたへの交換の申し出</b>`;
-    toMe.forEach(([id,o])=>{
-      const fromName=charName(o.from);
-      html+=`<hr class="sep"><p>${esc(fromName)} から「${esc(o.card.id)}」＋条件：${esc(o.cond||"（口頭で）")}</p>
-        <div style="display:flex;gap:.5em">
-          <button class="btn primary" onclick="acceptOffer('${id}')">受ける</button>
-          <button class="btn" onclick="rejectOffer('${id}')">断る</button>
-        </div>`;
-    });
-    html+=`</div>`;
-  }
-  // 送る
-  const canSend = mine.length && !(room.exchangedThisRound&&room.exchangedThisRound[me]);
-  if(canSend){
-    html+=`<div class="card"><b>手札を1枚おくる（任意・1巡1回）</b>`;
-    html+=`<label class="lbl">おくるカード</label><select id="exCard" class="txt">`;
-    mine.forEach(s=>html+=`<option value="${s.id}">${s.id}：${esc(s.text.slice(0,18))}…</option>`);
-    html+=`</select><label class="lbl">相手</label><select id="exTo" class="txt">`;
-    players().filter(p=>p.id!==me).forEach(p=>html+=`<option value="${p.id}">${esc(charName(p.id))}</option>`);
-    html+=`</select><label class="lbl">条件（任意・詳しくはDiscordで）</label><input class="txt" id="exCond" placeholder="例：あなたの山道の話を聞かせて">
-      <button class="btn primary" onclick="sendOffer()">この内容で申し出る</button></div>`;
-  }else{
-    html+=`<div class="card sub">${mine.length?"この巡はもう交換したよ。":"手札がないので今回は交換なし。"}</div>`;
-  }
-  return html;
-}
 function charName(pid){ const p=players().find(x=>x.id===pid); return p? (p.char?CHARS[p.char].name:p.name):"?"; }
-async function sendOffer(){
-  const cardId=$("#exCard").value, to=$("#exTo").value, cond=$("#exCond").value.trim();
-  const s=(room.hands[me]||{})[cardId]; if(!s) return;
-  const oid="o"+Date.now().toString(36);
-  await roomRef.child("offers/"+oid).set({from:me,to,card:s,cond,done:false});
-  await roomRef.child("exchangedThisRound/"+me).set(true);
-}
-async function acceptOffer(id){
-  const o=(room.offers||{})[id]; if(!o) return;
-  // 所有権移動：from の手札から削除、to の手札に追加
-  await roomRef.child("hands/"+o.from+"/"+o.card.id).remove();
-  await roomRef.child("hands/"+o.to+"/"+o.card.id).set(o.card);
-  await roomRef.child("offers/"+id+"/done").set(true);
-}
-async function rejectOffer(id){ await roomRef.child("offers/"+id+"/done").set(true); }
-
-/* イベント（リーダーがランダム選択） */
-async function computeEvent(){
-  if(room.event) return;
-  const keys=["A","B","C"];
-  const pick=keys[Math.floor(Math.random()*keys.length)];
-  await roomRef.child("event").set(pick);
-}
-function phEvent(){
-  return "";
-}
 
 /* 救済（第二探索終了時：足りない系統を全員へ補う） */
 async function computeGuarantee(){
   if(room.guaranteeDone) return;
   const have=keiCoveredSet();
-  const missing=["past","name","renji"].filter(k=>!have.has(k));
+  const missing=["past","name","murder"].filter(k=>!have.has(k));
   const list=missing.map(k=>({k,label:KEI[k],hint:RESCUE[k].hint}));
   await roomRef.child("guarantee").set(list);
   await roomRef.child("guaranteeDone").set(true);
@@ -1310,51 +1330,40 @@ function phGuarantee(){
   return html;
 }
 
-/* 記憶投票 */
-function phMemVote(){
-  const my=(room.mv&&room.mv[me])||null;
-  let g=`<div class="plaques">`;
-  CHAR_ORDER.forEach(c=>{
-    g+=`<button class="plaque ${my===c?'sel':''}" onclick="voteMem('${c}')">${CHARS[c].name}</button>`;
-  });
-  g+=`</div>`;
-  return g;
-}
-async function voteMem(c){ await roomRef.child("mv/"+me).set(c); await setReady(true); }
-async function computeMemReveal(){
-  if(room.memPick) return;
-  const tally={};
-  Object.values(room.mv||{}).forEach(c=>tally[c]=(tally[c]||0)+1);
-  let max=-1,cands=[];
-  Object.entries(tally).forEach(([c,n])=>{ if(n>max){max=n;cands=[c];} else if(n===max){cands.push(c);} });
-  const pick=cands[Math.floor(Math.random()*cands.length)]; // 同数はランダム
-  await roomRef.child("memPick").set(pick||CHAR_ORDER[0]);
-}
-function phMemReveal(){
-  return "";
-}
-
 /* 最終推理 */
 /* ①⑥⑦ 告白：各自が“決定的情報”を公開/隠す（自分で決める） */
 function phConfession(){
   const c=myChar(); const rv=c?CHARS[c].ho.reveal:null;
   const my = room.confess && room.confess[me];
+  const isCulprit = (c==="toru");
+  const label={open:"✅ すべて公開した",part:"◐ 一部だけ認めた",hide:isCulprit?"🤫 最後まで否認した":"🤫 隠したままにした"}[my]||"";
   let html=`${privBadge()}<div class="card mine" style="max-width:42em"><b>🗝 あなただけが握る、決定的な情報</b>`;
   if(rv) html+=`<p><b>${esc(rv.title)}</b><br>${nl2br(rv.text)}</p><p class="small">${esc(rv.note||"")}</p>`;
-  html+=`<hr class="sep"><p class="small">これを公開すると、真相に一歩近づく。でも自分から出すと、疑いを呼ぶかもしれない。出すか、隠すかは、あなたの判断。</p>`;
+  if(isCulprit){
+    html+=`<hr class="sep"><p class="small">あなたは犯人。……どう、幕を引く? 隠し通すのも、罪だけ認めるのも、すべてを差し出すのも、あなたの選択。</p>`;
+  }else{
+    html+=`<hr class="sep"><p class="small">これを公開すると、真相に一歩近づく。でも自分から出すと、疑いを呼ぶかも。出すか、隠すかは、あなたの判断。</p>`;
+  }
   if(my){
-    html+=`<p><span class="pill">${my==="open"?"✅ 公開した":"🤫 隠したままにした"}</span> <button class="tbtn" onclick="setConfess(null)">選び直す</button></p>`;
+    html+=`<p><span class="pill">${label}</span> <button class="tbtn" onclick="setConfess(null)">選び直す</button></p>`;
+  }else if(isCulprit){
+    html+=`<div class="brow"><button class="nextbtn" onclick="setConfess('open')">すべて認める</button><button class="btn" onclick="setConfess('part')">罪だけ認める</button><button class="btn" onclick="setConfess('hide')">否認する</button></div>`;
   }else{
     html+=`<div class="brow"><button class="nextbtn" onclick="setConfess('open')">公開する</button><button class="btn" onclick="setConfess('hide')">まだ隠す</button></div>`;
   }
   html+=`</div>`;
-  // 公開された決定的情報（全員に見える）
-  const pubs=Object.entries(room.confess||{}).filter(([pid,v])=>v==="open");
+  // “四つの名前”が揃っていく（公開＝open / 一部＝part も灯すが色を分ける）
+  const pubs=Object.entries(room.confess||{}).filter(([pid,v])=>v==="open"||v==="part");
+  const nFull=Object.values(room.confess||{}).filter(v=>v==="open").length;
+  const pips=CHAR_ORDER.map(cid=>{ const st=charConfessState(cid); return `<span class="np ${st==='open'?'on':(st==='part'?'part':'')}">${st?CHARS[cid].name:'？'}</span>`; }).join("");
+  html+=`<div class="card" style="max-width:42em;text-align:center"><b>四つの名前</b>
+    <div class="fournames">${pips}</div>
+    <div class="kv">${nameGathered()?"――四つの名前が、それぞれの意思で、揃った。":`${pubs.length} / 4 の名前が、明かされた`}</div></div>`;
   if(pubs.length){
-    html+=`<div class="card" style="max-width:42em"><b>公開された決定的情報</b>`;
+    html+=`<div class="card" style="max-width:42em"><b>明かされた決定的情報</b>`;
     pubs.forEach(([pid,v])=>{
       const pl=players().find(p=>p.id===pid); const kk=pl&&pl.char?CHARS[pl.char].ho.reveal:null;
-      if(kk) html+=`<hr class="sep"><p><b>${esc(charName(pid))}：${esc(kk.title)}</b><br>${nl2br(kk.text)}</p>`;
+      if(kk) html+=`<hr class="sep"><p><b>${esc(charName(pid))}：${esc(kk.title)}${v==="part"?"（一部）":""}</b><br>${nl2br(kk.text)}</p>`;
     });
     html+=`</div>`;
   }
@@ -1363,6 +1372,11 @@ function phConfession(){
 }
 async function setConfess(v){ await roomRef.child("confess/"+me).set(v?v:null); }
 function confessCount(){ return Object.values(room.confess||{}).filter(v=>v==="open").length; }
+function charConfessState(cid){ const p=players().find(x=>x.char===cid); return (p&&room.confess)?room.confess[p.id]:null; }
+// “四つの名前”＝四人それぞれが「何を残すか」を自分の意思で決めた（隠す以外を選んだ）
+function nameGathered(){
+  return CHAR_ORDER.every(cid=>{ const st=charConfessState(cid); return st==="open"||st==="part"; });
+}
 
 /* ⑤-① 事件の再構成：共有の並びを全員で上下、各自が確定 */
 function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
@@ -1419,7 +1433,9 @@ function actionScore(){
 function phVote(){
   const g=(k)=>room[k]&&room[k][me];
   const vm=g("vMurder"),vk=g("vCulprit"),v17=g("vChiyo"),vn=g("vName"),vr=g("vResp");
-  let html=`<div class="card"><b>① 巌は、殺されたのか？</b><div class="plaques" style="margin-top:.4em;grid-template-columns:repeat(2,1fr)">`;
+  let html="";
+  if(room.voteRedo){ html+=`<div class="card mine" style="text-align:center"><b>意見が割れた</b><p class="sub">「殺人か／犯人は誰か」で票が同数だった。もう一度だけ、話し合って選び直そう。（${room.voteRedo}回目）</p></div>`; }
+  html+=`<div class="card"><b>① 巌は、殺されたのか？</b><div class="plaques" style="margin-top:.4em;grid-template-columns:repeat(2,1fr)">`;
   [["殺された（殺人）","murder"],["事故だ","accident"]].forEach(([lab,v])=>html+=`<button class="plaque ${vm===v?'sel':''}" onclick="setVote('vMurder','${v}')">${lab}</button>`);
   html+=`</div></div>`;
   html+=`<div class="card"><b>② 犯人は誰か？</b><div class="plaques" style="margin-top:.4em">`;
@@ -1463,8 +1479,26 @@ function phTruth(){
     <p style="margin-top:2px">${nl2br(TRUTH)}</p></div>
     <p class="small center">――結末は、次の画面で。</p>`;
 }
+function charConfessed(cid){ const st=charConfessState(cid); return st==="open"||st==="part"; }
+// 事件を“実際に解けたか”＝正しい票＋時系列正解＋四人の行動3問以上
+function solvedCase(){ return isShinso() && timelineCorrect() && actionScore()>=3; }
+function computeEnding(){
+  const murder=majority(room.vMurder), culprit=majority(room.vCulprit), chiyo=majority(room.vChiyo), name=majority(room.vName), resp=majority(room.vResp);
+  const conf=confessCount();
+  // 透が“罪を認めた”か（全告白 open または一部告白 part）
+  const toruAdmitted = charConfessState("toru")==="open" || charConfessState("toru")==="part";
+  let ed, rank;
+  if(murder!=="murder" || culprit!=="toru"){ ed="4"; rank="D"; }        // 事故 or 犯人を確定できない
+  else if(name==="seal"){ ed="3"; rank="C"; }                            // 透と当てたが名を封じる＝また一人
+  else if(chiyo!=="innocent"){ ed="5"; rank="C"; }                       // 千代の無実に至らず＝表面的な救済
+  else if(resp!=="record"){ ed="2"; rank="B"; }                          // 千代は戻ったが責任は透一人へ
+  else if(!solvedCase()){ ed="5"; rank="C"; }                            // 票は最良でも、事件の全体像に届いていない
+  else if(nameGathered() && toruAdmitted){ ed="1"; rank="S"; }           // 四人が“何を残すか”を自ら選び、透も罪を認めた＝四つの名前
+  else { ed="1a"; rank="A"; }                                            // 真相到達（だが誰かは口を閉ざした）
+  return {ed,rank,murder,culprit,chiyo,name,resp,conf};
+}
 function phEnding(){
-  const {ed,murder,culprit,chiyo,name,resp}=computeEnding();
+  const {ed,rank,murder,culprit,chiyo,name,resp,conf}=computeEnding();
   const E=ENDINGS[ed];
   if(ed==="3"||ed==="5") playSfx("fall");
   const mL=murder==="murder"?"殺人":"事故";
@@ -1472,19 +1506,23 @@ function phEnding(){
   const cL=chiyo==="innocent"?"無実":(chiyo==="guilty"?"犯人":"?");
   const nL=name==="return"?"戻す":"封じる";
   const rL=resp==="record"?"村側も記録":"一人に集中";
-  let html=`${pubBadge()}<div class="card">
-    <b>結末 ── ${esc(E.name)}</b>
+  const rankNote={S:"四人全員が、自らの名を残した。",A:"真相へ到達。だが、誰かは秘密を抱えたまま。",B:"千代は戻った。けれど、責任は一人へ。",C:"何かに、まだ手が届いていない。",D:"事件は、闇の中へ。"}[rank]||"";
+  let html=`${pubBadge()}<div class="card" style="text-align:center">
+    <div class="rankbadge rank-${rank}">${rank}</div>
+    <div class="kv" style="margin-top:.3em">${esc(rankNote)}</div></div>`;
+  html+=`<div class="card"><b>結末 ── ${esc(E.name)}</b>
     <p style="margin-top:8px">${nl2br(E.text)}</p></div>`;
-  html+=`<div class="card"><div class="kv">${isShinso()?"真相に到達":"真相は、闇の中"}</div>
-    <div class="kv">①巌:<b>${mL}</b> ／ ②犯人:<b>${kL}</b> ／ ③あの子:<b>${cL}</b> ／ ④名前:<b>${nL}</b> ／ ⑤責任:<b>${rL}</b></div></div>`;
+  html+=`<div class="card"><div class="kv">${solvedCase()?"真相に到達":"真相は、まだ闇の中"}</div>
+    <div class="kv">①巌:<b>${mL}</b> ／ ②犯人:<b>${kL}</b> ／ ③あの子:<b>${cL}</b> ／ ④名前:<b>${nL}</b> ／ ⑤責任:<b>${rL}</b></div>
+    <div class="kv">再構成 <b>${timelineCorrect()?"○":"×"}</b> ／ 四人の行動 <b>${actionScore()}/4</b> ／ 告白 <b>${conf}/4</b></div></div>`;
   html+=`<p class="center sub" style="margin:18px 0">――『宵影村・四つの名前』 了</p>`;
   if(isLeader()) html+=`<button class="btn ghost" onclick="resetGame()">また、あの夜へ（部屋をリセット）</button>`;
   return html;
 }
 async function resetGame(){
   await roomRef.update({
-    step:-1, computedStep:-1, sel:null, ready:null, disc:null, gaveCard:null, coDone:null,
-    guarantee:null, guaranteeDone:null, vMurder:null, vCulprit:null, vChiyo:null, vName:null, vResp:null,
+    step:-1, computedStep:-1, sel:null, examine:null, ready:null, disc:null, gaveCard:null, coDone:null,
+    guarantee:null, guaranteeDone:null, vMurder:null, vCulprit:null, vChiyo:null, vName:null, vResp:null, voteRedo:null,
     shared:null, discovered:null, dm:null, confess:null, tl:null, tlok:null, da:null,
   });
 }
